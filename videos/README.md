@@ -5,4 +5,7 @@
 	- First commit video
 	- Commit components for draggable and resizable cards
 	- Tested with tree view and vtk
+	- TODO: I just realized that I forgot change the white color in the top bar and footer into transparent to match with the other parts
+
+
 
