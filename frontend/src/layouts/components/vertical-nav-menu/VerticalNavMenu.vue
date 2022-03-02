@@ -42,6 +42,13 @@
         :to="{ name: 'viewer' }"
         :icon="icons.mdiCardSearchOutline"
       ></nav-menu-link>
+      
+      <nav-menu-link 
+        title="Map" 
+        :to="{ name: 'maps' }" 
+        :icon="icons.mdiMap">
+      </nav-menu-link>
+
       <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
@@ -65,6 +72,7 @@ import {
   mdiFileOutline,
   mdiFormSelect,
   mdiAccountCogOutline,
+  mdiMap,
 } from '@mdi/js'
 import NavMenuLink from './components/NavMenuLink.vue'
 
@@ -94,6 +102,7 @@ export default {
         mdiFileOutline,
         mdiFormSelect,
         mdiAccountCogOutline,
+        mdiMap
       },
     }
   },

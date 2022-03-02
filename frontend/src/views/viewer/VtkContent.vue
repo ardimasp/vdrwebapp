@@ -65,6 +65,7 @@ export default {
         divWidth.value = currentValue[0]
         divHeight.value = currentValue[1]
         renderWindow.getViews()[0].setSize(currentValue[0], currentValue[1])
+        console.log(_oldValue)
     });
 
     watchEffect(() => {
