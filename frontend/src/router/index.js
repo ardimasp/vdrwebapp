@@ -14,6 +14,11 @@ const routes = [
     component: () => import('@/views/viewer/Viewer.vue'),
   },
   {
+    path: '/filemanagement',
+    name: 'file-management',
+    component: () => import('@/views/file-management/FileManagement.vue'),
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/dashboard/Dashboard.vue'),

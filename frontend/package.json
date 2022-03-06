@@ -5,15 +5,20 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test": "jest",
+    "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
     "@kitware/vtk.js": "^22.4.0",
     "@mdi/js": "^5.9.55",
+    "@vue/cli-plugin-unit-jest": "^5.0.1",
+    "@vue/compiler-sfc": "^3.2.31",
     "@vue/composition-api": "^1.3.3",
     "@vuetify/cli-plugin-utils": "^0.0.9",
     "apexcharts": "^3.27.3",
     "core-js": "^3.6.5",
+    "jest": "^27.5.1",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.6.2",
     "vue-drag-resize": "^1.5.4",
@@ -24,26 +29,34 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-airbnb": "^5.0.2",
+    "@vue/server-test-utils": "^1.3.0",
+    "@vue/test-utils": "^1.3.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^27.5.1",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.4.2",
+    "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.0"
   },
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "node": true,
+      "jest": true
     },
     "extends": [
       "plugin:vue/essential",
