@@ -5,22 +5,22 @@ export default {
         list: filedata
     },
     mutations: {
-        UPDATE_LIST(state, payload){
+        UPDATE_FILE(state, payload){
             state.list = payload;
           },
-          DELETE_LIST(state, index){
+          DELETE_FILE(state, index){
             // console.log("del from vuex", index);
             state.list.splice(index, 1);
           }
     },
     actions: {
-        addToList(context, data){
+        addToFiles(context, data){
             const list = context.state.list;
             list.push(data);
-            context.commit('UPDATE_LIST', list);
+            context.commit('UPDATE_FILE', list);
           },
-          removeFromList(context, index){
-            context.commit("DELETE_LIST", index);
+          removeFromFiles(context, index){
+            context.commit("DELETE_FILE", index);
           }
     }
 }

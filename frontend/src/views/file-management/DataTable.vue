@@ -93,7 +93,7 @@ export default {
   methods: {
     deleteItem(item) {
       const index = store.state.files.list.indexOf(item)
-      store.dispatch("removeFromList", index);
+      store.dispatch("removeFromFiles", index);
     },
     deleteAll(){
       let arr = [], index;
@@ -104,7 +104,7 @@ export default {
       arr.sort(function(a,b) {return b-a});
 
       for(let i in arr){
-        store.dispatch("removeFromList", arr[i]);
+        store.dispatch("removeFromFiles", arr[i]);
       }
       // clean out
       this.selected = [];
