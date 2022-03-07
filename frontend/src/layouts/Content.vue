@@ -103,7 +103,7 @@ export default {
 .v-app-bar ::v-deep {
   .v-toolbar__content {
     padding: 0;
-    background-color: #f4f5fa;;
+    background-color: #f4f5fa;
     .app-bar-search {
       .v-input__slot {
         padding-left: 18px;
@@ -116,6 +116,8 @@ export default {
   // max-width: 1440px;
   // margin-left: auto;
   // margin-right: auto;
+  background-color: #f4f5fa;
+
 }
 
 .app-content-container {

@@ -11,7 +11,6 @@
             class=" white--text dropdown-filter"
             @input="selectedPlace()"
             color="white"
-            clearable
             chips
             >
          

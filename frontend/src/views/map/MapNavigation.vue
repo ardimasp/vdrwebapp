@@ -1,16 +1,21 @@
 <template>
   <div>
     <div id="mapContainer">
+      <!-- <h6>{{dataMaps}}</h6> -->
       <v-card>
-        <l-map style="height: 800px" :zoom="zoom" :center="center">
+        <l-map style="height: 1100px" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
           <l-marker 
             :key="index"
             v-for="(dataMap,index) in dataMaps"
             :lat-lng="latLng(dataMap.data.coordinates.pos[0], dataMap.data.coordinates.pos[1])"
             :opacity="dataMap.opac"
+            @mouseover="markeronhover(dataMap.id)"
+            @mouseleave="markeronleave(dataMap.id)"
+            @click="cardshown(dataMap.id)"
+            id="maptry" >
             >
-            <l-icon :icon-size="dataMap.iconSize" :icon-url="icon"> </l-icon>
+            <l-icon :icon-size="dataMap.iconSize" :icon-url="dataMap.iconImg"> </l-icon>
     
           </l-marker>
           <l-circle
@@ -21,7 +26,10 @@
         </l-map>
       </v-card>
     </div>
-    <div style="height: 800px" id="maptryit"></div>
+    <v-overlay style="z-index: 9999" :absolute="true" :value="overlay">
+      <Card  :dataDetail="this.datacard" v-click-outside="test" />
+    </v-overlay>
+    <!-- <div style="height: 800px" id="maptryit"></div> -->
   </div>
 </template>
 
@@ -29,6 +37,7 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { LMap, LTileLayer, LMarker, LIcon, LCircle } from 'vue2-leaflet'
+import Card from './Card.vue'
 // import {heatLayer} from './heatmap/dist/leaflet-heat'
 // import { Icon } from 'leaflet';
 
@@ -39,6 +48,7 @@ import { LMap, LTileLayer, LMarker, LIcon, LCircle } from 'vue2-leaflet'
 //   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 // });
 import oilgas from '../../assets/images/oil&gas.png'
+import oilgasonhover from '../../assets/images/oil&gashover.png'
 
 export default {
   name: 'MapNavigation',
@@ -48,6 +58,7 @@ export default {
     LMarker,
     LIcon,
     LCircle,
+    Card
   },
   props:{
     dataMaps: Array,
@@ -62,22 +73,54 @@ export default {
       center: [-3.092642, 115.283758],
       marker: [-3.092642, 115.283758],
       icon: oilgas,
-      iconSize: [30, 30],
+      iconSize: [50, 50],
       circle: {
         center: [-3.092642, 115.283758],
         radius: 5000,
         color: 'red'
-      }
+      },
+      iconhover: oilgasonhover,
+      datacard: {},
+      overlay: false
     }
   },
   methods: {
     latLng: function(lat,lng){
       return L.latLng(lat,lng)
     },
-   
+    // heatt(){
+    //   if(this.heatmap != 0){
+    //       var heat = L.heatLayer(this.heatmap, {radius: 50}).addTo(maptryit);
+    //   }
+    //   return heat
+    // },
+
+    markeronhover(key){
+      // console.log(key)
+      var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
+      this.dataMaps[data].iconImg = this.iconhover
+    },
+    markeronleave(key){
+    
+      // console.log(key)
+      var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
+      this.dataMaps[data].iconImg = this.icon
+    },
+    cardshown(key){
+      var filteredResult = this.dataMaps.find((e) => e.id == key);
+      this.datacard = filteredResult
+      console.log(this.datacard.image)
+      this.overlay = true
+      // var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
+      // this.dataMaps[data].iconImg = this.icon
+    },
+    test() {
+      this.overlay = false
+    },
   },
 
   mounted: function() {
+    // var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
     var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
     
     L.tileLayer(
@@ -120,17 +163,60 @@ export default {
     // maptryit.removeLayer(heat)
 
     
-    // var heat = L.heatLayer([
-    //   [-0.847199, 117.015818, 80], // lat, lng, intensity
-    //   [-3.092642, 115.283758, 500],
-    // ], {radius: 50}).addTo(maptryit);
+    // var  
+
+    // var testData = {
+    //   max: 8,
+    //   data: [{lat: -0.847199, lng:117.015818, count: 3},{lat: -3.092642, lng:115.283758, count: 1}]
+    // };
+    // var baseLayer = L.tileLayer(
+    //   'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    //     attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    //     maxZoom: 18
+    //   }
+    // );
+    
+    // var cfg = {
+    //   // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+    //   // if scaleRadius is false it will be the constant radius used in pixels
+    //   "radius": 2,
+    //   "maxOpacity": .8,
+    //   // scales the radius based on map zoom
+    //   "scaleRadius": true,
+    //   // if set to false the heatmap uses the global maximum for colorization
+    //   // if activated: uses the data maximum within the current map boundaries
+    //   //   (there will always be a red spot with useLocalExtremas true)
+    //   "useLocalExtrema": true,
+    //   // which field name in your data represents the latitude - default "lat"
+    //   latField: 'lat',
+    //   // which field name in your data represents the longitude - default "lng"
+    //   lngField: 'lng',
+    //   // which field name in your data represents the data value - default "value"
+    //   valueField: 'count'
+    // };
+
+    // var heatmapLayer = new HeatmapOverlay(cfg);
+    // heatmapLayer.setData(testData);
+
+    // var maptryit = L.map('maptryit', {
+    //   center: [-3.092642, 115.283758],
+    //   zoom: 5,
+    //   layers: [baseLayer, heatmapLayer]
+    // });
 
   },
 }
 </script>
 
 <style lang="scss" scoped>
-
+/* // .tab-index {
+//   position: relative;
+//   z-index: 1;
+// }
+// #maptryit {
+//   height: 100vh;
+//   z-index: 0;
+// } */
 .mapContainer {
   position: relative;
   left: 0px;

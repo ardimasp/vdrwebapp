@@ -64,11 +64,11 @@ const cardData = [
             "HC_type": "Thermogenic",
         },
         "images": [
-                    "lead_img/dayana.PNG",
-                    "lead_img/dayana_leadpng.png",
-                    "lead_img/dayana1.png",
-                    "lead_img/dayana2.png",
-                    "lead_img/dayana3.PNG",
+                    "https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg",
+                    "https://cdn.vuetifyjs.com/images/carousel/sky.jpg",
+                    "https://cdn.vuetifyjs.com/images/carousel/bird.jpg",
+                    "https://cdn.vuetifyjs.com/images/carousel/planet.jpg",
+                    "https://cdn.vuetifyjs.com/images/carousel/bird.jpg",
                 ],
     },
     {

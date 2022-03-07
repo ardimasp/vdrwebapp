@@ -13,7 +13,7 @@
     <v-system-bar
       class="drag-handle"
       color="primary"
-      style="border-radius: 5px 5px 0px 0px; "
+      style="border-radius: 10px 10px 5px 5px; "
       window
     >
       <span class="white--text text-subtitle-1">{{ title }}</span>
