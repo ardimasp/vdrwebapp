@@ -1,11 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import FileModule from './file.module'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+  },
   mutations: {},
   actions: {},
-  modules: {},
+  modules: {
+    files: FileModule
+  },
 })

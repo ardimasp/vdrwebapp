@@ -12,7 +12,7 @@
     <v-data-table
       v-model="selected"
       :headers="headers"
-      :items="tabledata"
+      :items="filedata"
       :search="search"
       show-select
       :single-select="singleSelect"
@@ -57,11 +57,9 @@
 import { mdiDelete, mdiDownload } from '@mdi/js'
 import CardConfirm from '../cards/CardConfirm.vue'
 
+import store from '../../store/index'
+
 export default {
-  props: {
-    tabledata: Array,
-  },
-  emits: ['deleteitem'],
   components: {CardConfirm,},
   data() {
     return {
@@ -80,6 +78,7 @@ export default {
       ],
       iconDelete: mdiDelete,
       iconDownload: mdiDownload,
+      filedata: store.state.files.list,
 
       deleteDialog: false,
       selectedDelItem: null,
@@ -93,19 +92,20 @@ export default {
   },
   methods: {
     deleteItem(item) {
-      const index = this.tabledata.indexOf(item)
-      const arr = [index];
-      this.$emit('deleteitem', arr)
+      const index = store.state.files.list.indexOf(item)
+      store.dispatch("removeFromList", index);
     },
     deleteAll(){
       let arr = [], index;
       for (let i in this.selected){
-        index = this.tabledata.indexOf(this.selected[i]);
+        index = store.state.files.list.indexOf(this.selected[i]);
         arr.push(index);
       }
       arr.sort(function(a,b) {return b-a});
-      console.log("delete all array", arr);
-      this.$emit('deleteitem', arr);
+
+      for(let i in arr){
+        store.dispatch("removeFromList", arr[i]);
+      }
       // clean out
       this.selected = [];
     },

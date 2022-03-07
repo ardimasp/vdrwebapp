@@ -20,86 +20,20 @@
 
         @confirmdialog="confirmUpload"
       ></card-confirm>
-      <data-table
-        :tabledata="tableData.list"
-
-        @deleteitem="deleteItem"
-      ></data-table>
+      <data-table></data-table>
   </v-container>
 </template>
 
 <script>
-import { reactive, ref } from '@vue/composition-api'
+import { ref } from '@vue/composition-api'
 import DataTable from './DataTable.vue'
 import CardConfirm from '../cards/CardConfirm.vue'
+import store from '../../store/index'
 
 export default {
   name: 'FileManagement',
   components: { DataTable, CardConfirm },
   setup() {
-    const tableData = reactive({
-      list: [
-        {
-          name: 'Frozen Yogurt',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Ice cream sandwich',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Eclair',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Cupcake',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Gingerbread',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Jelly bean',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Lollipop',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Honeycomb',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'Donut',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-        {
-          name: 'KitKat',
-          filetype: 'Application/pdf',
-          uploadedat: '3/4/2022, 2:27:24 PM',
-        },
-      ],
-    })
-
-    // eslint-disable-next-line arrow-parens
-    const deleteItem = (arr) => {
-      for(let i in arr){
-        tableData.list.splice(arr[i], 1)
-        console.log('SUCCESSFULLY DELETED', arr[i])
-      }
-    }
-
     //function for drag and drop file
     const files = ref([])
     const addDropFile = (e) => {
@@ -119,13 +53,15 @@ export default {
 
     const uploadFile = () => {
       var currentDate = new Date();
+      let new_data;
       for (let i in files.value) {
         console.log(files.value[i])
-        tableData.list.push({
+        new_data = {
           name: files.value[i].name,
           filetype: files.value[i].type,
           uploadedat: currentDate.toLocaleString(),
-        });
+        };
+        store.dispatch('addToFiles', new_data);
       }
       files.value = []
     }
@@ -152,8 +88,8 @@ export default {
     }
 
     return {
-      tableData, files, uploadDialog,
-      deleteItem, addDropFile, confirmUpload, openUploadConfirm,
+      files, uploadDialog,
+      addDropFile, confirmUpload, openUploadConfirm,
       dragOver, dragLeave,
     }
   },
