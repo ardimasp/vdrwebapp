@@ -22,25 +22,44 @@
         <div v-if="selectedCount" class="text-right mr-3 mb-3">
           <v-btn
             color="primary"
-            x-small
+            small
+            class="mr-3"
+          >Download ({{selected.length}})</v-btn>
+          <v-btn
+            color="primary"
+            small
             @click="openDeleteConfirm('null')"
           >Delete ({{selected.length}})</v-btn>
         </div>
       </template>
       <template v-slot:item.actions="{ item }">
         <v-spacer></v-spacer>
-        <v-icon
-          small
-          class="mr-3"
-        >
-          {{ iconDownload }}
-        </v-icon>
-        <v-icon
-          small
-          @click="openDeleteConfirm(item)"
-        >
-          {{ iconDelete }}
-        </v-icon>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              small
+              v-bind="attrs"
+              v-on="on"
+              class="mr-3"
+            >
+              {{ iconDownload }}
+            </v-icon>
+          </template>
+          <span>Download {{item.name}}</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              small
+              @click="openDeleteConfirm(item)"
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ iconDelete }}
+            </v-icon>
+          </template>
+          <span>Delete {{item.name}}</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <card-confirm
