@@ -45,7 +45,7 @@
       app
       inset
       height="56"
-      class="px-0"
+      class="px-0 footer-pos"
     >
       <div class="boxed-container w-full">
         <div class="mx-6 d-flex justify-space-between">
@@ -120,7 +120,11 @@ export default {
 
 }
 
-.app-content-container {
-  // margin-top: -30px;
+// .app-content-container {
+//   // margin-top: -30px;
+// }
+
+.footer-pos{
+  position: absolute;
 }
 </style>

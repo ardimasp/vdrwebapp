@@ -1,13 +1,11 @@
 <template> 
-    <v-col md="3">
+    <!-- <v-col md="3"> -->
         <div class="pa-4 text-no-wrap rounded-xl borderfilter" >
 
         <v-autocomplete
             v-model="bysort"
             :items="sortitems"
             label="Sort By"
-            class=" white--text dropdown-filter"
-            color="white"
             clearable
             @input="selectedSort()"
 
@@ -15,7 +13,7 @@
          
           </v-autocomplete>
         </div>
-    </v-col>
+    <!-- </v-col> -->
 </template>
 
 <script>
@@ -49,14 +47,14 @@ export default {
   .borderfilter {
     // border: thin solid #df3131;
     border-radius:50px;
-    background-color: #b365f2;
+    // background-color: #b365f2;
     // width: 40%;
   }
 
-  .dropdown-filter{
-    background-color: #b365f2;
-    color: white;
+  // .dropdown-filter{
+  //   // background-color: #b365f2;
+  //   // color: white;
 
-  }
+  // }
 
 </style>

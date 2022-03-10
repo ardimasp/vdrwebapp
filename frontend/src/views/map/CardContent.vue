@@ -5,65 +5,27 @@
       class="mx-auto my-12"
       max-width="900"
       max-height="900"
-      width="900"
-      height="900"
     >
       <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
  
-      <v-card-title class="ml-2">{{ this.datacard.title }}</v-card-title>
-      <v-row>
-        <v-col>
-          <!-- <v-autocomplete
-            :items="images"
-            label="Sort By"
-            class=" white--text"
-            color="white"
-            clearable
-            rounded
-            solo
-            v-model="imgsort"
-            @input="selectedImg()"
-            >
-          </v-autocomplete> -->
-          <v-autocomplete
+      <!-- <v-card-title class="ml-2">{{ this.datacard.title }}</v-card-title> -->
+      <v-row class="ml-2">
+        <v-col md='4'>
+            <v-card-title class="ml-2">{{ this.datacard.title }}</v-card-title>
 
-           v-model="imgsort"
-            :items="images"
-            label="Sort By"
-            multiple
-            class=" white--text"
-            color="white"
-            chips
-            rounded
-            @input="selectedImg()"
-
-            >
-         
-            <template v-slot:selection="{ item, index }">
-                    <v-chip v-if="index === 0">
-                    <span class="white--text">{{ item }}</span>
-                    </v-chip>
-                    <span
-                    v-if="index === 1"
-                    class="white--text text-caption"
-                    >
-                    (+{{ val.length - 1 }} others)
-                    </span>
-                </template>
-          </v-autocomplete>
         </v-col>
-        <!-- <v-col md="1"
+        <v-col md="1"
           class="ml-md-auto mt-1 mr-8">
           <v-btn icon>
               <v-icon>{{icons.mdiDownload}}</v-icon>
 
           </v-btn>
-        </v-col> -->
+        </v-col>
       </v-row>
     
-      <!-- <v-carousel height="600">
+      <v-carousel height="600">
         <v-carousel-item min-width="500"
           v-for="(item, i) in this.images"
           :key="i"
@@ -71,7 +33,7 @@
           reverse-transition="fade-transition"
           transition="fade-transition"
         ></v-carousel-item>
-      </v-carousel> -->
+      </v-carousel>
 
       <!-- <v-card-actions>
       <v-btn

@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="container">
-       <vtk-card 
+       <!-- <vtk-card 
       :x="600"
       :y="0"
       title="3D View"
       :w="400"
       :h="500"
     >
-    </vtk-card>
+    </vtk-card> -->
 
     <regular-card 
       :x="0"
@@ -18,14 +18,26 @@
       :h="200"
     >
      <template>
-       <test-content></test-content>
+       <map-filter :dataMaps="dataMaps" v-on:input="placeSelected"></map-filter>
+     </template>
+    </regular-card>
+
+     <regular-card 
+      :x="500"
+      :y="0"
+      title="Sort By"
+      :w="400"
+      :h="150"
+    >
+     <template>
+          <MapSort v-on:input="sortSelected" />
      </template>
     </regular-card>
     
       <v-row>
-          <MapSort v-on:input="sortSelected" />
+          <!-- <MapSort v-on:input="sortSelected" /> -->
 
-          <MapList :dataMaps="dataMaps" v-on:input="placeSelected"/>
+          <!-- <MapList :dataMaps="dataMaps" v-on:input="placeSelected"/> -->
       </v-row>
     </div>
 
@@ -40,29 +52,32 @@ import MapNavigation from './MapNavigation.vue'
 import 'leaflet/dist/leaflet.css'
 // import L from 'leaflet'
 import { cardData } from './Dummy.js'
-import MapList from './MapList.vue'
+// import MapList from './MapList.vue'
 import MapSort from './MapSort.vue'
 
-import RegularCard from '../viewer/RegularCard.vue'
-import TestContent from '../viewer/TestContent.vue'
-import VtkCard from '../viewer/VtkCard.vue'
+import MapFilter from './MapFilter.vue'
 
-import oilgas from '../../assets/images/oil&gas.png'
+import RegularCard from '../viewer/RegularCard.vue'
+// import TestContent from '../viewer/TestContent.vue'
+// import VtkCard from '../viewer/VtkCard.vue'
+
+import oilgas from '../../assets/images/oil&gas.svg'
 
 export default {
   components: {
     MapNavigation,
-    MapList,
+    // MapList,
     MapSort,
+    MapFilter,
     RegularCard,
-    TestContent,
-    VtkCard
+    // TestContent,
+    // VtkCard,
   },
     data: function() {
     return {
       dataMaps: cardData,
       value: [],
-      selectedP: null,
+      selectedP: [],
       normalIcon: [50, 50],
       largeIcon: [100,100],
       datas: [],
@@ -82,44 +97,25 @@ export default {
 
   methods: {
     placeSelected(point){
-      let dataSelect
       this.selectedP = point
-      console.log('prev =',this.previousSelection)
-
-      let arrayD = null
-
-      if (this.previousSelection.length < this.selectedP.length) {
-        arrayD = this.selectedP.filter(x => !this.previousSelection.includes(x))[0] 
-        dataSelect = this.datas.findIndex(dataC => dataC.title === arrayD) 
-        this.datas[dataSelect].iconSize = this.largeIcon
-
-      } else if (this.previousSelection.length > this.selectedP.length) {
-        arrayD = this.previousSelection.filter(x => !this.selectedP.includes(x))[0]
-        dataSelect = this.datas.findIndex(dataC => dataC.title === arrayD) 
-        this.datas[dataSelect].iconSize = this.normalIcon
-
+      console.log(this.selectedP)
+      for (var s in this.selectedP){
+        this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
       }
-      console.log('selected = ', arrayD)
-      
-      this.previousSelection = this.selectedP
-      console.log('selection = ', this.selectedP)
 
+      const myArrayFiltered = this.datas.filter( el => {
+        return this.selectedP.every( f => {
+          return f !== el.title;
+        });
+      });
 
-      // for (let i in this.selectedP){
-      //   console.log(this.selectedP[i])
-      //   dataSelect = this.datas.findIndex(dataC => dataC.title === this.selectedP[i]) 
-      //   arrayD.push(dataSelect)
-      // }
-      // this.tempA = arrayD
-      // console.log(arrayD)
-      // for (let j in arrayD){
-      //   this.datas[arrayD[j]].iconSize = this.largeIcon
-      // }
-      // if (this.selectedP === undefined || this.selectedP.length == 0){
-      //   console.log(this.tempA)
-      //   this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon}))
+      for (var ns in myArrayFiltered){
+        var nsid = myArrayFiltered[ns].id
+        console.log(nsid)
 
-      // }
+        this.datas[nsid].iconSize = this.normalIcon
+      }
+      console.log(myArrayFiltered)
     },
 
     funcVol(arrayGas){

@@ -15,7 +15,7 @@
             @click="cardshown(dataMap.id)"
             id="maptry" >
             >
-            <l-icon :icon-size="dataMap.iconSize" :icon-url="dataMap.iconImg"> </l-icon>
+            <l-icon class="iconcolor" :icon-size="dataMap.iconSize" :icon-url="dataMap.iconImg"> </l-icon>
     
           </l-marker>
           <l-circle
@@ -47,7 +47,7 @@ import Card from './Card.vue'
 //   iconUrl: require('leaflet/dist/images/marker-icon.png'),
 //   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 // });
-import oilgas from '../../assets/images/oil&gas.png'
+import oilgas from '../../assets/images/oil&gas.svg'
 import oilgasonhover from '../../assets/images/oil&gashover.png'
 
 export default {
@@ -212,11 +212,12 @@ export default {
 /* // .tab-index {
 //   position: relative;
 //   z-index: 1;
-// }
-// #maptryit {
-//   height: 100vh;
-//   z-index: 0;
-// } */
+// }*/
+.leaflet-marker-icon {
+  fill: green;
+  filter: hue-rotate(120deg);
+    
+} 
 .mapContainer {
   position: relative;
   left: 0px;
