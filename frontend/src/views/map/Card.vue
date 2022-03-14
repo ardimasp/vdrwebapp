@@ -92,7 +92,6 @@ import {mdiDownload} from "@mdi/js"
 // import VtkContent from '../viewer/VtkContent.vue'
 import VtkCard from '../viewer/VtkCard.vue'
 
-
 export default {
   component:{
     // VtkContent,
@@ -101,6 +100,7 @@ export default {
   name: "Card",
   props: {
     dataDetail: Object,
+    overlay: String
   },
   data: function(){
     return{
@@ -132,6 +132,11 @@ export default {
       console.log(this.images)
       this.$forceUpdate();
     },
+
+    test(){
+      var click = false
+      this.$emit('input', click)
+    }
   },
   mounted: function() {
     this.images = this.datacard.images

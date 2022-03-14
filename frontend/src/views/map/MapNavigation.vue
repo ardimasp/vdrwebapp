@@ -27,7 +27,7 @@
       </v-card>
     </div>
     <v-overlay style="z-index: 9999" :absolute="true" :value="overlay">
-      <Card  :dataDetail="this.datacard" v-click-outside="test" />
+      <Card  :dataDetail="this.datacard" v-click-outside="onClickOutside"/>
     </v-overlay>
     <!-- <div style="height: 800px" id="maptryit"></div> -->
   </div>
@@ -49,6 +49,8 @@ import Card from './Card.vue'
 // });
 import oilgas from '../../assets/images/oil&gas.svg'
 import oilgasonhover from '../../assets/images/oil&gashover.png'
+// import Vue from "vue";
+import ClickOutside from 'vue-click-outside'
 
 export default {
   name: 'MapNavigation',
@@ -114,12 +116,15 @@ export default {
       // var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
       // this.dataMaps[data].iconImg = this.icon
     },
-    test() {
-      this.overlay = false
+    onClickOutside(val) {
+      this.overlay = val
+      console.log("clicked outside");
     },
   },
 
   mounted: function() {
+    this.popupItem = this.$el
+
     // var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
     var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
     
@@ -205,6 +210,10 @@ export default {
     // });
 
   },
+   // do not forget this section
+  directives: {
+    ClickOutside
+  }
 }
 </script>
 
