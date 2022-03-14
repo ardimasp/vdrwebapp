@@ -52,6 +52,11 @@
         :to="{ name: 'file-management' }"
         :icon="icons.mdiTable"
       ></nav-menu-link>
+      <nav-menu-link
+        title="T_T folder"
+        :to="{ name: 'testtt-HELP' }"
+        :icon="icons.mdiTable"
+      ></nav-menu-link>
       
     </v-list>
     
