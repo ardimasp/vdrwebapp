@@ -11,7 +11,7 @@
     </vtk-card> -->
 
     <regular-card 
-      :x="50"
+      :x="10"
       :y="50"
       title="Select Wells"
       :w="300"

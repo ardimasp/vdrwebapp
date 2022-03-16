@@ -3,7 +3,7 @@
     <div id="mapContainer">
       <!-- <h6>{{dataMaps}}</h6> -->
       <!-- <v-card> -->
-        <l-map style="width: 95vw; height: 85vh" :zoom="zoom" :center="center">
+        <l-map class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
           <l-marker 
             :key="index"
@@ -228,14 +228,31 @@ export default {
     
 } 
 .mapContainer {
-  position: relative;
+  position: fixed;
   left: 0px;
   top: 0px;
   z-index: 1;
+}
+
+.map-size{
+  min-width: 87vw; 
+  min-height: 88vh;
+  height: auto;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
 .v-application .pa-6 {
     padding: 0px !important;
 }
 
+@media (max-height:855px){
+.map-size{
+  min-width: 86vw; 
+  min-height: 83vh;
+  height: auto;
+  max-width: 100vw;
+  max-height: 90vh;
+}
+}
 </style>

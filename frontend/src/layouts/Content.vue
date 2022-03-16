@@ -5,13 +5,14 @@
     <v-app-bar class="header-pos"
       app
       flat
-      fixed
+      style="z-index: 9999"
+
     >
-      <div class="boxed-container w-full">
-        <div class="d-flex align-center mx-6">
+      <div class="header-margin boxed-container w-full h-5">
+        <div class="d-flex align-center mx-6 my-6">
           <!-- Left Content -->
           <v-app-bar-nav-icon
-            class="d-block me-2"
+            class="d-block me-2 mt-5"
             @click="isDrawerOpen = !isDrawerOpen"
           >
             <v-icon>
@@ -25,7 +26,7 @@
           <v-btn
             icon
             small
-            class="ms-3"
+            class="ms-3 mt-4"
           >
             <v-icon>
               {{ icons.mdiBellOutline }}
@@ -47,6 +48,7 @@
       inset
       height="56"
       bottom
+      style="background-color: #f4f5fa;"
       class="px-0 footer-pos"
     >
       <div class="boxed-container w-full">
@@ -104,7 +106,6 @@ export default {
 <style lang="scss" scoped>
 .v-app-bar ::v-deep {
   .v-toolbar__content {
-      z-index: 9999;
     padding: 0;
     background-color: #f4f5fa;
     .app-bar-search {
@@ -123,19 +124,33 @@ export default {
 
 }
 
-// .app-content-container {
-//   // margin-top: -30px;
-// }
+.app-content-container {
+  margin-top: -50px;
+}
 
 .footer-pos{
   position: absolute;
-}
-
-.header-pos{
-  position: fixed;
-  left: 0;
-  top: 0;
   z-index: 9999;
+  background-color: #f4f5fa;
 
 }
+
+// .header-pos{
+//   // position: fixed;
+//   // left: 0;
+//   // top: 0;
+//   // z-index: 9999;
+//   margin-top: 30px;
+
+
+// }
+// @media (max-height:855px){
+// .header-margin{
+//   // top: 10;
+//   // margin-top: 20px;
+
+//   margin-bottom: 35px;
+
+// }
+// }
 </style>

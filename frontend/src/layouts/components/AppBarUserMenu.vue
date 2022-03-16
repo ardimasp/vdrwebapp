@@ -13,7 +13,7 @@
         overlap
         offset-x="12"
         offset-y="12"
-        class="ms-4"
+        class="ms-4 mt-4"
         dot
       >
         <v-avatar
