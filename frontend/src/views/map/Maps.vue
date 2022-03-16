@@ -11,10 +11,10 @@
     </vtk-card> -->
 
     <regular-card 
-      :x="0"
-      :y="0"
+      :x="50"
+      :y="50"
       title="Select Wells"
-      :w="400"
+      :w="300"
       :h="200"
     >
      <template>
@@ -23,10 +23,10 @@
     </regular-card>
 
      <regular-card 
-      :x="500"
-      :y="0"
+      :x="400"
+      :y="50"
       title="Sort By"
-      :w="400"
+      :w="250"
       :h="150"
     >
      <template>
@@ -200,8 +200,8 @@ export default {
 <style lang="scss" scoped>
 
 .container{
-    z-index: 9998;
-    position: absolute;
+    z-index: 999;
+    position: relative;
     margin-top: 10px;
     left: 50%;
     transform: translate(-50%, 0);

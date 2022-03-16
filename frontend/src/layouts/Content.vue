@@ -2,9 +2,10 @@
   <v-app>
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
 
-    <v-app-bar
+    <v-app-bar class="header-pos"
       app
       flat
+      fixed
     >
       <div class="boxed-container w-full">
         <div class="d-flex align-center mx-6">
@@ -45,6 +46,7 @@
       app
       inset
       height="56"
+      bottom
       class="px-0 footer-pos"
     >
       <div class="boxed-container w-full">
@@ -102,6 +104,7 @@ export default {
 <style lang="scss" scoped>
 .v-app-bar ::v-deep {
   .v-toolbar__content {
+      z-index: 9999;
     padding: 0;
     background-color: #f4f5fa;
     .app-bar-search {
@@ -126,5 +129,13 @@ export default {
 
 .footer-pos{
   position: absolute;
+}
+
+.header-pos{
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+
 }
 </style>

@@ -2,8 +2,8 @@
   <div>
     <div id="mapContainer">
       <!-- <h6>{{dataMaps}}</h6> -->
-      <v-card>
-        <l-map style="height: 1100px" :zoom="zoom" :center="center">
+      <!-- <v-card> -->
+        <l-map style="width: 95vw; height: 85vh" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
           <l-marker 
             :key="index"
@@ -24,7 +24,7 @@
       :color="circle.color"
           />
         </l-map>
-      </v-card>
+      <!-- </v-card> -->
     </div>
     <v-overlay style="z-index: 9999" :absolute="true" :value="overlay">
       <Card  :dataDetail="this.datacard" v-click-outside="onClickOutside"/>
