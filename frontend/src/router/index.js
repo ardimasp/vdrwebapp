@@ -29,6 +29,11 @@ const routes = [
     component: () => import('@/views/test/FileFolder.vue'),
   },
   {
+    path: '/test2',
+    name: 'immacrie',
+    component: () => import('@/views/test-tree/Folder.vue'),
+  },
+  {
     path: '/typography',
     name: 'typography',
     component: () => import('@/views/typography/Typography.vue'),
