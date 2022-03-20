@@ -37,7 +37,7 @@
             :items="items" 
             item-key="id"
             selectable
-            selection-type="independent"
+            selection-type="leaf"
             rounded
             hoverable
             activatable
