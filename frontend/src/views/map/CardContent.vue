@@ -77,22 +77,7 @@ export default {
     }
   },
   methods: {
-    // reserve() {
-    //   console.log(this.details)
-    // },
-    // selectedImg:function(){
-    //   var chosensort = this.imgsort
-    //   console.log(chosensort)
-    //   const prev = this.images
-    //   var lucky = prev.filter(function(prev) {
-    //     return prev != chosensort;
-    //   });
-    //   this.images = []
-    //   this.images.push(chosensort)
-    //   this.images.push(...lucky)
-    //   console.log(this.images)
-    //   this.$forceUpdate();
-    // },
+
      closeOverlay:function(){
       var over = false
       this.$emit('click', over)

@@ -61,15 +61,12 @@
 
 <script>
 import {mdiDownload, mdiCloseThick} from "@mdi/js"
-// import VtkContent from '../viewer/VtkContent.vue'
-// import VtkCard from '../viewer/VtkCard.vue'
+
 import CardContent from './CardContent.vue'
 
 
 export default {
   components:{
-    // VtkContent,
-    // VtkCard,
     CardContent
   },
   name: "ChoiceCard",
@@ -95,9 +92,6 @@ export default {
     }
   },
   methods: {
-    // reserve() {
-    //   console.log(this.details)
-    // },
     selectedImg:function(){
       var chosensort = this.imgsort
       console.log(chosensort)
