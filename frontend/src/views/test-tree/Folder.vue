@@ -16,8 +16,18 @@
             </v-btn>
           </div>
         </div>
-        <div>
-          {{tree}}
+        <div v-if="checkSelect">
+          <v-btn
+            color="secondary"
+            small
+            class="mr-3"
+          >Download</v-btn>
+          <v-btn
+            color="secondary"
+            small
+            @click="openDelFileDialog"
+          >Delete</v-btn>
+          <div class="caption">Selecting file(s)</div>
         </div>
         <v-text-field
           v-model="search"
@@ -27,9 +37,6 @@
           clearable
           clear-icon="mdi-close-circle-outline"
         ></v-text-field>
-        <!-- <v-subheader>
-          file folder
-        </v-subheader> -->
         <v-treeview 
             v-model="tree" 
             :open="open" 
@@ -42,8 +49,8 @@
             hoverable
             activatable
             :active.sync="active"
-            color="secondary_button"
-            selected-color="secondary_button"
+            color="secondary"
+            selected-color="secondary"
         >
             <template v-slot:prepend="{ item, open }">
               <v-icon v-if="!item.file">
@@ -61,6 +68,11 @@
                   <span>
                     {{props.item.uploaddate}}
                   </span>
+                  <span v-if="props.item.type == 'folder'">
+                    <v-icon small @click.prevent="saveSelectedFolder(props.item.id)">
+                      {{iconDelete}}
+                    </v-icon>
+                  </span>
                 </div>
             </template>
         </v-treeview>
@@ -74,29 +86,46 @@
           :active="active[0]"
           @closedialog="closeFileDialog"
         ></dialog-file>
+        <card-confirm
+          v-if="delFileDialog"
+          title="Delete File(s)"
+          text="Do you want to delete this file(s)?"
+
+          @confirmdialog="deleteFile"
+        ></card-confirm>
+        <card-confirm
+          v-if="delFolderDialog"
+          title="Delete Folder"
+          text="Do you want to delete this folder?"
+
+          @confirmdialog="deleteFolder"
+        ></card-confirm>
     </div>
 </template>
 
 <script>
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
 mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
-mdiFileImage, mdiFileDocumentOutline,mdiFileExcel} from '@mdi/js'
-import { ref } from '@vue/composition-api'
+mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete} from '@mdi/js'
+import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
+import CardConfirm from './../cards/CardConfirm.vue'
 import store from '../../store'
 
 export default{
   components: {
       DialogFile,
       DialogFolder,
+      CardConfirm,
   },
   setup(){
     const iconFolderPlus = mdiFolderPlus;
     const iconFilePlus = mdiFilePlus;
     const iconFolderOpen = mdiFolderOpen;
     const iconFolder = mdiFolder;
+    const iconDelete = mdiDelete;
     const active = ref([]);
     const fileTypes= {
                     html: mdiLanguageHtml5,
@@ -110,10 +139,17 @@ export default{
                   };
 
     const open= ["public"];
-    const tree = ref([]);
+    const tree = ref([]); //selected
     const items = store.state.tree.list;
     const search = ref("");
 
+    // computed
+    const checkSelect = computed(() => {
+      if (tree.value.length) return true;
+      return false;
+    });
+
+    // add file(s)
     const fileDialog = ref(false);
     const openFileDialog = () => {
       fileDialog.value = true;
@@ -124,6 +160,7 @@ export default{
       console.log("close", fileDialog.value)
     }
 
+    // add folder
     const folderDialog = ref(false);
     const openFolderDialog = () => {
       folderDialog.value = true;
@@ -132,11 +169,32 @@ export default{
       folderDialog.value = false;
     }
 
+    // delete file(s)
+    const delFileDialog = ref(false);
+    const deleteFile = (bool) => {
+      if(bool) store.dispatch('deleteFile', tree.value);
+      delFileDialog.value = false;
+    }
+    const openDelFileDialog = () => {delFileDialog.value = true}
+
+    // delete folder
+    const selectedFolder = ref(0);
+    const delFolderDialog = ref(false);
+    const deleteFolder = () => {
+      store.dispatch('deleteFolder', selectedFolder.value);
+      delFolderDialog.value = false;
+    }
+    const saveSelectedFolder = (id) => {
+      selectedFolder.value = id
+      delFolderDialog.value = true;
+    }
+
     return {
-      iconFolderPlus, open, tree, items, search,
-      active, iconFilePlus,
+      iconFolderPlus, open, tree, items, search, iconDelete,
+      active, iconFilePlus, checkSelect, deleteFile, deleteFolder,
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
-      openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog
+      openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
+      delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder
     }
   },
 }
