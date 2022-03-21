@@ -1,31 +1,37 @@
 <template>
-  <!-- <v-hover v-slot="{ hover }"> -->
-    <v-card
+     <v-card
       :loading="loading"
       class="mx-auto my-12"
       max-width="900"
       max-height="900"
+      width="900"
+      height="800"
     >
-      <template slot="progress">
+     <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
- 
-      <!-- <v-card-title class="ml-2">{{ this.datacard.title }}</v-card-title> -->
-      <v-row class="ml-2">
-        <v-col md='4'>
-            <v-card-title class="ml-2">{{ this.datacard.title }}</v-card-title>
-
+      <v-row class="mb-2">
+        <v-col class="ml-2">
+                <v-card-title class="ml-2">{{ this.dataTitle }}</v-card-title>
         </v-col>
-        <v-col md="1"
-          class="ml-md-auto mt-1 mr-8">
+        <v-col md="auto" class="mt-3">
           <v-btn icon>
               <v-icon>{{icons.mdiDownload}}</v-icon>
 
           </v-btn>
         </v-col>
+        <v-col lg="2" class="mt-3">
+          <v-btn icon @click="closeOverlay()">
+              <v-icon>{{icons.mdiCloseThick}}</v-icon>
+
+          </v-btn>
+        </v-col>
       </v-row>
-    
-      <v-carousel height="600">
+        <!-- <VtkContent
+            :divWidthProp="800"
+            :divHeightProp="500"
+        /> -->
+      <v-carousel height="800">
         <v-carousel-item min-width="500"
           v-for="(item, i) in this.images"
           :key="i"
@@ -34,46 +40,39 @@
           transition="fade-transition"
         ></v-carousel-item>
       </v-carousel>
-
-      <!-- <v-card-actions>
-      <v-btn
-        color="deep-purple lighten-2"
-        text
-        @click="reserve"
-      >
-        Reserve
-      </v-btn>
-    </v-card-actions> -->
-
     </v-card>
-  <!-- </v-hover> -->
+
 </template>
 
 <script>
-import {mdiDownload} from "@mdi/js"
+
+// import VtkCard from '../viewer/VtkCard.vue'
 // import VtkContent from '../viewer/VtkContent.vue'
-import VtkCard from '../viewer/VtkCard.vue'
+
+import {mdiDownload, mdiCloseThick} from "@mdi/js"
 
 
 export default {
-  component:{
+  components:{
     // VtkContent,
-    VtkCard
+
   },
-  name: "Card",
+  name: "CardContent",
   props: {
-    dataDetail: Object,
+    dataD: Array,
+    dataTitle: String
   },
   data: function(){
     return{
       loading: false,
       selection: 1,
-      datacard: this.dataDetail,
+      datacard: this.dataD,
       images: [],
       imgsort: null,
       sortitems: ['Oil Volume', 'Gas Volume', 'Mix oil & gas volume'],
       icons:{
-        mdiDownload
+        mdiDownload,
+        mdiCloseThick
       }
     }
   },
@@ -81,22 +80,26 @@ export default {
     // reserve() {
     //   console.log(this.details)
     // },
-    selectedImg:function(){
-      var chosensort = this.imgsort
-      console.log(chosensort)
-      const prev = this.images
-      var lucky = prev.filter(function(prev) {
-        return prev != chosensort;
-      });
-      this.images = []
-      this.images.push(chosensort)
-      this.images.push(...lucky)
-      console.log(this.images)
-      this.$forceUpdate();
+    // selectedImg:function(){
+    //   var chosensort = this.imgsort
+    //   console.log(chosensort)
+    //   const prev = this.images
+    //   var lucky = prev.filter(function(prev) {
+    //     return prev != chosensort;
+    //   });
+    //   this.images = []
+    //   this.images.push(chosensort)
+    //   this.images.push(...lucky)
+    //   console.log(this.images)
+    //   this.$forceUpdate();
+    // },
+     closeOverlay:function(){
+      var over = false
+      this.$emit('click', over)
     },
   },
   mounted: function() {
-    this.images = this.datacard.images
+    this.images = this.datacard
     console.log(this.images)
 
   }

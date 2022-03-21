@@ -27,7 +27,7 @@
       <!-- </v-card> -->
     </div>
     <v-overlay style="z-index: 9999" :absolute="true" :value="overlay">
-      <Card  :dataDetail="this.datacard" v-click-outside="onClickOutside"/>
+      <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
     <!-- <div style="height: 800px" id="maptryit"></div> -->
   </div>
@@ -37,7 +37,9 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { LMap, LTileLayer, LMarker, LIcon, LCircle } from 'vue2-leaflet'
-import Card from './Card.vue'
+// import Card from './Card.vue'
+import ChoiceCard from './ChoiceCard.vue'
+
 // import {heatLayer} from './heatmap/dist/leaflet-heat'
 // import { Icon } from 'leaflet';
 
@@ -60,7 +62,8 @@ export default {
     LMarker,
     LIcon,
     LCircle,
-    Card
+    // Card,
+    ChoiceCard
   },
   props:{
     dataMaps: Array,
@@ -120,6 +123,11 @@ export default {
       this.overlay = val
       console.log("clicked outside");
     },
+
+    changeOverlay(over){
+      this.overlay = over
+      console.log(over);
+    }
   },
 
   mounted: function() {
