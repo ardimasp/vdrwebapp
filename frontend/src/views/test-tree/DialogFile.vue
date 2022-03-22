@@ -59,7 +59,6 @@ export default{
             let idx = id;
             for (let i in selectedFile.value) {
                 // console.log(selectedFile.value[i])
-                idx += parseInt(i);
                 files.value.push({
                     id: idx,
                     name: selectedFile.value[i].name,
@@ -67,7 +66,8 @@ export default{
                     uploaddate: currentDate.toLocaleString(),
                     type: 'file',
                 });
-                console.log(selectedFile.value[i].type)
+                console.log("selected", idx)
+                idx++;
             }
         }
 

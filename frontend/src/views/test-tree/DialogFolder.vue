@@ -69,7 +69,8 @@ export default defineComponent({
             console.log("add folder active value", props.active)
             store.dispatch("addFolder", {
                 active: props.active,
-                name: folderName.value
+                name: folderName.value,
+                id: store.state.tree.length,
                 });
             closeDialog();
         }

@@ -1,4 +1,4 @@
-export const searchFolder = (item, name, active, length) => {
+export const searchFolder = (item, id, name, active) => {
     Object.keys(item).forEach(key => {
         // check every key (id, name, type) if its an object
         if(typeof item[key] === "object") {
@@ -6,7 +6,7 @@ export const searchFolder = (item, name, active, length) => {
           // check the item.id directly n if its a folder
           if (item.id == active && item.type == "folder"){
             item.children.push({
-              id: length+1,
+              id: id,
               type: 'folder',
               name: name,
               children: []
@@ -14,7 +14,7 @@ export const searchFolder = (item, name, active, length) => {
             return false;
           }
           // if no match found and there is an object
-          else searchFolder(item[key], name, active, length);
+          else searchFolder(item[key], name, active);
         }
         return true;
     })
@@ -43,12 +43,17 @@ export const searchFile = (item, files, active, length, size) => {
 export const searchDelFile = (item, arr) => {
   Object.keys(item).forEach(key => {
     if(typeof item[key] === "object") {
-      console.log("item", item.id, item[key].type, item[key]);
+      console.log("item", item.id, item.type, item[key]);
       if (item[key].type === "file") {
-        const child_arr = item[key];
-        if (arr.includes(child_arr.id)){
-          let found = item.indexOf(child_arr);
-          item = item.splice(found, 1);
+        // console.log("child", item.length, item);
+        // const length = item.length;
+        for(let i = 0; i < item.length; i++){
+          // console.log("loop", item[i].id);
+          if (arr.includes(item[i].id)){
+            item.splice(i, 1);
+            // console.log("found", item.length);
+            i--;
+          }
         }
       }
       else searchDelFile(item[key], arr);
