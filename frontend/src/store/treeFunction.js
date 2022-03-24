@@ -87,9 +87,7 @@ export const searchDelFile = (item, arr) => {
                     count++;
                 }
             }
-            if(count == arr.length) {
-                break;
-            }
+            if(count == arr.length) break;
             continue;
         }
         if (item.children.length) searchDelFile(item.children, arr);
@@ -98,9 +96,7 @@ export const searchDelFile = (item, arr) => {
         for(let i = 0; i < item.length; i++){
             searchDelFile(item[i], arr)
     
-            if(count == arr.length) {
-                break;
-            }
+            if(count == arr.length) break;
             continue;
         }
     }
