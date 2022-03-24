@@ -10,7 +10,6 @@ export default {
           state.list = payload;
         },
         DELETE_FOLDER(state, index){
-          // console.log("del from vuex", index);
           state.list.splice(index, 1);
         },
         UPDATE_TAB(state, tab_id){

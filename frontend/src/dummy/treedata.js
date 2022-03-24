@@ -1,6 +1,6 @@
 export default [
     { id: 1,
-      name: 'COMERCIALIZAÇÃO',
+      name: 'Folder 1',
       type: 'folder', 
       children: [
         { 
@@ -10,10 +10,17 @@ export default [
         file: 'application/pdf', 
         uploaddate: '3/17/2022, 9:01:32 PM'
         },
+        { 
+          id: 19,
+        name: 'owo.pdf', 
+        type: 'file',
+        file: 'application/pdf', 
+        uploaddate: '3/17/2022, 9:01:32 PM'
+        },
       ],
     },
     { id: 2,
-      name: 'DISTRIBUIÇÃO', 
+      name: 'Folder 2', 
       type: 'folder',
       children: [
         { 
@@ -26,7 +33,7 @@ export default [
       ],
     },
     { id: 4,
-      name: 'GERAÇÃO',
+      name: 'Folder 3',
       type: 'folder',
       children: [
         { 
@@ -39,7 +46,7 @@ export default [
       ],
     },
     { id: 6,
-      name: 'SERVIÇOS',
+      name: 'Folder 4',
       type: 'folder',
       children: [
         { 
@@ -52,12 +59,12 @@ export default [
       ],
     },
     { id: 8,
-      name: 'TRANSMISSÃO',
+      name: 'Folder 5',
       type: 'folder',
       children: [
         { 
           id: 18,
-          name: '	01. Implementação dos projetos de transmissão de energia',
+          name: '	01. subfolder',
           type: 'folder',
           children: [
             { 
@@ -70,7 +77,7 @@ export default [
           ],
         },
         { id: 10,
-          name: '	02. OeM da Transmissão de energia',
+          name: '	02. subfolder',
           type: 'folder',
           children: [
             { 
@@ -83,7 +90,7 @@ export default [
           ],
         },
         { id: 12,
-          name: '	03. Gestão comercial da Transmissão',
+          name: '	03. subfolder',
           type: 'folder',
           children: [
             { 
@@ -96,7 +103,7 @@ export default [
           ],
         },
         { id: 14,
-          name: '	04. Processos de suporte',
+          name: '	04. subfolder',
           type: 'folder',
           children: [
             { 
@@ -109,7 +116,7 @@ export default [
           ],
         },
         { id: 16,
-          name: 'Cadeia de Valor_Transmissão.pdf', 
+          name: 'dummy.pdf', 
           type: 'file',
           file: 'application/pdf', 
           uploaddate: '3/17/2022, 9:01:32 PM'

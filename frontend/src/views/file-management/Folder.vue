@@ -133,7 +133,7 @@ export default{
                     json: mdiCodeJson,
                     md: mdiLanguageMarkdown,
                     "application/pdf": mdiFilePdf,
-                    png: mdiFileImage,
+                    "image/png": mdiFileImage,
                     txt: mdiFileDocumentOutline,
                     xls: mdiFileExcel,
                   };
@@ -151,23 +151,13 @@ export default{
 
     // add file(s)
     const fileDialog = ref(false);
-    const openFileDialog = () => {
-      fileDialog.value = true;
-      console.log("open", fileDialog.value)
-    }
-    const closeFileDialog = () => {
-      fileDialog.value = false;
-      console.log("close", fileDialog.value)
-    }
+    const openFileDialog = () => { fileDialog.value = true; }
+    const closeFileDialog = () => {fileDialog.value = false; }
 
     // add folder
     const folderDialog = ref(false);
-    const openFolderDialog = () => {
-      folderDialog.value = true;
-    }
-    const closeFolderDialog = () => {
-      folderDialog.value = false;
-    }
+    const openFolderDialog = () => {folderDialog.value = true; }
+    const closeFolderDialog = () => {folderDialog.value = false;}
 
     // delete file(s)
     const delFileDialog = ref(false);

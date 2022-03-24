@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/filemanagement',
     name: 'file-management',
-    component: () => import('@/views/file-management/FileManagement.vue'),
+    component: () => import('@/views/file-management/Folder.vue'),
   },
   {
     path: '/dashboard',
@@ -26,12 +26,7 @@ const routes = [
   {
     path: '/test',
     name: 'testtt-HELP',
-    component: () => import('@/views/test/FileFolder.vue'),
-  },
-  {
-    path: '/test2',
-    name: 'immacrie',
-    component: () => import('@/views/test-tree/Folder.vue'),
+    component: () => import('@/views/test/testing.vue'),
   },
   {
     path: '/typography',

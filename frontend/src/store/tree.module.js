@@ -1,45 +1,51 @@
 import treedata from "./../dummy/treedata"
-import { searchFile, searchFolder, searchDelFile, searchDelFolder } from "./searchTree";
+import { searchStatus, countStatus, countIncrement, searchFile, 
+        searchFolder, searchDelFolder, searchDelFile, countReset } from "./treeFunction";
 
 export default {
     state: {
         list: treedata,
-        length: 19,
+        length: 20,
     },
     mutations: {
         UPDATE_TREE(state, payload){
             state.list = payload;
-            console.log("list", state.list)
         },
         UPDATE_LENGTH(state, payload){
             state.length = payload;
-            console.log("tree size", state.length);
         },
         DELETE_FILE_TREE(state, data){
             const list = state.list;
             data.sort(function(a,b){return b-a});
             let item;
-            const size = data.length;
             for(let i = 0; i < list.length; i++){
                 item = list[i];
                 if (data.includes(item.id)) {
                     let found = list.indexOf(item);
                     list.splice(found, 1);
                     i--;
+                    countIncrement()
                 }
-                else searchDelFile(item, data, size);
+                else searchDelFile(item, data);
+
+                console.log("counter at root", countStatus())
+                if(countStatus() == data.length) break;
+                continue;
             }
+            countReset();
         },
         DELETE_FOLDER_TREE(state, id){
             const list = state.list;
-            list.forEach(item=> {
-                if (item.id == id){
-                    let found = list.indexOf(item);
-                    list.splice(found, 1);
-                    console.log("found at root");
+            for(let i = 0; i < list.length; i++){
+                if (list[i].id == id){
+                    list.splice(i, 1);
+                    break
                 }
-                else searchDelFolder(item, id);
-            })
+                else searchDelFolder(list[i], id);
+
+                if(searchStatus()) break;
+                continue;
+            }
         }
     },
     actions: {
@@ -54,9 +60,13 @@ export default {
                     children: []
                 })
             } else {
-                list.forEach(item => {
-                    searchFolder(item, id, data.name, data.active)
-                })
+                for (let i = 0; i < list.length; i++){
+                    console.log("looping", i, "...");
+                    searchFolder(list[i], id, data.name, data.active)
+    
+                    if(searchStatus()) break;
+                    continue;
+                }
             }
             context.commit('UPDATE_TREE', list);
             context.commit('UPDATE_LENGTH', context.state.length+1);
@@ -72,9 +82,13 @@ export default {
                     list.push(files[i])
                 }
             } else {
-                list.forEach(item => {
-                    searchFile(item, files, active, length, size)
-                })
+                for (let i = 0; i < list.length; i++){
+                    console.log("looping", i, "...");
+                    searchFile(list[i], files, active, size)
+    
+                    if(searchStatus()) break;
+                    continue;
+                }
             }
             context.commit('UPDATE_TREE', list);
             context.commit('UPDATE_LENGTH', length+size);

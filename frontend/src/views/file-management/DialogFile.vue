@@ -58,7 +58,6 @@ export default{
             var currentDate = new Date();
             let idx = id;
             for (let i in selectedFile.value) {
-                // console.log(selectedFile.value[i])
                 files.value.push({
                     id: idx,
                     name: selectedFile.value[i].name,
@@ -66,7 +65,6 @@ export default{
                     uploaddate: currentDate.toLocaleString(),
                     type: 'file',
                 });
-                console.log("selected", idx)
                 idx++;
             }
         }
