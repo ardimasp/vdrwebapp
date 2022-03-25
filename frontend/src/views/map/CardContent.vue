@@ -27,10 +27,10 @@
           </v-btn>
         </v-col>
       </v-row>
-        <!-- <VtkContent
+        <VtkContent
             :divWidthProp="800"
             :divHeightProp="500"
-        /> -->
+        />
       <v-carousel height="800">
         <v-carousel-item min-width="500"
           v-for="(item, i) in this.images"
@@ -47,14 +47,14 @@
 <script>
 
 // import VtkCard from '../viewer/VtkCard.vue'
-// import VtkContent from '../viewer/VtkContent.vue'
+import VtkContent from '../viewer/VtkContent.vue'
 
 import {mdiDownload, mdiCloseThick} from "@mdi/js"
 
 
 export default {
   components:{
-    // VtkContent,
+    VtkContent,
 
   },
   name: "CardContent",
