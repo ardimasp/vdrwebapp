@@ -2,10 +2,12 @@
   <!-- <v-hover v-slot="{ hover }"> -->
       <div>
     <v-card
+                style="background-color: #f4f5fa;"
+
       :loading="loading"
       class="mx-auto my-12"
-      max-width="400"
-      max-height="400"
+      max-width="500"
+      max-height="500"
       width="400"
       height="400"
     >
@@ -13,14 +15,16 @@
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
 
-      <v-row no-gutters>
+      <v-row 
+      style="background-color: #9155fd;"
+      no-gutters>
         <v-col  cols="auto"
                 class="mr-auto">
-            <v-card-title class="pa-2 ml-2 mt-4">{{ this.datacard.title }}</v-card-title>
+            <v-card-title class="pa-2 ml-2 mt-2">{{ this.datacard.title }}</v-card-title>
         </v-col>
         
             <v-col  cols="auto">
-                <v-btn class="pa-2 mr-6 mt-4" icon @click="closeOverlay()">
+                <v-btn class="pa-2 mr-6 mt-2" icon @click="closeOverlay()">
                     <v-icon>{{icons.mdiCloseThick}}</v-icon>
 
                 </v-btn>
@@ -32,14 +36,41 @@
     </p>
  </v-row> -->
 
-      <v-row >
+      <v-row>
         <v-col>
-          <v-checkbox class="shrink ml-5 mr-0 mt-0" v-for="item in images" v-model="val" :key="item" :label="item" :value="item" ></v-checkbox>
+          <!-- <v-checkbox border-color="#000000" color="primary" class="black--text shrink ml-5 mr-0 mt-0" v-for="item in images" v-model="val" :key="item" :label="item" :value="item" ></v-checkbox> -->
+          <v-list-item-group
+            v-model="val"
+            multiple
+          >
+            <v-virtual-scroll
+              :items="images"
+              :item-height="50"
+              height="260"
+            >
+              <template v-slot="{ item }">
+                <v-list-item :key="item" :value="item">
+                  <v-list-item-action>
+                    <v-checkbox
+                      :input-value="val.includes(item)"
+
+                      color="primary"
+                    />
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-list-item-title class="black--text">
+                      {{ item }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-virtual-scroll>
+          </v-list-item-group>
         </v-col>     
       </v-row>
       <v-card-actions class="justify-center">
               <v-btn
-              color="blue lighten-1"
+              style="background-color: #9155fd;"
               elevation="10"
               large
               text
@@ -140,3 +171,8 @@ export default {
 }
 }
 </script>
+<style scoped>
+.black--text /deep/ label {
+    color: #777777;
+}
+</style>

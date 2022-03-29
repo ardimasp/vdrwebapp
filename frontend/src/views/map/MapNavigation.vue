@@ -26,7 +26,7 @@
         </l-map>
       <!-- </v-card> -->
     </div>
-    <v-overlay style="z-index: 9999" :absolute="true" :value="overlay">
+    <v-overlay style="z-index: 9999;" :absolute="true" :value="overlay">
       <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
     <!-- <div style="height: 800px" id="maptryit"></div> -->

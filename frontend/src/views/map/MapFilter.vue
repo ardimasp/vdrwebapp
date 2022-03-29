@@ -1,6 +1,7 @@
 <template>
 <v-card>
 <v-text-field
+    color="black"
     v-model="search"
     label="Search Wells"
     dark
@@ -11,7 +12,7 @@
     ></v-text-field>
   <v-treeview
     selectable
-    selected-color="red"
+    color="#9155fd"
     :search="search"
     v-model="val"
     :items="mapData"

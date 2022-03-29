@@ -1,6 +1,6 @@
 <template>
      <v-card
-      :loading="loading"
+      style="background-color: #9155fd;"
       class="mx-auto my-12"
       max-width="900"
       max-height="900"
@@ -90,3 +90,9 @@ export default {
   }
 }
 </script>
+
+<style lang="css" scoped>
+.v-card{
+  background-color: #9155FD;
+}
+</style>
