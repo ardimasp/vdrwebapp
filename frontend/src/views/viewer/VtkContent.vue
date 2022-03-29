@@ -60,11 +60,12 @@ export default {
       renderWindow.getViews()[0].setSize(100, 100)
     }
 
-    watch(() => [props.divWidthProp,props.divHeightProp], (currentValue, _oldValue) => {
+    watch(() => [props.divWidthProp,props.divHeightProp], (currentValue,_oldValue) => {
         const { renderWindow } = context.value;
         divWidth.value = currentValue[0]
         divHeight.value = currentValue[1]
         renderWindow.getViews()[0].setSize(currentValue[0], currentValue[1])
+        console.log(_oldValue);
     });
 
     watchEffect(() => {
