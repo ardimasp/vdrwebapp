@@ -5,6 +5,7 @@
     <v-app-bar
       app
       flat
+      color="#F4F5FA"
     >
       <div class="boxed-container w-full">
         <div class="d-flex align-center mx-6">
@@ -46,6 +47,7 @@
       inset
       height="56"
       class="px-0"
+      color="#F4F5FA"
     >
       <div class="boxed-container w-full">
         <div class="mx-6 d-flex justify-space-between">

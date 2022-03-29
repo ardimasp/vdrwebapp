@@ -15,7 +15,7 @@
         class="d-flex align-center text-decoration-none"
       >
         <v-img
-          :src="require('@/assets/images/logos/logo.png')"
+          :src="require('@/assets/images/logos/V_logo.png')"
           max-height="30px"
           max-width="30px"
           alt="logo"
@@ -46,6 +46,11 @@
         title="Dashboard"
         :to="{ name: 'dashboard' }"
         :icon="icons.mdiHomeOutline"
+      ></nav-menu-link>
+      <nav-menu-link
+        title="File Management"
+        :to="{ name: 'file-management' }"
+        :icon="icons.mdiTable"
       ></nav-menu-link>
       
     </v-list>
