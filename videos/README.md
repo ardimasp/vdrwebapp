@@ -5,6 +5,10 @@
 - [filemanagement3.gif](filemanagement3.gif) 
 	
 	![filemanagement3.gif](filemanagement3.gif) 
+
+- [Map2.gif](Map2.gif) 
+	
+	![Map2.gif](Map2.gif) 
 	
 	- First commit video
 	- Commit components for draggable and resizable cards
