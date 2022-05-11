@@ -28,7 +28,7 @@ export default {
                 }
                 else searchDelFile(item, data);
 
-                console.log("counter at root", countStatus())
+                // console.log("counter at root", countStatus())
                 if(countStatus() == data.length) break;
                 continue;
             }

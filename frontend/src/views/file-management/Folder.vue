@@ -1,34 +1,34 @@
 <template>
     <div>
-        <div class="d-flex flex-row-reverse">
-          <div>
-            <v-btn class="mr-3" color="primary" @click="openFileDialog">
-              <v-icon left>
-                {{iconFilePlus}}
-              </v-icon> 
-              Add file
-            </v-btn>
-            <v-btn color="primary" @click="openFolderDialog">
-              <v-icon left>
-                {{iconFolderPlus}}
-              </v-icon> 
-              Add folder
-            </v-btn>
-          </div>
+      <div class="d-flex flex-row-reverse">
+        <div>
+          <v-btn class="mr-3" color="primary" @click="openFileDialog">
+            <v-icon left>
+              {{iconFilePlus}}
+            </v-icon> 
+            Add file
+          </v-btn>
+          <v-btn color="primary" @click="openFolderDialog">
+            <v-icon left>
+              {{iconFolderPlus}}
+            </v-icon> 
+            Add folder
+          </v-btn>
         </div>
-        <div v-if="checkSelect">
-          <v-btn
-            color="secondary"
-            small
-            class="mr-3"
-          >Download</v-btn>
-          <v-btn
-            color="secondary"
-            small
-            @click="openDelFileDialog"
-          >Delete</v-btn>
-          <div class="caption">Selecting file(s)</div>
-        </div>
+      </div>
+      <div v-if="checkSelect">
+        <v-btn
+          color="secondary"
+          small
+          class="mr-3"
+        >Download</v-btn>
+        <v-btn
+          color="secondary"
+          small
+          @click="openDelFileDialog"
+        >Delete</v-btn>
+        <div class="caption">Selecting file(s)</div>
+      </div>
         <v-text-field
           v-model="search"
           label="Search File | Folder"
@@ -170,8 +170,8 @@ export default{
     // delete folder
     const selectedFolder = ref(0);
     const delFolderDialog = ref(false);
-    const deleteFolder = () => {
-      store.dispatch('deleteFolder', selectedFolder.value);
+    const deleteFolder = (bool) => {
+      if(bool) store.dispatch('deleteFolder', selectedFolder.value);
       delFolderDialog.value = false;
     }
     const saveSelectedFolder = (id) => {
