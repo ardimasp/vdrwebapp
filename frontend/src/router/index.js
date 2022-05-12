@@ -19,6 +19,11 @@ const routes = [
     component: () => import('@/views/file-management/Folder.vue'),
   },
   {
+    path: '/maps',
+    name: 'maps',
+    component: () => import('@/views/map/Maps.vue'),
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/dashboard/Dashboard.vue'),

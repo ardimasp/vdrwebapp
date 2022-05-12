@@ -3,7 +3,7 @@
 
     <vtk-card 
       :x="600"
-      :y="0"
+      :y="50"
       title="3D View"
       :w="400"
       :h="500"
@@ -11,8 +11,8 @@
     </vtk-card>
 
     <regular-card 
-      :x="0"
-      :y="0"
+      :x="100"
+      :y="50"
       title="Tree View"
       :w="400"
       :h="200"

@@ -4,6 +4,7 @@
     app
     floating
     width="260"
+    style="z-index: 9999"
     class="app-navigation-menu"
     :right="$vuetify.rtl"
     @input="val => $emit('update:is-drawer-open', val)"
@@ -42,6 +43,13 @@
         :to="{ name: 'viewer' }"
         :icon="icons.mdiCardSearchOutline"
       ></nav-menu-link>
+      
+      <nav-menu-link 
+        title="Map" 
+        :to="{ name: 'maps' }" 
+        :icon="icons.mdiMap">
+      </nav-menu-link>
+
       <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
@@ -70,6 +78,7 @@ import {
   mdiFileOutline,
   mdiFormSelect,
   mdiAccountCogOutline,
+  mdiMap,
 } from '@mdi/js'
 import NavMenuLink from './components/NavMenuLink.vue'
 
@@ -99,6 +108,7 @@ export default {
         mdiFileOutline,
         mdiFormSelect,
         mdiAccountCogOutline,
+        mdiMap
       },
     }
   },

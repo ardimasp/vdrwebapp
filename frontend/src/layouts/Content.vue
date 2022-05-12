@@ -2,16 +2,18 @@
   <v-app>
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
 
-    <v-app-bar
+    <v-app-bar class="header-pos"
       app
       flat
       color="#F4F5FA"
+      style="z-index: 9999"
+
     >
-      <div class="boxed-container w-full">
-        <div class="d-flex align-center mx-6">
+      <div class="header-margin boxed-container w-full h-5">
+        <div class="d-flex align-center mx-6 my-6">
           <!-- Left Content -->
           <v-app-bar-nav-icon
-            class="d-block me-2"
+            class="d-block me-2 mt-5"
             @click="isDrawerOpen = !isDrawerOpen"
           >
             <v-icon>
@@ -25,7 +27,7 @@
           <v-btn
             icon
             small
-            class="ms-3"
+            class="ms-3 mt-4"
           >
             <v-icon>
               {{ icons.mdiBellOutline }}
@@ -46,8 +48,9 @@
       app
       inset
       height="56"
-      class="px-0"
       color="#F4F5FA"
+      bottom
+      class="px-0 footer-pos"
     >
       <div class="boxed-container w-full">
         <div class="mx-6 d-flex justify-space-between">
@@ -105,7 +108,7 @@ export default {
 .v-app-bar ::v-deep {
   .v-toolbar__content {
     padding: 0;
-
+    background-color: #f4f5fa;
     .app-bar-search {
       .v-input__slot {
         padding-left: 18px;
@@ -118,9 +121,37 @@ export default {
   // max-width: 1440px;
   // margin-left: auto;
   // margin-right: auto;
+  background-color: #f4f5fa;
+
 }
 
 .app-content-container {
-  // margin-top: -30px;
+  margin-top: -50px;
 }
+
+.footer-pos{
+  position: absolute;
+  z-index: 9999;
+  background-color: #f4f5fa;
+
+}
+
+// .header-pos{
+//   // position: fixed;
+//   // left: 0;
+//   // top: 0;
+//   // z-index: 9999;
+//   margin-top: 30px;
+
+
+// }
+// @media (max-height:855px){
+// .header-margin{
+//   // top: 10;
+//   // margin-top: 20px;
+
+//   margin-bottom: 35px;
+
+// }
+// }
 </style>
