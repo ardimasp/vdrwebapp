@@ -1,7 +1,6 @@
 <template>
   <!-- class viewer container act as a constraint -->
   <div id="viewer-container" class="viewer-container">
-    {{items}}
 
     <vtk-card 
       :x="600"
