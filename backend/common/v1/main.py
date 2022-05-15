@@ -16,7 +16,7 @@ import os, time, magic
 import aiofiles
 import urllib.parse
 import random
-
+import shutil
 import threading
 
 _uid = threading.local()
@@ -189,6 +189,28 @@ def delete_files(userid:str, deletedfiles: DeletedFiles):
         for file in deletedfiles.paths:
             try:
                 os.remove("files/"+urllib.parse.quote(f"{userid}")+f"{file}")
+                results.append(True)
+            except:
+                results.append(False)
+            
+        return {
+            "status": "success",
+            "results": results
+        }
+    except Exception as e:
+        return {"status":"failed", "message": str(e)}
+
+class DeletedFolders(BaseModel):
+    paths: List[str]
+
+@app.delete("/folders/{userid}", tags=["files"])
+def delete_folders(userid:str, deletedfolders: DeletedFolders):
+    try:
+        
+        results = []
+        for folder in deletedfolders.paths:
+            try:
+                shutil.rmtree("files/"+urllib.parse.quote(f"{userid}")+f"{folder}", ignore_errors=True)
                 results.append(True)
             except:
                 results.append(False)
