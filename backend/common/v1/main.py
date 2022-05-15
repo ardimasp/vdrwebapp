@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from fastapi import FastAPI, Header, File, UploadFile, Form
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse
 import os, time, magic
 import aiofiles
 import urllib.parse
+import random
 
 os.environ['TZ'] = 'Asia/Jakarta'
 time.tzset()
@@ -105,6 +106,17 @@ async def upload_files(
     except Exception as e:
         return {"status":"failed", "message": str(e)}
 
+
+@app.get("/file/{userid}", tags=["files"])
+def download_file(userid:str, path:str):
+    try:
+
+        file_path = "files/"+urllib.parse.quote(f"{userid}")+"/"+f"{path}"
+        print(file_path)
+        return FileResponse(file_path)
+    except Exception as e:
+        return {"status":"failed", "message": str(e)}
+
 def get_tree(path,userid):
    return {'foldername':path.replace("files/"+urllib.parse.quote(f"{userid}"),''), 
            'amount_of_files':sum(not os.path.isdir(os.path.join(path, k)) for k in os.listdir(path)),
@@ -118,7 +130,7 @@ def get_tree(path,userid):
            'children':[get_tree(os.path.join(path, k),userid) for k in os.listdir(path) if os.path.isdir(os.path.join(path, k))]}
 
 
-@app.get("/files/{userid}", tags=["files"])
+@app.get("/files/{userid}/lists", tags=["files"])
 def get_list_folders_and_files(userid:str):
     try:
         return {
