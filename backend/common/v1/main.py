@@ -17,6 +17,10 @@ import aiofiles
 import urllib.parse
 import random
 
+import threading
+
+_uid = threading.local()
+
 os.environ['TZ'] = 'Asia/Jakarta'
 time.tzset()
 mime = magic.Magic(mime=True)
@@ -117,18 +121,52 @@ def download_file(userid:str, path:str):
     except Exception as e:
         return {"status":"failed", "message": str(e)}
 
-def get_tree(path,userid):
-   return {'foldername':path.replace("files/"+urllib.parse.quote(f"{userid}"),''), 
-           'amount_of_files':sum(not os.path.isdir(os.path.join(path, k)) for k in os.listdir(path)),
-           'filenames': [
-               {
-                   'filename':os.path.join(path, k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
-                   'type':mime.from_file(os.path.join(path, k)),
-                   'created_time':time.ctime(os.path.getctime(os.path.join(path, k)))
-               } 
-               for k in os.listdir(path) if os.path.isfile(os.path.join(path, k))],
-           'children':[get_tree(os.path.join(path, k),userid) for k in os.listdir(path) if os.path.isdir(os.path.join(path, k))]}
+def genuid():
+    if getattr(_uid, "uid", None) is None:
+        _uid.tid = threading.current_thread().ident
+        _uid.uid = 0
+    _uid.uid += 1
+    return (_uid.tid, _uid.uid)
 
+def get_tree(path,userid):
+    tmp = [
+       {
+           'id': genuid()[-1],
+           'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+           'type': 'file' if os.path.isfile(os.path.join(path,k)) else 'folder',
+           'uploaddate': time.ctime(os.path.getctime(os.path.join(path, k))) if os.path.isfile(os.path.join(path,k)) else None,
+           'filetype' :mime.from_file(os.path.join(path, k)) if os.path.isfile(os.path.join(path,k)) else None,
+           'children' : get_tree(os.path.join(path,k),userid) if os.path.isdir(os.path.join(path,k)) else None
+       } for k in os.listdir(path)
+    ]
+    result = [cleanNullTerms(t) for t in tmp]
+    return result
+
+# def get_tree(path,userid):
+#    return {'foldername':path.replace("files/"+urllib.parse.quote(f"{userid}"),''), 
+#            'amount_of_files':sum(not os.path.isdir(os.path.join(path, k)) for k in os.listdir(path)),
+#            'filenames': [
+#                {
+#                    'filename':os.path.join(path, k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+#                    'type':mime.from_file(os.path.join(path, k)),
+#                    'created_time':time.ctime(os.path.getctime(os.path.join(path, k)))
+#                } 
+#                for k in os.listdir(path) if os.path.isfile(os.path.join(path, k))],
+#            'children':[get_tree(os.path.join(path, k),userid) for k in os.listdir(path) if os.path.isdir(os.path.join(path, k))]}
+
+def cleanNullTerms(d):
+    clean = {}
+    for k, v in d.items():
+        if k == 'children' and v is not None and isinstance(v, list):
+            clean[k] = [cleanNullTerms(l) for l in v]
+        else:
+            if isinstance(v, dict):
+                nested = cleanNullTerms(v)
+                if len(nested.keys()) > 0:
+                    clean[k] = nested
+            elif v is not None:
+                clean[k] = v
+    return clean
 
 @app.get("/files/{userid}/lists", tags=["files"])
 def get_list_folders_and_files(userid:str):
