@@ -31,7 +31,7 @@ mime = magic.Magic(mime=True)
 
 tags_metadata = [
         {
-            "name":"files",
+            "name":"Files",
             "description": "endpoints for file management"
             },
         ]
@@ -80,8 +80,28 @@ async def root():
     response = RedirectResponse(url='/api/v1/common/docs')
     return response
 
+class CreatedFolders(BaseModel):
+    paths: List[str]
 
-@app.post("/files/{userid}", tags=["files"])
+@app.post("/folders/{userid}", tags=["Files"])
+async def create_folders(
+    userid: str,
+    createdfolders: CreatedFolders
+):
+    try:
+        results = []
+        for path in createdfolders.paths:
+            try:
+                filename = "files/"+urllib.parse.quote(f"{userid}/{path}")
+                os.makedirs(filename, exist_ok=True)
+                results.append(True)
+            except:
+                results.append(False)
+        return {'status':'success', "results":results}
+    except Exception as e:
+        return {"status":"failed", "message": str(e)}
+
+@app.post("/files/{userid}", tags=["Files"])
 async def upload_files(
     userid: str,
     files: List[UploadFile] = File(..., description="Upload multiple files"),
@@ -123,7 +143,7 @@ async def upload_files(
         return {"status":"failed", "message": str(e)}
 
 
-@app.get("/file/{userid}", tags=["files"])
+@app.get("/file/{userid}", tags=["Files"])
 def download_file(userid:str, path:str):
     try:
 
@@ -181,7 +201,7 @@ def cleanNullTerms(d):
                 clean[k] = v
     return clean
 
-@app.get("/files/{userid}/lists", tags=["files"])
+@app.get("/files/{userid}/lists", tags=["Files"])
 def get_list_folders_and_files(userid:str):
     try:
         return {
@@ -206,7 +226,7 @@ def get_tree_filtered(path,userid,pointer,list_paths):
     result = [cleanNullTerms(t) for t in tmp]
     return result
 
-@app.get("/files/{userid}/lists/{pointer}", tags=["files"])
+@app.get("/files/{userid}/lists/{pointer}", tags=["Files"])
 def get_list_folders_and_files_based_on_pointer(userid:str,pointer:str):
     try:
         user_db = mongo_client[urllib.parse.quote(f"{userid}")]
@@ -227,7 +247,7 @@ def get_list_folders_and_files_based_on_pointer(userid:str,pointer:str):
 class DeletedFiles(BaseModel):
     paths: List[str]
 
-@app.delete("/files/{userid}", tags=["files"])
+@app.delete("/files/{userid}", tags=["Files"])
 def delete_files(userid:str, deletedfiles: DeletedFiles):
     try:
         
@@ -249,7 +269,7 @@ def delete_files(userid:str, deletedfiles: DeletedFiles):
 class DeletedFolders(BaseModel):
     paths: List[str]
 
-@app.delete("/folders/{userid}", tags=["files"])
+@app.delete("/folders/{userid}", tags=["Files"])
 def delete_folders(userid:str, deletedfolders: DeletedFolders):
     try:
         
