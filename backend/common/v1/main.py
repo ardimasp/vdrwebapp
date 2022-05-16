@@ -144,7 +144,8 @@ def get_tree(path,userid):
     tmp = [
        {
            'id': genuid()[-1],
-           'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+        #    'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+           'name':os.path.join(path,k).split('/')[-1],
            'type': 'file' if os.path.isfile(os.path.join(path,k)) else 'folder',
            'uploaddate': time.ctime(os.path.getctime(os.path.join(path, k))) if os.path.isfile(os.path.join(path,k)) else None,
            'filetype' :mime.from_file(os.path.join(path, k)) if os.path.isfile(os.path.join(path,k)) else None,
