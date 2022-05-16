@@ -163,7 +163,7 @@ def genuid():
 def get_tree(path,userid):
     tmp = [
        {
-           'id': os.path.join(path,k).replace("files/","/"),
+           'id': os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
         #    'id': genuid()[-1],
         #    'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
            'name':os.path.join(path,k).split('/')[-1],
