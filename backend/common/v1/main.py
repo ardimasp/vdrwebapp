@@ -95,7 +95,7 @@ async def create_folders(
         results = []
         for path in createdfolders.paths:
             try:
-                filename = "files/"+urllib.parse.quote(f"{userid}/{path}")
+                filename = "files/"+(f"{userid}/{path}")
                 os.makedirs(filename, exist_ok=True)
                 results.append(True)
             except:
@@ -118,9 +118,9 @@ async def upload_files(
             try:
                 # set the filename
                 if foldername == '.':
-                    filename = "files/"+urllib.parse.quote(f"{userid}/{file.filename}")
+                    filename = "files/"+(f"{userid}/{file.filename}")
                 else:
-                    filename = "files/"+urllib.parse.quote(f"{userid}/{foldername}/{file.filename}")
+                    filename = "files/"+(f"{userid}/{foldername}/{file.filename}")
                 
                 # create the folder if it does not exist
                 os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -133,8 +133,8 @@ async def upload_files(
                 # save to db
                 if pointer != '*':
                     to_db = {"path":filename}
-                    user_db = mongo_client[urllib.parse.quote(f"{userid}")]
-                    list_pointers = user_db[urllib.parse.quote(f"{pointer}")]
+                    user_db = mongo_client[(f"{userid}")]
+                    list_pointers = user_db[(f"{pointer}")]
                     list_pointers.insert_one(to_db).inserted_id
 
                 results.append(True)
@@ -150,7 +150,7 @@ async def upload_files(
 def download_single_file(userid:str, path:str):
     try:
 
-        file_path = "files/"+urllib.parse.quote(f"{userid}")+"/"+f"{path}"
+        file_path = "files/"+(f"{userid}")+"/"+f"{path}"
         print(file_path)
         return FileResponse(file_path)
     except Exception as e:
@@ -181,7 +181,7 @@ def download_multiple_files(userid:str, files:DownloadedFiles):
 
         filenames = []
         for path in files.paths:
-            filenames.append("files/"+urllib.parse.quote(f"{userid}")+"/"+f"{path}")
+            filenames.append("files/"+(f"{userid}")+"/"+f"{path}")
 
         resp = zipfiles(filenames)
 
@@ -199,9 +199,9 @@ def genuid():
 def get_tree(path,userid):
     tmp = [
        {
-           'id': os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+           'id': os.path.join(path,k).replace("files/"+(f"{userid}"),''),
         #    'id': genuid()[-1],
-        #    'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+        #    'name':os.path.join(path,k).replace("files/"+(f"{userid}"),''),
            'name':os.path.join(path,k).split('/')[-1],
            'type': 'file' if os.path.isfile(os.path.join(path,k)) else 'folder',
            'uploaddate': time.ctime(os.path.getctime(os.path.join(path, k))) if os.path.isfile(os.path.join(path,k)) else None,
@@ -213,11 +213,11 @@ def get_tree(path,userid):
     return result
 
 # def get_tree(path,userid):
-#    return {'foldername':path.replace("files/"+urllib.parse.quote(f"{userid}"),''), 
+#    return {'foldername':path.replace("files/"+(f"{userid}"),''), 
 #            'amount_of_files':sum(not os.path.isdir(os.path.join(path, k)) for k in os.listdir(path)),
 #            'filenames': [
 #                {
-#                    'filename':os.path.join(path, k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+#                    'filename':os.path.join(path, k).replace("files/"+(f"{userid}"),''),
 #                    'type':mime.from_file(os.path.join(path, k)),
 #                    'created_time':time.ctime(os.path.getctime(os.path.join(path, k)))
 #                } 
@@ -243,7 +243,7 @@ def get_list_folders_and_files(userid:str):
     try:
         return {
             "status":"success",
-            "data": get_tree("files/"+urllib.parse.quote(f"{userid}"),userid)
+            "data": get_tree("files/"+(f"{userid}"),userid)
             }
     except Exception as e:
         return {"status":"failed", "message": str(e)}
@@ -252,7 +252,7 @@ def get_tree_filtered(path,userid,pointer,list_paths):
     tmp = [
        {
            'id': genuid()[-1],
-        #    'name':os.path.join(path,k).replace("files/"+urllib.parse.quote(f"{userid}"),''),
+        #    'name':os.path.join(path,k).replace("files/"+(f"{userid}"),''),
            'name':os.path.join(path,k).split('/')[-1],
            'type': 'file' if os.path.isfile(os.path.join(path,k)) else 'folder',
            'uploaddate': time.ctime(os.path.getctime(os.path.join(path, k))) if os.path.isfile(os.path.join(path,k)) else None,
@@ -266,11 +266,11 @@ def get_tree_filtered(path,userid,pointer,list_paths):
 @app.get("/files/{userid}/lists/{pointer}", tags=["Files"])
 def get_list_folders_and_files_based_on_pointer(userid:str,pointer:str):
     try:
-        user_db = mongo_client[urllib.parse.quote(f"{userid}")]
-        list_pointers = user_db[urllib.parse.quote(f"{pointer}")]
+        user_db = mongo_client[(f"{userid}")]
+        list_pointers = user_db[(f"{pointer}")]
         list_paths = [object["path"] for object in list_pointers.find()]
         result = get_tree_filtered(
-            "files/"+urllib.parse.quote(f"{userid}"),
+            "files/"+(f"{userid}"),
             userid,
             pointer,
             list_paths)
@@ -291,7 +291,7 @@ def delete_files(userid:str, deletedfiles: DeletedFiles):
         results = []
         for file in deletedfiles.paths:
             try:
-                os.remove("files/"+urllib.parse.quote(f"{userid}")+f"{file}")
+                os.remove("files/"+(f"{userid}")+f"{file}")
                 results.append(True)
             except:
                 results.append(False)
@@ -313,7 +313,7 @@ def delete_folders(userid:str, deletedfolders: DeletedFolders):
         results = []
         for folder in deletedfolders.paths:
             try:
-                shutil.rmtree("files/"+urllib.parse.quote(f"{userid}")+f"{folder}", ignore_errors=True)
+                shutil.rmtree("files/"+(f"{userid}")+f"{folder}", ignore_errors=True)
                 results.append(True)
             except:
                 results.append(False)
