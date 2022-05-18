@@ -1,5 +1,7 @@
 <template>
     <div>
+      <p>tree: {{tree}}</p>
+      <p>active: {{active}}</p>
       <div class="d-flex flex-row-reverse">
         <div>
           <v-btn class="mr-3" color="primary" @click="openFileDialog">
@@ -21,6 +23,7 @@
           color="secondary"
           small
           class="mr-3"
+          @click="downloadFiles"
         >Download</v-btn>
         <v-btn
           color="secondary"
@@ -53,24 +56,29 @@
             selected-color="secondary"
         >
             <template v-slot:prepend="{ item, open }">
-              <v-icon v-if="!item.file">
+              <v-icon v-if="!item.filetype">
                 {{ open ? iconFolderOpen : iconFolder }}          
               </v-icon>
               <v-icon v-else>
-                {{ fileTypes[item.file] }}
+                {{ fileTypes[item.filetype] }}
               </v-icon>
             </template>
             <template slot="append" slot-scope="props">
                 <div>
+                  <!-- <span class="mr-6">
+                    {{props.item.filetype}}
+                  </span> -->
                   <span class="mr-6">
-                    {{props.item.file}}
-                  </span>
-                  <span>
                     {{props.item.uploaddate}}
                   </span>
                   <span v-if="props.item.type == 'folder'">
                     <v-icon small @click.prevent="saveSelectedFolder(props.item.id)">
                       {{iconDelete}}
+                    </v-icon>
+                  </span>
+                  <span v-else>
+                    <v-icon small @click.prevent="downloadFile(props.item.id)">
+                      {{iconDownload}}
                     </v-icon>
                   </span>
                 </div>
@@ -106,13 +114,14 @@
 <script>
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
 mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
-mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete} from '@mdi/js'
+mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload} from '@mdi/js'
 import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
 import CardConfirm from './../cards/CardConfirm.vue'
 import store from '../../store'
+import axios from 'axios'
 
 export default{
   components: {
@@ -121,10 +130,14 @@ export default{
       CardConfirm,
   },
   setup(){
+    // const items = store.state.tree.list;
+    const items = computed(() => {return store.state.tree.list;})
+
     const iconFolderPlus = mdiFolderPlus;
     const iconFilePlus = mdiFilePlus;
     const iconFolderOpen = mdiFolderOpen;
     const iconFolder = mdiFolder;
+    const iconDownload = mdiDownload;
     const iconDelete = mdiDelete;
     const active = ref([]);
     const fileTypes= {
@@ -134,13 +147,13 @@ export default{
                     md: mdiLanguageMarkdown,
                     "application/pdf": mdiFilePdf,
                     "image/png": mdiFileImage,
+                    "image/jpeg": mdiFileImage,
                     txt: mdiFileDocumentOutline,
                     xls: mdiFileExcel,
                   };
 
     const open= ["public"];
     const tree = ref([]); //selected
-    const items = store.state.tree.list;
     const search = ref("");
 
     // computed
@@ -161,8 +174,28 @@ export default{
 
     // delete file(s)
     const delFileDialog = ref(false);
-    const deleteFile = (bool) => {
-      if(bool) store.dispatch('deleteFile', tree.value);
+    const userId = store.state.user.id;
+    const deleteFile = async (bool) => {
+      if(bool) {
+        var optionAxios = {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+        await axios
+          .delete(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/${userId}`, 
+            {optionAxios, data:{"paths": tree.value}}
+          )
+          .then(
+            (res) => {
+              console.log(res.status);
+            },
+            (err) => {
+              console.log(err.response.data);
+            }
+          )
+        await store.dispatch("fetchTreeList", userId);
+      }
       delFileDialog.value = false;
     }
     const openDelFileDialog = () => {delFileDialog.value = true}
@@ -170,8 +203,27 @@ export default{
     // delete folder
     const selectedFolder = ref(0);
     const delFolderDialog = ref(false);
-    const deleteFolder = (bool) => {
-      if(bool) store.dispatch('deleteFolder', selectedFolder.value);
+    const deleteFolder = async (bool) => {
+      if(bool) {
+        var optionAxios = {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+        await axios
+          .delete(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/folders/${userId}`, 
+            {optionAxios, data:{"paths": [selectedFolder.value]}}
+          )
+          .then(
+            (res) => {
+              console.log(res.status);
+            },
+            (err) => {
+              console.log(err.response.data);
+            }
+          )
+        await store.dispatch("fetchTreeList", userId);
+      }
       delFolderDialog.value = false;
     }
     const saveSelectedFolder = (id) => {
@@ -179,12 +231,52 @@ export default{
       delFolderDialog.value = true;
     }
 
+    // download file
+    const downloadFile = (path) => {
+      var url = "http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file/"+userId+"?path="+path;
+      var link = document.createElement("a");
+      link.href = encodeURI(url);
+      link.target = "_blank";
+      link.click();
+    }
+
+    const downloadFiles = async () => {
+      var optionAxios = {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer'
+      }
+      var submitData = {
+        "paths": tree.value
+      }
+      await axios
+        .post(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/bulk/${userId}`, submitData, optionAxios)
+        .then(
+          (res) => {
+            console.log("check bulk download", res.data);
+            var url = window.URL.createObjectURL(new Blob([res.data], {type: "application/zip"}))
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = url;
+            link.setAttribute('download', 'vdrfolder.zip');
+            link.click();
+            link.remove()
+            return res.data;
+          },
+          (err) => {
+            console.log(err);
+          }
+        )
+    }
+
     return {
       iconFolderPlus, open, tree, items, search, iconDelete,
       active, iconFilePlus, checkSelect, deleteFile, deleteFolder,
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
-      delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder
+      delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
+      iconDownload, downloadFile, downloadFiles
     }
   },
 }

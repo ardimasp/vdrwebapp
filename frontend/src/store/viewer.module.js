@@ -1,5 +1,3 @@
-// import viewerData from '../dummy/viewerdata'
-
 export default {
     state: {
         list: [],

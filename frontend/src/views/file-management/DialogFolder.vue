@@ -45,11 +45,12 @@
 
 <script>
 import { computed, defineComponent, ref } from '@vue/composition-api'
+import axios from 'axios';
 import store from './../../store/index'
 
 export default defineComponent({
     props: {
-        active: {type: Number, default: 0},
+        active: {type: String},
     },
     setup(props, {emit}) {
         const dialog = ref(true);
@@ -65,12 +66,28 @@ export default defineComponent({
             emit("closedialog");
         }
 
-        const save = () => {
-            store.dispatch("addFolder", {
-                active: props.active,
-                name: folderName.value,
-                id: store.state.tree.length,
-                });
+        const save = async () => {
+            const userId = store.state.user.id;
+            var optionAxios = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+            var submitData;
+            if(!props.active || props.active.length == 0) submitData = {"paths": ["./" + folderName.value]};
+            else submitData = {"paths": [props.active + "/" + folderName.value]};
+
+            await axios
+                .post(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/folders/${userId}`, submitData, optionAxios)
+                .then(
+                    (res) => {
+                        console.log(res)
+                    },
+                    (err) => {
+                        console.log(err.response.data)
+                    }
+                )
+            await store.dispatch("fetchTreeList", userId);
             closeDialog();
         }
 

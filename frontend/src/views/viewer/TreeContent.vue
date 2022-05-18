@@ -50,7 +50,7 @@ export default {
     CardConfirm,
   },
   setup() {
-    const items = store.state.tree.list;
+    const items = computed(() => {return store.state.tree.list;})
     const selected = ref([]);
     const search = ref("");
 
