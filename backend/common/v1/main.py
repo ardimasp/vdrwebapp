@@ -175,7 +175,7 @@ def zipfiles(filenames):
         headers = { "Content-Disposition": f"attachment; filename=archive.zip"}
     )
 
-@app.get("/files/bulk/{userid}", tags=["Files"])
+@app.post("/files/bulk/{userid}", tags=["Files"])
 def download_multiple_files(userid:str, files:DownloadedFiles):
     try:
 
