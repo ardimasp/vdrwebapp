@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from fastapi import FastAPI, Header, File, UploadFile, Form
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RedirectResponse, FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -18,6 +18,9 @@ import urllib.parse
 import random
 import shutil
 import threading
+
+import zipfile
+from io import BytesIO
 
 import pymongo
 from bson.objectid import ObjectId
@@ -144,12 +147,45 @@ async def upload_files(
 
 
 @app.get("/file/{userid}", tags=["Files"])
-def download_file(userid:str, path:str):
+def download_single_file(userid:str, path:str):
     try:
 
         file_path = "files/"+urllib.parse.quote(f"{userid}")+"/"+f"{path}"
         print(file_path)
         return FileResponse(file_path)
+    except Exception as e:
+        return {"status":"failed", "message": str(e)}
+
+class DownloadedFiles(BaseModel):
+    paths: List[str]
+
+
+def zipfiles(filenames):
+    zip_io = BytesIO()
+    with zipfile.ZipFile(zip_io, mode='w', compression=zipfile.ZIP_DEFLATED) as temp_zip:
+        for fpath in filenames:
+            # Calculate path for file in zip
+            fdir, fname = os.path.split(fpath)
+            zip_path = fname
+            # Add file, at correct path
+            temp_zip.write(fpath, zip_path)
+    return StreamingResponse(
+        iter([zip_io.getvalue()]), 
+        media_type="application/x-zip-compressed", 
+        headers = { "Content-Disposition": f"attachment; filename=archive.zip"}
+    )
+
+@app.get("/files/bulk/{userid}", tags=["Files"])
+def download_multiple_files(userid:str, files:DownloadedFiles):
+    try:
+
+        filenames = []
+        for path in files.paths:
+            filenames.append("files/"+urllib.parse.quote(f"{userid}")+"/"+f"{path}")
+
+        resp = zipfiles(filenames)
+
+        return resp
     except Exception as e:
         return {"status":"failed", "message": str(e)}
 
