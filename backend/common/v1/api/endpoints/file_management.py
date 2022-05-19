@@ -1,8 +1,11 @@
 from typing import List
-from fastapi import APIRouter, status, HTTPException, File, UploadFile, Form
+from fastapi import APIRouter, status, HTTPException, File, UploadFile, Form, Depends
 from fastapi.responses import FileResponse, StreamingResponse
 
 from app.api.models.file_management import CreatedFolders, DownloadedFiles, DeletedFiles, DeletedFolders
+
+from app.utils.authentication import get_current_active_user
+from app.api.models.login import User
 
 import os, time, magic
 import aiofiles
@@ -23,12 +26,13 @@ mime = magic.Magic(mime=True)
 
 router = APIRouter()
 
-@router.post("/folders/{userid}", tags=["Files"])
+@router.post("/folders")
 async def create_folders(
-    userid: str,
-    createdfolders: CreatedFolders
+    createdfolders: CreatedFolders,
+    current_user: User = Depends(get_current_active_user),
 ):
     try:
+        userid = current_user.username
         for path in createdfolders.paths:
             filename = "files/"+(f"{userid}/{path}")
             os.makedirs(filename, exist_ok=True)
@@ -40,15 +44,15 @@ async def create_folders(
             # detail=str(e),
         )
 
-@router.post("/files/{userid}", tags=["Files"])
+@router.post("/files")
 async def upload_files(
-    userid: str,
     files: List[UploadFile] = File(..., description="Upload multiple files"),
     foldername: str = Form(..., description="The folder name (e.g., use '.' to store the files in the root folder)"),
     pointer: str = Form(..., description="Pointer name (e.g., showcase). Please use '*' for the general use."),
+    current_user: User = Depends(get_current_active_user),
 ):
     try:
-        
+        userid = current_user.username
         for file in files:
             # set the filename
             if foldername == '.':
@@ -78,10 +82,13 @@ async def upload_files(
             # detail=str(e),
         )
 
-@router.get("/file/{userid}", tags=["Files"])
-def download_single_file(userid:str, path:str):
+@router.get("/file")
+def download_single_file(
+    path:str, 
+    current_user: User = Depends(get_current_active_user),
+    ):
     try:
-
+        userid = current_user.username
         file_path = "files/"+(f"{userid}")+"/"+f"{path}"
         return FileResponse(file_path)
     except Exception as e:
@@ -106,10 +113,13 @@ def zipfiles(filenames):
         headers = { "Content-Disposition": f"attachment; filename=archive.zip"}
     )
 
-@router.post("/files/bulk/{userid}", tags=["Files"])
-def download_multiple_files(userid:str, files:DownloadedFiles):
+@router.post("/files/bulk")
+def download_multiple_files(
+    files:DownloadedFiles,
+    current_user: User = Depends(get_current_active_user),
+    ):
     try:
-
+        userid = current_user.username
         filenames = []
         for path in files.paths:
             filenames.append("files/"+(f"{userid}")+"/"+f"{path}")
@@ -174,9 +184,10 @@ def cleanNullTerms(d):
                 clean[k] = v
     return clean
 
-@router.get("/files/{userid}/lists", tags=["Files"])
-def get_list_folders_and_files(userid:str):
+@router.get("/files/lists")
+def get_list_folders_and_files(current_user: User = Depends(get_current_active_user)):
     try:
+        userid = current_user.username
         return {
             "status":"success",
             "data": get_tree("files/"+(f"{userid}"),userid)
@@ -202,9 +213,13 @@ def get_tree_filtered(path,userid,pointer,list_paths):
     result = [cleanNullTerms(t) for t in tmp]
     return result
 
-@router.get("/files/{userid}/lists/{pointer}", tags=["Files"])
-def get_list_folders_and_files_based_on_pointer(userid:str,pointer:str):
+@router.get("/files/lists/{pointer}")
+def get_list_folders_and_files_based_on_pointer(
+    pointer:str,
+    current_user: User = Depends(get_current_active_user),
+    ):
     try:
+        userid = current_user.username
         user_db = mongo_client[(f"{userid}")]
         list_pointers = user_db[(f"{pointer}")]
         list_paths = [object["path"] for object in list_pointers.find()]
@@ -223,10 +238,13 @@ def get_list_folders_and_files_based_on_pointer(userid:str,pointer:str):
             # detail=str(e),
         )
 
-@router.delete("/files/{userid}", tags=["Files"])
-def delete_files(userid:str, deletedfiles: DeletedFiles):
+@router.delete("/files")
+def delete_files(
+    deletedfiles: DeletedFiles,
+    current_user: User = Depends(get_current_active_user),
+    ):
     try:
-        
+        userid = current_user.username
         for file in deletedfiles.paths:
             os.remove("files/"+(f"{userid}")+f"{file}")
             results.append(True)
@@ -240,10 +258,13 @@ def delete_files(userid:str, deletedfiles: DeletedFiles):
             # detail=str(e),
         )
 
-@router.delete("/folders/{userid}", tags=["Files"])
-def delete_folders(userid:str, deletedfolders: DeletedFolders):
+@router.delete("/folders")
+def delete_folders(
+    deletedfolders: DeletedFolders,
+    current_user: User = Depends(get_current_active_user),
+    ):
     try:
-        
+        userid = current_user.username
         for folder in deletedfolders.paths:
             shutil.rmtree("files/"+(f"{userid}")+f"{folder}", ignore_errors=True)
             

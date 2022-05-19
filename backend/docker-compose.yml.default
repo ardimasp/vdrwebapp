@@ -13,7 +13,8 @@ services:
       - "8001:80"
     command: ["/start-reload.sh"]
     volumes:
-      - ./common/v1/main.py:/app/app/main.py
+      # - ./common/v1/main.py:/app/app/main.py
+      # - ./common/v1/:/app/app/
       - ./files/:/app/files/
   registration:
     build: ./registration/
