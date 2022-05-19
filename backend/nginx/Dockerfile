@@ -11,4 +11,6 @@ RUN chmod +x entryPoint.sh
 
 ENTRYPOINT ["/entryPoint.sh"]
 
+COPY ./.htpasswd /etc/nginx/.htpasswd
+
 CMD ["nginx", "-g", "daemon off;"]
