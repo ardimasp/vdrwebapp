@@ -123,21 +123,21 @@ async def add_profile(profile: Profile):
     accounts_list.insert_one(to_db).inserted_id
     return {"status": "success"}
 
-@app.get("/profile/password/{userid}")
-async def get_password(userid: str):
+# @app.get("/profile/password/{userid}")
+# async def get_password(userid: str):
     
-    if "profiles" in mongo_client.list_database_names():
-        result = is_unique(userid)
+#     if "profiles" in mongo_client.list_database_names():
+#         result = is_unique(userid)
     
-        return {
-            "status": "success", 
-            "hashed_password": result[0]["hashed_password"]
-            }
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Database not found",
-        )
+#         return {
+#             "status": "success", 
+#             "hashed_password": result[0]["hashed_password"]
+#             }
+#     else:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Database not found",
+#         )
 
 @app.delete("/profile/{userid}")
 async def delete_userid(userid: str):
