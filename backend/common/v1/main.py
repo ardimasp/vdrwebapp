@@ -13,6 +13,10 @@ from app.api.api import api_router
 
 tags_metadata = [
         {
+            "name":"Login",
+            "description": "endpoints for login"
+            },
+        {
             "name":"Files",
             "description": "endpoints for file management"
             },
@@ -62,5 +66,5 @@ async def root():
     response = RedirectResponse(url='/api/v1/common/docs')
     return response
 
-app.include_router(api_router, prefix='/api/v1/common')
+app.include_router(api_router)
 
