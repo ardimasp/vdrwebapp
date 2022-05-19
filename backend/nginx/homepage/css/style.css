@@ -76,7 +76,7 @@
 }
 
 .card:nth-child(2):before {
-    background-image: url('../images/second.webp');
+    background-image: url('../images/registration.jpeg');
     opacity: 0.5;
     background-position: center;
 }
