@@ -247,7 +247,6 @@ def delete_files(
         userid = current_user.username
         for file in deletedfiles.paths:
             os.remove("files/"+(f"{userid}")+f"{file}")
-            results.append(True)
             
         return {
             "status": "success"
