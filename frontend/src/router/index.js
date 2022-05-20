@@ -24,6 +24,11 @@ const routes = [
     component: () => import('@/views/dashboard/Dashboard.vue'),
   },
   {
+    path: '/showcase',
+    name: 'showcase',
+    component: () => import('@/views/showcase/FormLayouts.vue'),
+  },
+  {
     path: '/typography',
     name: 'typography',
     component: () => import('@/views/typography/Typography.vue'),

@@ -33,12 +33,7 @@
           <MapSort v-on:input="sortSelected" />
      </template>
     </regular-card>
-    
-      <v-row>
-          <!-- <MapSort v-on:input="sortSelected" /> -->
 
-          <!-- <MapList :dataMaps="dataMaps" v-on:input="placeSelected"/> -->
-      </v-row>
     </div>
 
     <MapNavigation :dataMaps="datas" :heatmap="heatmap"></MapNavigation>
@@ -52,16 +47,17 @@ import MapNavigation from './MapNavigation.vue'
 import 'leaflet/dist/leaflet.css'
 // import L from 'leaflet'
 import { cardData } from './Dummy.js'
+import { colorRange } from './Color.js'
 // import MapList from './MapList.vue'
 import MapSort from './MapSort.vue'
 
 import MapFilter from './MapFilter.vue'
 
 import RegularCard from '../viewer/RegularCard.vue'
-// import TestContent from '../viewer/TestContent.vue'
-// import VtkCard from '../viewer/VtkCard.vue'
 
-import oilgas from '../../assets/images/oil&gas.svg'
+
+// import oilgas from '../../assets/images/oil&gas.svg'
+// import oilgas from '../../assets/images/map-marker.svg'
 
 export default {
   components: {
@@ -70,12 +66,11 @@ export default {
     MapSort,
     MapFilter,
     RegularCard,
-    // TestContent,
-    // VtkCard,
   },
     data: function() {
     return {
       dataMaps: cardData,
+      colorSort: colorRange,
       value: [],
       selectedP: [],
       normalIcon: [50, 50],
@@ -86,12 +81,14 @@ export default {
       heatmap: [],
       opacity: 1,
       lessopacity: 0.8,
-      defaulticon: oilgas
+      defcolor: '#004E40',
     }
   },
   mounted:function(){
+    this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor}))
+    console.log(this.colorSort)
 
-    this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon, opac: this.lessopacity, iconImg: this.defaulticon}))
+    // this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon, opac: this.lessopacity, iconImg: this.defaulticon}))
     // console.log(datas)
   },
 
@@ -122,22 +119,43 @@ export default {
           let sortedarrayGas = arrayGas.sort(function(a,b) {
             return a[3]-b[3]
           });
+          // HERE COLOR
+          // this.colorSort = colorRange
 
-          console.log(sortedarrayGas)
+          // OPACITY SORT
           var intensity = 1/sortedarrayGas.length
           for(let i in sortedarrayGas){
             sortedarrayGas[i].push(intensity)
             intensity = intensity + 1/sortedarrayGas.length;
           }
           this.heatmap = sortedarrayGas
-          console.log(sortedarrayGas)
+
+          console.log(this.colorSort)
+          var newtotalC = []
+          if (this.colorSort.length >= sortedarrayGas.length){
+            for(let i in sortedarrayGas){
+              sortedarrayGas[i].push(this.colorSort[i])
+            }
+          }else if (this.colorSort.length < sortedarrayGas.length){
+            var totalColor = Math.round(sortedarrayGas.length / this.colorSort.length)
+            console.log(totalColor)
+            for(let i in this.colorSort){
+              var tempAr = Array(totalColor).fill(this.colorSort[i])
+              newtotalC = newtotalC.concat(tempAr)
+            }
+            for(let i in sortedarrayGas){
+              sortedarrayGas[i].push(newtotalC[i])
+            }
+          }
 
           for (let s in sortedarrayGas){
             var sortSelect = this.datas.findIndex(dataC => dataC.id === sortedarrayGas[s][0]) 
             console.log(sortSelect)
-            console.log(sortedarrayGas[s][3])
+            console.log(sortedarrayGas[s][5])
 
-            this.datas[sortSelect].opac = sortedarrayGas[s][4]
+            // this.datas[sortSelect].opac = sortedarrayGas[s][4]
+            this.datas[sortSelect].iconColor = sortedarrayGas[s][5]
+
           }
     },
     
@@ -162,7 +180,7 @@ export default {
       }
       else if(sortp == null){
         for (let i in this.dataMaps){
-          this.datas[i].opac = this.lessopacity
+          this.datas[i].iconColor = this.defcolor
         }
       }
       
@@ -202,7 +220,7 @@ export default {
 .container{
     z-index: 999;
     position: relative;
-    margin-top: 10px;
+    margin-top: 20px;
     left: 50%;
     transform: translate(-50%, 0);
   }

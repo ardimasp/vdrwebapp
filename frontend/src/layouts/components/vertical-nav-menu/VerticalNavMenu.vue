@@ -56,6 +56,12 @@
         :icon="icons.mdiHomeOutline"
       ></nav-menu-link>
       
+      <nav-menu-link
+        title="Data Showcase"
+        :to="{ name: 'showcase' }"
+        :icon="icons.mdiCardSearchOutline"
+      ></nav-menu-link>
+
     </v-list>
     
   </v-navigation-drawer>

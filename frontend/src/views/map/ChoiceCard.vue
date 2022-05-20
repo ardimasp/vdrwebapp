@@ -2,7 +2,7 @@
   <!-- <v-hover v-slot="{ hover }"> -->
       <div>
     <v-card
-                style="background-color: #f4f5fa;"
+      style="background-color: #f4f5fa;"
 
       :loading="loading"
       class="mx-auto my-12"
@@ -24,10 +24,22 @@
         </v-col>
         
             <v-col  cols="auto">
-                <v-btn class="pa-2 mr-6 mt-2" icon @click="closeOverlay()">
+                <!-- <v-btn class="pa-2 mr-6 mt-2" icon @click="closeOverlay()">
                     <v-icon>{{icons.mdiCloseThick}}</v-icon>
 
-                </v-btn>
+                </v-btn> -->
+
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+
+                    <v-btn class="pa-2 mr-6 mt-1" icon @click="closeOverlay()">
+                        <v-icon  v-bind="attrs"
+                      v-on="on">{{icons.mdiCloseThick}}</v-icon>
+
+                    </v-btn>
+                  </template>
+                  <span>Close Overlay</span>
+                </v-tooltip>
               </v-col> 
       </v-row>
  <!-- <v-row no-gutters>
@@ -44,7 +56,7 @@
             multiple
           >
             <v-virtual-scroll
-              :items="images"
+              :items="datacard.images"
               :item-height="50"
               height="260"
             >
@@ -70,7 +82,7 @@
       </v-row>
       <v-card-actions class="justify-center">
               <v-btn
-              style="background-color: #9155fd;"
+              style="background-color: #00BFA5; color: white;"
               elevation="10"
               large
               text
@@ -84,10 +96,11 @@
 
     </v-card>
      <v-overlay style="z-index: 99999" :absolute="true" :value="overlayAgain">
-      <CardContent :dataD="this.chosenImg" :dataTitle="this.datacard.title" v-on:click="changeOverlay"/>
+      <CardContent :dataD="this.chosenImg" :dataTitle="this.datacard.title" :details="this.dataDetail.displayed" v-on:click="changeOverlay"/>
     </v-overlay>
     </div>
   <!-- </v-hover> -->
+  <!-- style="background-color: #E0F2F1; color: #9155fd;" -->
 </template>
 
 <script>
@@ -119,7 +132,8 @@ export default {
         mdiCloseThick
       },
       overlayAgain: false,
-      chosenImg: []
+      chosenImg: [],
+      chosenData: []
     }
   },
   methods: {
