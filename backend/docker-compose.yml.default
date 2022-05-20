@@ -16,6 +16,8 @@ services:
       # - ./common/v1/main.py:/app/app/main.py
       # - ./common/v1/:/app/app/
       - ./files/:/app/files/
+    environment:
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
   registration:
     build: ./registration/
     container_name: registration

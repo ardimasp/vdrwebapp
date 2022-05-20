@@ -9,6 +9,8 @@ from passlib.context import CryptContext
 
 from app.api.models.login import User,TokenData
 
+import os
+
 import pymongo
 mongo_client = pymongo.MongoClient("mongodb://mongo:27017/")
 profiles_db = mongo_client["profiles"]
@@ -20,7 +22,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 SECRET_KEY = "6318e0710c104c22905cffb6b199568e9115d95bac81844a00147d5127bafc36"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
