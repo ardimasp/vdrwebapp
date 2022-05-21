@@ -20,6 +20,10 @@ tags_metadata = [
             "name":"Files",
             "description": "endpoints for file management"
             },
+        {
+            "name":"Showcase",
+            "description": "endpoint for showcase application"
+            },
         ]
 
 
