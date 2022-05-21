@@ -116,6 +116,13 @@ async def add_profile(profile: Profile):
     if "profiles" in mongo_client.list_database_names():
         is_exist(profile.userid)
     
+    t = profile.userid.split(" ")
+    if len(t) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST ,
+            detail="Contains white space",
+        )
+
     to_db = {
         "userid":profile.userid,
         "hashed_password": pwd_context.hash(profile.password),
