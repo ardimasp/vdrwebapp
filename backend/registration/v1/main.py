@@ -153,7 +153,7 @@ async def get_list_userid():
         response = []
 
         for data in accounts_list.find():
-            response.append(data["userid"])
+            response.append({'userid':data["userid"]})
 
         return {
             "data": response
