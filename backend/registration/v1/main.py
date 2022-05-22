@@ -146,6 +146,24 @@ async def add_profile(profile: Profile):
 #             detail="Database not found",
 #         )
 
+@app.get("/profile")
+async def get_list_userid():
+    if "profiles" in mongo_client.list_database_names():
+        
+        response = []
+
+        for data in accounts_list.find():
+            response.append(data["userid"])
+
+        return {
+            "data": response
+            }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Database not found",
+        )
+
 @app.delete("/profile/{userid}")
 async def delete_userid(userid: str):
     
