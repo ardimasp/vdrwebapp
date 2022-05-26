@@ -1,4 +1,4 @@
-import axios from 'axios'
+import fileService from '../services/file.service';
 
 export default {
     state: {
@@ -14,23 +14,20 @@ export default {
         },
     },
     actions: {
-        fetchTreeList(context, userId){
-            var optionAxios = {
-                headers: {
-                    'Content-Type': 'application/json'
+        fetchTreeList(context){
+            return fileService.fetchFiles().then(
+                data => {
+                    context.commit('UPDATE_TREE', data.data);
+                    console.log("fetch files", data.data)
+                    return data.data;
+                },
+                error => {
+                    return Promise.reject(error);
                 }
-            }
-            return axios
-                .get(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/${userId}/lists`, optionAxios)
-                .then(
-                    (res) => {
-                        let callList = res.data;
-                        context.commit('UPDATE_TREE', callList.data);
-                    },
-                    (err) => {
-                        console.log(err);
-                    }
-                )
+            )
+        },
+        resetFileList(context){
+            context.commit('UPDATE_TREE', [])
         }
     }
 }

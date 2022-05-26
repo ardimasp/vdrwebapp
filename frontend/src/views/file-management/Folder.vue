@@ -121,7 +121,7 @@ import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
 import CardConfirm from './../cards/CardConfirm.vue'
 import store from '../../store'
-import axios from 'axios'
+import fileService from './../../services/file.service'
 
 export default{
   components: {
@@ -177,24 +177,8 @@ export default{
     const userId = store.state.user.id;
     const deleteFile = async (bool) => {
       if(bool) {
-        var optionAxios = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-        await axios
-          .delete(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/${userId}`, 
-            {optionAxios, data:{"paths": tree.value}}
-          )
-          .then(
-            (res) => {
-              console.log(res.status);
-            },
-            (err) => {
-              console.log(err.response.data);
-            }
-          )
-        await store.dispatch("fetchTreeList", userId);
+        await fileService.deleteFile(tree.value);
+        await store.dispatch("fetchTreeList");
       }
       delFileDialog.value = false;
     }
@@ -205,23 +189,7 @@ export default{
     const delFolderDialog = ref(false);
     const deleteFolder = async (bool) => {
       if(bool) {
-        var optionAxios = {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-        await axios
-          .delete(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/folders/${userId}`, 
-            {optionAxios, data:{"paths": [selectedFolder.value]}}
-          )
-          .then(
-            (res) => {
-              console.log(res.status);
-            },
-            (err) => {
-              console.log(err.response.data);
-            }
-          )
+        await fileService.deleteFolder(selectedFolder.value);
         await store.dispatch("fetchTreeList", userId);
       }
       delFolderDialog.value = false;
@@ -232,42 +200,15 @@ export default{
     }
 
     // download file
-    const downloadFile = (path) => {
-      var url = "http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file/"+userId+"?path="+path;
-      var link = document.createElement("a");
-      link.href = encodeURI(url);
-      link.target = "_blank";
-      link.click();
+    const downloadFile = async (path) => {
+      await fileService.downloadFile(path);
     }
 
     const downloadFiles = async () => {
-      var optionAxios = {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        responseType: 'arraybuffer'
-      }
       var submitData = {
         "paths": tree.value
       }
-      await axios
-        .post(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/bulk/${userId}`, submitData, optionAxios)
-        .then(
-          (res) => {
-            console.log("check bulk download", res.data);
-            var url = window.URL.createObjectURL(new Blob([res.data], {type: "application/zip"}))
-            var link = document.createElement('a');
-            document.body.appendChild(link);
-            link.href = url;
-            link.setAttribute('download', 'vdrfolder.zip');
-            link.click();
-            link.remove()
-            return res.data;
-          },
-          (err) => {
-            console.log(err);
-          }
-        )
+      await fileService.downloadFiles(submitData);
     }
 
     return {

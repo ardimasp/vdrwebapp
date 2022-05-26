@@ -36,8 +36,8 @@
 <script>
 import { mdiPaperclip } from '@mdi/js';
 import { ref, computed } from '@vue/composition-api';
-import axios from 'axios';
 import store from './../../store/index'
+import fileService from '../../services/file.service';
 
 export default{
     props: {
@@ -70,30 +70,17 @@ export default{
             else submitData.append('foldername', props.active);
             submitData.append('pointer', categoryChoosen.value);
 
-            var optionAxios = {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }
-
-            const userId = store.state.user.id;
-            await axios
-                .post(`http://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/${userId}`, submitData, optionAxios)
-                .then(
-                    (res) => {
-                        console.log(res.status);
-                    },
-                    (err) => {
-                        console.log(err)
-                    }
-                )
-            await store.dispatch("fetchTreeList", userId);
+            // call API
+            await fileService.addFile(submitData);
+            await store.dispatch("fetchTreeList");
 
             closeDialog();
         }
 
-        return {iconPaperClip, dialog, selectedFile, checkFile, selectItems, categoryChoosen,
-                closeDialog, save}
+        return {
+            iconPaperClip, dialog, selectedFile, checkFile, selectItems, categoryChoosen,
+            closeDialog, save
+        }
     },
 }
 </script>

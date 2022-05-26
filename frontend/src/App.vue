@@ -10,6 +10,8 @@ import { useRouter } from '@/utils'
 import LayoutBlank from '@/layouts/Blank.vue'
 import LayoutContent from '@/layouts/Content.vue'
 import store from './store'
+import route from './router'
+// import {checkToken} from './check.js'
 
 export default {
   components: {
@@ -17,13 +19,29 @@ export default {
     LayoutContent,
   },
   async mounted() {
+    store.dispatch("resetFileList")
     // fetchAPI
-    const userId = store.state.user.id;
-    const treeList = store.state.tree.list;
+    store.dispatch("setUserToken", localStorage.getItem("user"));
+    const state = store.state.auth.logged;
+    console.log("at mounted", state, localStorage.getItem("user"));
 
-    if(!treeList || treeList.length == 0){
-      await store.dispatch("fetchTreeList", userId)
-    }
+    // const userId = store.state.user.id;
+    // const treeList = store.state.tree.list;
+    // let check = await checkToken();
+    // console.log("check token at initial", check, userId)
+
+    if(state) store.dispatch("fetchTreeList")
+    else route.push('/login');
+
+    // if(userId !== "" && check){  //if user token is not null and token is correct
+    //   if(!treeList || treeList.length == 0){
+    //     await store.dispatch("fetchTreeList", userId)
+    //   }
+    // } 
+    // else {
+    //   route.push('/login');
+    // }
+    
     // end fetchAPI
   },
   setup() {
@@ -32,7 +50,7 @@ export default {
     
     const resolveLayout = computed(() => {
       // Handles initial route
-      if (route.value.name === null) {
+      if (route.value.meta.layout == "blank") {
         return 'layout-blank'
       }
 
@@ -41,17 +59,8 @@ export default {
     // end routing
     
     return {
-      resolveLayout,
+      resolveLayout, route,
     }
   },
-  // async beforeCreate() {
-  //   console.log("before created...")
-  //   const userId = store.state.user.id;
-  //   const treeList = store.state.tree.list;
-  //   if(!treeList || treeList.length == 0){
-  //     await store.dispatch("fetchTreeList", userId)
-  //   }
-  //   console.log("end of before created")
-  // }
 }
 </script>

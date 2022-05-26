@@ -139,7 +139,7 @@
       <v-divider class="my-2"></v-divider>
 
       <!-- Logout -->
-      <v-list-item link>
+      <v-list-item link @click.prevent="logout">
         <v-list-item-icon class="me-2">
           <v-icon size="22">
             {{ icons.mdiLogoutVariant }}
@@ -164,10 +164,19 @@ import {
   mdiHelpCircleOutline,
   mdiLogoutVariant,
 } from '@mdi/js'
+import store from '../../store'
+import router from '../../router'
 
 export default {
   setup() {
+    const logout = async () => {
+      await store.dispatch("resetFileList")
+      store.dispatch('logout');
+      router.push('/login');
+    }
+
     return {
+      logout,
       icons: {
         mdiAccountOutline,
         mdiEmailOutline,

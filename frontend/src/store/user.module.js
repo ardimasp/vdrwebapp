@@ -1,11 +1,17 @@
 export default {
     state: {
-        id: "3050",
+        id: "",
+        permission: "",
     },
-    mutation: {
-        // after login function is available
+    mutations: {
+        UPDATE_TOKEN(state,payload){
+            state.id = payload;
+        }
     },
-    action: {
-        // after login function is available
+    actions: {
+        setUserToken(context, data){
+            localStorage.setItem("token", data);
+            context.commit("UPDATE_TOKEN", data);
+        }
     }
 }

@@ -18,7 +18,7 @@
             ></v-img>
 
             <h2 class="text-2xl font-weight-semibold">
-              Materio
+              VDR
             </h2>
           </router-link>
         </v-card-title>
@@ -26,7 +26,7 @@
         <!-- title -->
         <v-card-text>
           <p class="text-2xl font-weight-semibold text--primary mb-2">
-            Welcome to Materio! 👋🏻
+            Welcome to VDR! 👋🏻
           </p>
           <p class="mb-2">
             Please sign-in to your account and start the adventure
@@ -56,6 +56,10 @@
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
 
+            <p  class="text-caption" style="color:red" v-if="errorMsg">
+              You typed the wrong username or password!
+            </p>
+
             <div class="d-flex align-center justify-space-between flex-wrap">
               <v-checkbox
                 label="Remember Me"
@@ -77,6 +81,8 @@
               block
               color="primary"
               class="mt-6"
+              @click="submitForm"
+              :disabled="!checkValid"
             >
               Login
             </v-btn>
@@ -88,7 +94,7 @@
           <span class="me-2">
             New on our platform?
           </span>
-          <router-link :to="{name:'pages-register'}">
+          <router-link :to="{name:'register'}">
             Create an account
           </router-link>
         </v-card-text>
@@ -144,7 +150,9 @@
 <script>
 // eslint-disable-next-line object-curly-newline
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
-import { ref } from '@vue/composition-api'
+import { computed, ref } from '@vue/composition-api'
+import store from '../../store'
+import router from '../../router'
 
 export default {
   setup() {
@@ -174,11 +182,46 @@ export default {
       },
     ]
 
+    const checkValid = computed(() => {
+      if(email.value !== "" && password.value !== "") return true;
+      return false;
+    })
+
+    const errorMsg = ref(false);
+    const submitForm = async () => {
+      
+
+      let submitData = new FormData();
+      submitData.append("username", email.value);
+      submitData.append("password", password.value);
+
+      const result = await store.dispatch('login', submitData);
+
+      if(result == 200) {
+        errorMsg.value = false;
+        
+        if(email.value == "admin") {
+          await store.dispatch("setPermission", "admin")
+          await store.dispatch("fetchUserList")
+          await router.push('/admin')
+        }
+        else {
+          await store.dispatch("setPermission", "user")
+          await store.dispatch("fetchTreeList");
+          await router.push('/');
+        }
+      }
+      else errorMsg.value = true;
+    }
+
     return {
       isPasswordVisible,
       email,
       password,
       socialLink,
+      submitForm,
+      checkValid,
+      errorMsg,
 
       icons: {
         mdiEyeOutline,
