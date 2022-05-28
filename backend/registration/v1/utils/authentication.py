@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.api.models.login import User,TokenData
+from app.models.login import User,TokenData
 
 import os
 

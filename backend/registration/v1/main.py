@@ -1,9 +1,8 @@
-from typing import Optional, List
-
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, Body, status, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+
+from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -11,144 +10,22 @@ from fastapi.openapi.docs import (
 )
 from fastapi.staticfiles import StaticFiles
 
-import pymongo
-from bson.objectid import ObjectId
-mongo_client = pymongo.MongoClient("mongodb://mongo:27017/")
-profiles_db = mongo_client["profiles"]
-accounts_list = profiles_db["accounts"]
-
-from passlib.context import CryptContext
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-###################
-
-
-from datetime import datetime, timedelta
-from typing import Optional
-
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-
-from typing import Optional
-from pydantic import BaseModel
-
-class User(BaseModel):
-    username: str
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: Optional[str] = None
-
-
-class UserInDB(BaseModel):
-    username: str
-    hashed_password: str
-
-import os
-
-import pymongo
-mongo_client = pymongo.MongoClient("mongodb://mongo:27017/")
-profiles_db = mongo_client["profiles"]
-accounts_list = profiles_db["accounts"]
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-SECRET_KEY = "6318e0710c104c22905cffb6b199568e9115d95bac81844a00147d5127bafc36"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-def get_user(username: str):
-
-    query_result = accounts_list.find(
-            {'userid':username},
-            {
-                '_id':False,
-            }
-        )
-    result = list(query_result)
-
-    if len(result) == 0:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Userid not found",
-        )
-    if len(result) > 1:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT ,
-            detail="Multiple Userids are detected",
-        )
-
-    user_dict = result[0]
-
-    class Response:
-        def __init__(self, username, hashed_password):
-            self.username = username
-            self.hashed_password = hashed_password
-
-    response = Response(user_dict["userid"],user_dict['hashed_password'])
-
-    return response
-
-def authenticate_user(username: str, password: str):
-    user = get_user(username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+from datetime import timedelta, datetime
+from app.models.login import Token, Profile, User, profile_example
+from app.utils.authentication import (
+    get_current_active_user, 
+    authenticate_user,
+    pwd_context,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    create_access_token
     )
-    
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
+from app.profpict import default_profile_pict
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    return current_user
-
-
-###################
+import pymongo
+mongo_client = pymongo.MongoClient("mongodb://mongo:27017/")
+profiles_db = mongo_client["profiles"]
+accounts_list = profiles_db["accounts"]
 
 app = FastAPI(
         title="VDRWEBAPP-API: Registration",
@@ -250,8 +127,24 @@ async def startup_event():
         to_db = {
             "userid":'admin',
             "hashed_password": pwd_context.hash('powerpuffgirls'),
+            'type': 'Administrator',
+            'name': 'Administrator',
+            'expiry_date': '9999-12-30',
+            'affiliation': 'Binus University',
+            'profile_picture': default_profile_pict,
             }
         accounts_list.insert_one(to_db).inserted_id
+    elif len(result) == 1:
+        myquery = { 'userid': 'admin' }
+        newvalues = { "$set": { 
+            "hashed_password": pwd_context.hash('powerpuffgirls'),
+            'type': 'Administrator',
+            'name': 'Administrator',
+            'expiry_date': '9999-12-30',
+            'affiliation': 'Binus University',
+            'profile_picture': default_profile_pict,
+            } }
+        accounts_list.update_one(myquery, newvalues)
 
 
 ################
@@ -266,9 +159,22 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={
+            "userid": user.username,
+            "type": user.type,
+            "name": user.name,
+            "expiry_date": str(user.expiry_date),
+            "affiliation": user.affiliation
+            }, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "type": user.type,
+        "name": user.name,
+        "expiry_date": user.expiry_date,
+        "affiliation": user.affiliation,
+        }
 
 # @app.get("/test")
 # async def test_token(current_user: User = Depends(get_current_active_user)):
@@ -276,14 +182,16 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 #     return {"userid": current_user.username}
 ################
 
-class Profile(BaseModel):
-    userid: str
-    password: str
+
+
+def size(b64string):
+    # return in bytes
+    return (len(b64string) * 3) / 4 - b64string.count('=', -2)
 
 @app.post("/profile")
-async def add_profile(profile: Profile, current_user: User = Depends(get_current_active_user)):
+async def add_profile(profile: Profile = Body(...,examples=profile_example), current_user: User = Depends(get_current_active_user)):
     
-    if current_user.username == 'admin':
+    if current_user.type == 'Administrator':
         if "profiles" in mongo_client.list_database_names():
             is_exist(profile.userid)
         
@@ -294,9 +202,28 @@ async def add_profile(profile: Profile, current_user: User = Depends(get_current
                 detail="Contains white space",
             )
 
+        if size(profile.profile_pict) > 10000:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
+                detail="Profile picture cannot be larger than 10KB",
+            )
+
+        try:
+            datetime.strptime(profile.expiry_date,"%Y-%m-%d")
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST ,
+                detail="Follow ISO 8601 format, like: 2022-12-15",
+            )
+
         to_db = {
             "userid":profile.userid,
             "hashed_password": pwd_context.hash(profile.password),
+            "type":profile.type,
+            "name":profile.name,
+            "expiry_date":profile.expiry_date,
+            "affiliation":profile.affiliation,
+            "profile_pict":profile.profile_pict
             }
         accounts_list.insert_one(to_db).inserted_id
         return {"status": "success"}
@@ -325,7 +252,7 @@ async def add_profile(profile: Profile, current_user: User = Depends(get_current
 
 @app.get("/profile")
 async def get_list_userid(current_user: User = Depends(get_current_active_user)):
-    if current_user.username == 'admin':
+    if current_user.type == 'Administrator':
         if "profiles" in mongo_client.list_database_names():
             
             response = []
@@ -348,10 +275,49 @@ async def get_list_userid(current_user: User = Depends(get_current_active_user))
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+@app.get("/profile/{userid}")
+async def get_detail_userid(
+    userid: str,
+    current_user: User = Depends(get_current_active_user)):
+    if current_user.type == 'Administrator':
+        if "profiles" in mongo_client.list_database_names():
+            
+            query_result = accounts_list.find(
+                {'userid':userid},
+                {
+                    '_id':False,
+                    'hashed_password':False
+                }
+            )
+            result = list(query_result)
+            print(result)
+
+            return {
+                "data": result[0]
+                }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Database not found",
+            )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not the admin",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 @app.delete("/profile/{userid}")
 async def delete_userid(userid: str, current_user: User = Depends(get_current_active_user)):
     
-    if current_user.username == 'admin':
+    if current_user.type == 'Administrator':
+        if userid == 'admin':
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not allowed to remove admin",
+            )
+
         if "profiles" in mongo_client.list_database_names():
             is_unique(userid)
 
@@ -378,11 +344,30 @@ async def delete_userid(userid: str, current_user: User = Depends(get_current_ac
 @app.put("/profile")
 async def edit_profile(profile: Profile, current_user: User = Depends(get_current_active_user)):
 
-    if current_user.username == 'admin':
+    if current_user.type == 'Administrator':
         if "profiles" in mongo_client.list_database_names():
             is_unique(profile.userid)
+            if size(profile.profile_pict) > 10000:
+                raise HTTPException(
+                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
+                    detail="Profile picture cannot be larger than 10KB",
+                )
+            try:
+                datetime.strptime(profile.expiry_date,"%Y-%m-%d")
+            except:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST ,
+                    detail="Follow ISO 8601 format, like: 2022-12-15",
+                )
             myquery = { 'userid': profile.userid }
-            newvalues = { "$set": { "hashed_password": pwd_context.hash(profile.password) } }
+            newvalues = { "$set": { 
+                "hashed_password": pwd_context.hash(profile.password),
+                'type': profile.type,
+                'name': profile.name,
+                'expiry_date': profile.expiry_date,
+                'affiliation': profile.affiliation,
+                'profile_picture': profile.profile_pict, 
+                } }
             accounts_list.update_one(myquery, newvalues)
             return {"status": "success"}
         else:
