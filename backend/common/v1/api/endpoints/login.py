@@ -23,7 +23,7 @@ router = APIRouter()
 #     )
 #     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/token", response_model=Token, include_in_schema=False)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
