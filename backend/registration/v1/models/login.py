@@ -30,37 +30,11 @@ class UserInDB(BaseModel):
 
 profile_example = {
     "regular": {
-        "summary": "Regular User",
+        "summary": "Example",
         "value": {
                 "userid": "userdummy",
                 "password": "yoursecurepassword",
-                "type": "Regular User",
                 "name": "User Dummy",
-                "expiry_date": "2023-12-30",
-                "affiliation": "Binus University",
-                "profile_pict": default_profile_pict
-        }
-    },
-    "premium": {
-        "summary": "Premium User",
-        "value": {
-                "userid": "userdummy",
-                "password": "yoursecurepassword",
-                "type": "Premium User",
-                "name": "User Dummy",
-                "expiry_date": "2023-12-30",
-                "affiliation": "Binus University",
-                "profile_pict": default_profile_pict
-        }
-    },
-    "admin": {
-        "summary": "Administrator",
-        "value": {
-                "userid": "userdummy",
-                "password": "yoursecurepassword",
-                "type": "Administrator",
-                "name": "User Dummy",
-                "expiry_date": "2023-12-30",
                 "affiliation": "Binus University",
                 "profile_pict": default_profile_pict
         }
@@ -70,9 +44,7 @@ profile_example = {
 class Profile(BaseModel):
     userid: str
     password: str
-    type: UserType 
     name: str 
-    expiry_date: str
     affiliation: str 
     profile_pict: str 
 
@@ -81,7 +53,27 @@ class Profile(BaseModel):
             "example": {
                 "userid": "userdummy",
                 "password": "yoursecurepassword",
-                "type": "Regular",
+                "name": "User Dummy",
+                "affiliation": "Binus University",
+                "profile_pict": default_profile_pict
+            }
+        }
+
+class EditProfile(BaseModel):
+    userid: str
+    password: Optional[str] = None
+    type: Optional[UserType] = None 
+    name: Optional[str] = None 
+    expiry_date: Optional[str] = None
+    affiliation: Optional[str] = None 
+    profile_pict: Optional[str] = None 
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "userid": "userdummy",
+                "password": "yoursecurepassword",
+                "type": "Regular User",
                 "name": "User Dummy",
                 "expiry_date": "2023-12-30",
                 "affiliation": "Binus University",

@@ -10,8 +10,8 @@ from fastapi.openapi.docs import (
 )
 from fastapi.staticfiles import StaticFiles
 
-from datetime import timedelta, datetime
-from app.models.login import Token, Profile, User, profile_example
+from datetime import timedelta, datetime, date
+from app.models.login import Token, Profile, User, profile_example, EditProfile
 from app.utils.authentication import (
     get_current_active_user, 
     authenticate_user,
@@ -189,50 +189,35 @@ def size(b64string):
     return (len(b64string) * 3) / 4 - b64string.count('=', -2)
 
 @app.post("/profile")
-async def add_profile(profile: Profile = Body(...,examples=profile_example), current_user: User = Depends(get_current_active_user)):
+async def add_profile(profile: Profile = Body(...,examples=profile_example)):
     
-    if current_user.type == 'Administrator':
-        if "profiles" in mongo_client.list_database_names():
-            is_exist(profile.userid)
-        
-        t = profile.userid.split(" ")
-        if len(t) > 1:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST ,
-                detail="Contains white space",
-            )
-
-        if size(profile.profile_pict) > 100000:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
-                detail="Profile picture cannot be larger than 100KB",
-            )
-
-        try:
-            datetime.strptime(profile.expiry_date,"%Y-%m-%d")
-        except:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST ,
-                detail="Follow ISO 8601 format, like: 2022-12-15",
-            )
-
-        to_db = {
-            "userid":profile.userid,
-            "hashed_password": pwd_context.hash(profile.password),
-            "type":profile.type,
-            "name":profile.name,
-            "expiry_date":profile.expiry_date,
-            "affiliation":profile.affiliation,
-            "profile_pict":profile.profile_pict
-            }
-        accounts_list.insert_one(to_db).inserted_id
-        return {"status": "success"}
-    else:
+    if "profiles" in mongo_client.list_database_names():
+        is_exist(profile.userid)
+    
+    t = profile.userid.split(" ")
+    if len(t) > 1:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not the admin",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=status.HTTP_400_BAD_REQUEST ,
+            detail="Contains white space",
         )
+    if size(profile.profile_pict) > 100000:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
+            detail="Profile picture cannot be larger than 100KB",
+        )
+
+    to_db = {
+        "userid":profile.userid,
+        "hashed_password": pwd_context.hash(profile.password),
+        "type":"Regular User",
+        "name":profile.name,
+        "expiry_date":str(date(datetime.now().year+1,datetime.now().month,datetime.now().day)),
+        "affiliation":profile.affiliation,
+        "profile_pict":profile.profile_pict
+        }
+    accounts_list.insert_one(to_db).inserted_id
+    return {"status": "success"}
+
 
 # @app.get("/profile/password/{userid}")
 # async def get_password(userid: str):
@@ -271,7 +256,7 @@ async def get_list_userid(current_user: User = Depends(get_current_active_user))
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not the admin",
+            detail="You are not an admin",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -279,7 +264,7 @@ async def get_list_userid(current_user: User = Depends(get_current_active_user))
 async def get_detail_userid(
     userid: str,
     current_user: User = Depends(get_current_active_user)):
-    if current_user.type == 'Administrator':
+    if current_user.type == 'Administrator' or current_user.username == userid:
         if "profiles" in mongo_client.list_database_names():
             
             query_result = accounts_list.find(
@@ -303,7 +288,7 @@ async def get_detail_userid(
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not the admin",
+            detail="You are not authorized",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -336,38 +321,65 @@ async def delete_userid(userid: str, current_user: User = Depends(get_current_ac
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not the admin",
+            detail="You are not an admin",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
 
 @app.put("/profile")
-async def edit_profile(profile: Profile, current_user: User = Depends(get_current_active_user)):
+async def edit_profile(profile: EditProfile, current_user: User = Depends(get_current_active_user)):
 
-    if current_user.type == 'Administrator':
+    if current_user.type == 'Administrator' or current_user.username == profile.userid:
         if "profiles" in mongo_client.list_database_names():
             is_unique(profile.userid)
-            if size(profile.profile_pict) > 10000:
-                raise HTTPException(
-                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
-                    detail="Profile picture cannot be larger than 10KB",
-                )
-            try:
-                datetime.strptime(profile.expiry_date,"%Y-%m-%d")
-            except:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST ,
-                    detail="Follow ISO 8601 format, like: 2022-12-15",
-                )
+
+            to_be_modified = {}
+            if profile.password is not None:
+                to_be_modified["hashed_password"] = pwd_context.hash(profile.password)
+
+            if profile.type is not None:
+                if current_user.type != 'Administrator':
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="You are not an admin",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                to_be_modified["type"] = profile.type
+
+            if profile.name is not None:
+                to_be_modified["name"] = profile.name
+
+            if profile.expiry_date is not None:
+                if current_user.type != 'Administrator':
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="You are not an admin",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                
+                try:
+                    datetime.strptime(profile.expiry_date,"%Y-%m-%d")
+                except:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST ,
+                        detail="Follow ISO 8601 format, like: 2022-12-15",
+                    )
+                to_be_modified["expiry_date"] = profile.expiry_date
+
+            if profile.affiliation is not None:
+                to_be_modified["affiliation"] = profile.affiliation
+
+            if profile.profile_pict is not None:
+                if size(profile.profile_pict) > 10000:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
+                        detail="Profile picture cannot be larger than 10KB",
+                    )
+                to_be_modified["profile_pict"] = profile.profile_pict
+
+           
             myquery = { 'userid': profile.userid }
-            newvalues = { "$set": { 
-                "hashed_password": pwd_context.hash(profile.password),
-                'type': profile.type,
-                'name': profile.name,
-                'expiry_date': profile.expiry_date,
-                'affiliation': profile.affiliation,
-                'profile_picture': profile.profile_pict, 
-                } }
+            newvalues = { "$set": to_be_modified }
             accounts_list.update_one(myquery, newvalues)
             return {"status": "success"}
         else:
@@ -378,6 +390,6 @@ async def edit_profile(profile: Profile, current_user: User = Depends(get_curren
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not the admin",
+            detail="You are not authorized",
             headers={"WWW-Authenticate": "Bearer"},
         )
