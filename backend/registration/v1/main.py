@@ -370,10 +370,10 @@ async def edit_profile(profile: EditProfile, current_user: User = Depends(get_cu
                 to_be_modified["affiliation"] = profile.affiliation
 
             if profile.profile_pict is not None:
-                if size(profile.profile_pict) > 10000:
+                if size(profile.profile_pict) > 4000000:
                     raise HTTPException(
                         status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
-                        detail="Profile picture cannot be larger than 10KB",
+                        detail="Profile picture cannot be larger than 4MB",
                     )
                 to_be_modified["profile_pict"] = profile.profile_pict
 
