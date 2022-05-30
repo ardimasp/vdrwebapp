@@ -200,10 +200,10 @@ async def add_profile(profile: Profile = Body(...,examples=profile_example)):
             status_code=status.HTTP_400_BAD_REQUEST ,
             detail="Contains white space",
         )
-    if size(profile.profile_pict) > 100000:
+    if size(profile.profile_pict) > 4000000:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
-            detail="Profile picture cannot be larger than 100KB",
+            detail="Profile picture cannot be larger than 4MB",
         )
 
     to_db = {
