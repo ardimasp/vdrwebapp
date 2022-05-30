@@ -30,7 +30,7 @@
                     flat
                     hide-details
                     clearable
-                    :clear-icon="mdiclosecircleoutline"
+                    :clear-icon="mdiCloseCircleOutline"
                     ></v-text-field>
                     <v-treeview
                         :open="open" 
@@ -110,12 +110,17 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 import {mdiCloseCircleOutline} from "@mdi/js"
 import store from '../../store'
+import router from '../../router'
 
 export default defineComponent({
     setup() {
+        onMounted(() => {
+            if(store.state.auth.permission !== "Premium User") router.push('/not-authorized')
+        })
+
         // to move the timelines
         const e1 = ref(1)
 

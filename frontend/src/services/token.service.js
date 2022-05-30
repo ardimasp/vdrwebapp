@@ -23,6 +23,7 @@ class TokenService {
       localStorage.removeItem("user");
       localStorage.removeItem("username");
       localStorage.removeItem("type");
+      localStorage.removeItem("profile");
     }
   }
   export default new TokenService();

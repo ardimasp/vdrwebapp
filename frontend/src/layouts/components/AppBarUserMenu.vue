@@ -175,15 +175,21 @@ export default {
   setup() {
     const profile = ref("");
     onMounted(async () => {
-      const userid = store.state.auth.username;
-      var res = await adminService.getUserDetail(userid);
-      if(res.status == 200) {
-          let pic = res.data.data.profile_pict;
-          let mime = detectMimeType(pic);
-          if(mime == "") profile.value = pic
-          else profile.value = "data:" + mime + ";base64," + pic
-          // profile.value = "data:" + mime + ";base64," + pic
-          store.dispatch("setProfile", profile.value);
+      if(!localStorage.getItem("profile")){
+        const userid = store.state.auth.username;
+        var res = await adminService.getUserDetail(userid);
+        if(res.status == 200) {
+            let pic = res.data.data.profile_pict;
+            let mime = detectMimeType(pic);
+            if(mime == "") profile.value = pic
+            else profile.value = "data:" + mime + ";base64," + pic
+            // profile.value = "data:" + mime + ";base64," + pic
+            store.dispatch("setProfile", profile.value);
+            localStorage.setItem("profile", profile.value)
+        }
+      }
+      else {
+        profile.value = localStorage.getItem("profile")
       }
     })
 

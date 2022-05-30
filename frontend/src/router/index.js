@@ -34,6 +34,11 @@ const routes = [
     component: () => import('@/views/sreeya/Sreeya.vue'),
   },
   {
+    path: '/not-authorized',
+    name: 'not-authorized',
+    component: () => import('@/views/sreeya/NotAuthorized.vue'),
+  },
+  {
     path: '/test',
     name: 'testtt-HELP',
     component: () => import('@/views/test/testing.vue'),
