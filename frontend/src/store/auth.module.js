@@ -8,16 +8,21 @@ export default {
     mutations:{
         LOGIN_SUCCESS(state, data){
             state.logged = true;
-            state.user = data
+            state.user = data.access_token;
+            state.username = data.name;
+            state.permission = data.type;
         },
         LOGIN_FAIL(state){
             state.logged = false;
             state.user = null;
+            state.username = null;
+            state.permission = null;
         },
         LOGOUT(state){
             state.logged = false;
-            state.username = null;
             state.user = null;
+            state.username = null;
+            state.permission = null;
         },
         SET_USER(state, data){
             state.username = data;
@@ -30,7 +35,7 @@ export default {
         login({commit}, data){
             return authService.login(data).then(
                 data => {
-                    commit('LOGIN_SUCCESS', data.data.access_token);
+                    commit('LOGIN_SUCCESS', data.data);
                     console.log("logged in", data.status)
                     return data.status;
                 },

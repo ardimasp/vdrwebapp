@@ -75,6 +75,24 @@ class AdminService{
                 }
             )
     }
+    getUserDetail(data) {
+        return axios.get(`${url}/profile/${data}`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("user")
+            }
+        })
+            .then(
+                (res) => {
+                    console.log(res);
+                    return res;
+                },
+                (err) => {
+                    console.log(err);
+                    checkExpire(err);
+                    return err;
+                }
+            )
+    }
 }
 
 export default new AdminService();

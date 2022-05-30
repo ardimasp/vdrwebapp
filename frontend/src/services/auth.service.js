@@ -11,6 +11,8 @@ class AuthService{
                 (res) => {
                     let token = res.data.access_token;
                     tokenService.setUser(token);
+                    // localStorage.setItem("username", res.data.name);
+                    localStorage.setItem("type", res.data.type);
                     console.log("successful login", localStorage.getItem("user"));
                     return res;
                 },

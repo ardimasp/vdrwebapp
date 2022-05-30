@@ -9,6 +9,7 @@ import { computed, } from '@vue/composition-api'
 import { useRouter } from '@/utils'
 import LayoutBlank from '@/layouts/Blank.vue'
 import LayoutContent from '@/layouts/Content.vue'
+import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
 // import {checkToken} from './check.js'
@@ -17,6 +18,7 @@ export default {
   components: {
     LayoutBlank,
     LayoutContent,
+    LayoutAdmin,
   },
   async mounted() {
     store.dispatch("resetFileList")
@@ -25,22 +27,13 @@ export default {
     const state = store.state.auth.logged;
     console.log("at mounted", state, localStorage.getItem("user"));
 
-    // const userId = store.state.user.id;
-    // const treeList = store.state.tree.list;
-    // let check = await checkToken();
-    // console.log("check token at initial", check, userId)
-
-    if(state) store.dispatch("fetchTreeList")
+    if(state) {
+      store.dispatch("fetchTreeList")
+      store.dispatch("setUsername", localStorage.getItem("username"))
+      store.dispatch("setPermission", localStorage.getItem("type"))
+      console.log("login data check user", store.state.auth.username, store.state.auth.permission, store.state.auth.logged)
+    }
     else route.push('/login');
-
-    // if(userId !== "" && check){  //if user token is not null and token is correct
-    //   if(!treeList || treeList.length == 0){
-    //     await store.dispatch("fetchTreeList", userId)
-    //   }
-    // } 
-    // else {
-    //   route.push('/login');
-    // }
     
     // end fetchAPI
   },
@@ -52,6 +45,9 @@ export default {
       // Handles initial route
       if (route.value.meta.layout == "blank") {
         return 'layout-blank'
+      }
+      else if (route.value.meta.layout == "top") {
+        return 'layout-admin'
       }
 
       return 'layout-content'

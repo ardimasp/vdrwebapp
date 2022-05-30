@@ -29,6 +29,11 @@ const routes = [
     component: () => import('@/views/dashboard/Dashboard.vue'),
   },
   {
+    path: '/production',
+    name: 'production',
+    component: () => import('@/views/sreeya/Sreeya.vue'),
+  },
+  {
     path: '/test',
     name: 'testtt-HELP',
     component: () => import('@/views/test/testing.vue'),
@@ -93,19 +98,36 @@ const routes = [
     redirect: 'error-404',
   },
   {
+    path: '/profile/:userid',
+    name: "profile",
+    component: () => import("@/views/profile/Profile.vue"),
+    meta: {
+      layout: 'top',
+    },
+  },
+  {
     path: '/admin',
     name: "admin",
-    component: () => import("@/views/admin/Main.vue")
+    component: () => import("@/views/admin/Main.vue"),
+    meta: {
+      layout: 'top',
+    },
   },
   {
     path: '/admin/adduser',
     name: "admin_adduser",
-    component: () => import("@/views/admin/addUser.vue")
+    component: () => import("@/views/admin/addUser.vue"),
+    meta: {
+      layout: 'top',
+    },
   },
   {
     path: '/admin/profile/:userid',
     name: "admin_edituser",
-    component: () => import("@/views/admin/editUser.vue")
+    component: () => import("@/views/admin/editUser.vue"),
+    meta: {
+      layout: 'top',
+    },
   },
 ]
 

@@ -199,14 +199,15 @@ export default {
 
       if(result == 200) {
         errorMsg.value = false;
+        localStorage.setItem("username", email.value);
+        await store.dispatch("setPermission", localStorage.getItem("type"))
+        await store.dispatch("setUsername", localStorage.getItem("username"))
         
-        if(email.value == "admin") {
-          await store.dispatch("setPermission", "admin")
+        if(localStorage.getItem("type") == "Administrator") {
           await store.dispatch("fetchUserList")
           await router.push('/admin')
         }
         else {
-          await store.dispatch("setPermission", "user")
           await store.dispatch("fetchTreeList");
           await router.push('/');
         }

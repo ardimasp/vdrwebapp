@@ -14,7 +14,7 @@ export default {
             console.log("admin get user");
             return adminService.fetchUsers().then(
                 data => {
-                    context.commit('UPDATE_USERLIST', data.data)
+                    context.commit('UPDATE_USERLIST', data.data.splice(1))
                     return data.data;
                 },
                 error => {

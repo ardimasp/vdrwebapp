@@ -38,7 +38,7 @@
           flat
           hide-details
           clearable
-          clear-icon="mdi-close-circle-outline"
+          :clear-icon="mdiclosecircleoutline"
         ></v-text-field>
         <v-treeview 
             v-model="tree" 
@@ -113,8 +113,9 @@
 
 <script>
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
-mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
-mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload} from '@mdi/js'
+      mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
+      mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload,
+      mdiCloseCircleOutline} from '@mdi/js'
 import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
@@ -217,7 +218,7 @@ export default{
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
       delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
-      iconDownload, downloadFile, downloadFiles
+      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline,
     }
   },
 }

@@ -10,11 +10,20 @@
                 </v-btn>
             </div>
         </div>
+        <v-text-field
+            v-model="search"
+            :append-icon="mdiMagnify"
+            label="Search"
+            single-line
+            hide-details
+            class="mb-3"
+        ></v-text-field>
         <v-data-table
             :headers="headers"
             :items="list"
             item-key="userid"
             :items-per-page="10"
+            :search="search"
             class="elevation-1"
         >
             <template v-slot:item.actions="{ item }">
@@ -47,7 +56,8 @@
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import router from '../../router';
 import store from '../../store';
-import {mdiAccount, mdiKey, mdiEye, mdiEyeOff, mdiDelete, mdiPencil} from '@mdi/js'
+import {mdiAccount, mdiKey, mdiEye, mdiEyeOff, mdiDelete, mdiPencil,
+        mdiMagnify} from '@mdi/js'
 import adminService from '../../services/admin.service';
 import CardConfirm from './../cards/CardConfirm.vue'
 
@@ -66,6 +76,7 @@ export default defineComponent({
           { text: 'Actions', value: 'actions', sortable: false },
         ];
         const list = computed(() => {return store.state.admin.userList});
+        const search = ref("");
 
         const editUser = (item) => {
             router.push({
@@ -93,7 +104,8 @@ export default defineComponent({
 
         return {
             headers, list, editUser, mdiAccount, mdiKey, mdiEye, mdiEyeOff,
-            mdiDelete, deleteUser, mdiPencil, deleteUserOpenDialog, delUserDialog
+            mdiDelete, deleteUser, mdiPencil, deleteUserOpenDialog, delUserDialog,
+            mdiMagnify, search
         }
     },
 })

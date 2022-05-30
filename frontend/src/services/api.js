@@ -9,6 +9,9 @@ export const checkExpire = (err) => {
         store.dispatch('logout');
         router.push('/login');
     }
+    if(store.state.auth.permission == "Administrator" && err.response.status == 500){
+        router.push('/admin')
+    }
 }
 
 // export const checkAdmin = (err) => {
