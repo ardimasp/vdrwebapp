@@ -26,15 +26,19 @@
                         label="Choose new image"
                         v-model="imageProfile"
                         @change="setNewProfile"
+                        messages="Image upload limit is 4MB"
                     >
                     </v-file-input>
-                    <v-avatar size=100 v-if="newImage" class="mb-5">
+                    <v-avatar size=100 v-if="newImage" class="mt-5 mb-5">
                         <v-img aspect-ratio="1" 
                             :src="newImage">
                         </v-img>
                     </v-avatar>
                     <div v-if="newImage">
-                        <v-btn color="error" class="mr-3" @click="clearImage" :disabled="!checkImg">
+                        <p  class="text-caption" style="color:red" v-if="!checkImg">
+                            Your file input exceeds the 4MB limit!
+                        </p>
+                        <v-btn color="error" class="mr-3" @click="clearImage">
                             Cancel
                         </v-btn>
                         <v-btn color="secondary" @click="submitImage" :disabled="!checkImg">
@@ -143,7 +147,10 @@ export default defineComponent({
         // IMAGE
         const checkImg = computed(() => {
             if(imageProfile.value == null || imageProfile.value == "") return false;
-            return true;
+            else {
+                if(imageProfile.value.size > 4194304) return false
+                return true;
+            }
         })
         const clearImage = () => {
             imageProfile.value = null;
@@ -153,6 +160,7 @@ export default defineComponent({
         const setNewProfile = () => {
             passwordUpdated.value = false;
             let file = imageProfile.value;
+            console.log("check size", file);
             let reader = new FileReader();
             reader.onloadend = function() {
                 // console.log('RESULT: ', reader.result);
