@@ -9,7 +9,8 @@ import store from './store'
 import VueDraggableResizable from 'vue-draggable-resizable'
 import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
 
-
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
 // import VueDragResize from 'vue-drag-resize'
 
 Vue.config.productionTip = false

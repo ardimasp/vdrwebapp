@@ -15,7 +15,8 @@
     color="#9155fd"
     :search="search"
     v-model="val"
-    :items="mapData"
+    :items="dataMaps"
+    item-key="name"
     @input="selectedPlace()"
 
   ></v-treeview>
@@ -40,93 +41,44 @@
     data: function() {
         return {
             val: this.value,
-            mapTitle: [],
+            mapData: this.dataMaps,
             search: null,
             caseSensitive: false,
-
-            mapData: [
-                {
-                id: 1,
-                name: 'Applications :',
-                children: [
-                    { id: 2, name: 'Dayana Lead' },
-                ],
-                },
-                {
-                id: 3,
-                name: 'Documents :',
-                children: [
-                    {
-                    id: 4,
-                    name: 'Fiki Lead',
-                    
-                    },
-                    
-                ],
-                },
-                {
-                id: 5,
-                name: 'Downloads :',
-                children: [
-                    { id: 6, name: 'Jambal Lead' },
-                 
-                ],
-                },
-                {
-                id: 7,
-                name: 'Videos :',
-                children: [
-                    {
-                    id: 8,
-                    name: 'Kabaena Carbonate Lead',
-                    
-                    },
-                    {
-                    id: 9,
-                    name: 'Delta Utara Lead',
-                    
-                    },
-                    {
-                    id: 10,
-                    name: 'Maniang Lead',
-                    
-                    },
-                ],
-                },
-            ],
-
         }
     },
 
-    mounted: function() {
-        var temp = []
-        for (let i = 0; i < this.dataMaps.length; i++) {
-        temp.push(this.dataMaps[i].title);
-        }
-        this.mapTitle = temp
-        console.log(temp)
-    },
+    // mounted: function() {
+    //   // console.log(this.dataMaps)
+    //   //   var temp = []
+    //   //   for (let i = 0; i < this.dataMaps.length; i++) {
+    //   //   temp.push(this.dataMaps[i].title);
+    //   //   }
+    //   //   this.mapTitle = temp
+    //   //   console.log(temp)
+    // },
     
     methods:{
    
+  //  perlu ganti yg di send
       selectedPlace: function(){
-          var matches = [];
-          for(var i in this.val){
-            console.log(this.val[i])
-            var idfind = this.val[i]
+        //   var matches = [];
+        //   for(var i in this.val){
+        //     console.log(this.val[i])
+        //     var idfind = this.val[i]
  
-            this.mapData.forEach(function(e) {
-                matches = matches.concat(e.children.filter(function(c) {
-                    return (c.id === idfind);
-                }));
-            });
+        //     this.mapData.forEach(function(e) {
+        //         matches = matches.concat(e.children.filter(function(c) {
+        //             return (c.id === idfind);
+        //         }));
+        //     });
 
-            // place.push(temp)
-          }
-        var result = matches.map(a => a.name);
+        //     // place.push(temp)
+        //   }
+        // var result = matches.map(a => a.name);
 
-        console.log(Object.values(result))
-
+        // console.log(Object.values(result))
+        var result = this.val
+        console.log(result)
 
         this.$emit('input', result)
       }

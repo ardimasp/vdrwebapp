@@ -1,17 +1,19 @@
 <template>
 <div>
-  <v-form class="multi-col-validation">
+  <v-form ref="form" v-model="valid" lazy-validation class="multi-col-validation">
     <v-row>
       <v-col cols="8"
        >
-        <v-text-field
-          v-model="fieldName"
+        
+        <v-combobox
+        v-model="fieldName"
           label="Field Name"
+          :items="existingFields"
           outlined
           dense
           placeholder="Field Name"
-          hide-details
-        ></v-text-field>
+          required
+></v-combobox>
         </v-col>
 
         <v-col cols="4"
@@ -20,28 +22,31 @@
         <v-btn
         color="primary"
           outlined
-          class="mx-2" @click="addNewSection"
+          class="mx-2" @click="addNewChildren"
         >
           Add Wells
         </v-btn>
       </v-col>
 
     </v-row>
-  <div v-for="(children) in this.childrens" :key="children">
+  <div v-for="(children, index) in this.childrens" :key="index">
     <v-card-title class="mt-5">Well</v-card-title>
-
+<p>{{children.name}}</p>
     <v-row class="mx-2">
       <v-col
         cols="12"
         md="6"
       >
         <v-text-field
-          v-model="wellName"
+        required
+          v-model="children.name"
           label="Well Name"
           outlined
           dense
           placeholder="Well Name"
           hide-details
+          :rules="wellRules"
+          @input="enableFileInput(index)"
         ></v-text-field>
       </v-col>
 
@@ -50,7 +55,8 @@
         md="6"
       >
         <v-text-field
-          v-model="area"
+        required
+          v-model="children.area"
           label="Area (km2)"
           outlined
           dense
@@ -58,42 +64,60 @@
           hide-details
         ></v-text-field>
       </v-col>
-
-<v-col
-        cols="12"
-        md="6"
+     
+      <div v-if="location.position">
+<v-row class="mt-2 ml-3">
+      <v-col
+        cols="6"
       >
-        <v-text-field
-          v-model="latitude"
-          label="Latitude"
-          outlined
-          dense
-          placeholder="Latitude (Ex: -0.847199)"
-          hide-details
-        ></v-text-field>
+            <v-text-field
+            required
+              v-model="location.position.lat"
+              label="Latitude"
+              outlined
+              dense
+              placeholder="Latitude (Ex: -0.847199)"
+              hide-details
+            ></v-text-field>
+        
       </v-col>
 
+      <v-col
+        cols="6"
+      >
+
+            <v-text-field
+            required
+              v-model="location.position.lng"
+              label="Longitude"
+              outlined
+              dense
+              placeholder="Longitude (Ex: 117.015818)"
+              hide-details
+            ></v-text-field>
+      </v-col>
+</v-row>
+      </div>
+      <div v-else>
+        <br>
+        <h4 class="ml-3">Please choose the location of the Well by double tapping on a location on the map, drag and place the marker or use the search tool on the top left</h4>
+      </div>
+
+ <v-col
+              cols="12"
+              md="12"
+            >
+        <div style="width:100%;height: 500px">
+          <SearchLocation v-model="location" :key="key" :ind="index" v-on:input="storeloc" />
+        </div>
+      </v-col>
       <v-col
         cols="12"
         md="6"
       >
         <v-text-field
-          v-model="longitude"
-          label="Longitude"
-          outlined
-          dense
-          placeholder="Longitude (Ex: 117.015818)"
-          hide-details
-        ></v-text-field>
-      </v-col>
-
-
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <v-text-field
-          v-model="oilVolume"
+        required
+          v-model="children.oilVolume"
           label="Oil Volume"
           outlined
           dense
@@ -107,7 +131,8 @@
         md="6"
       >
         <v-text-field
-          v-model="gasVolume"
+        required
+          v-model="children.gasVolume"
           label="Gas Volume"
           outlined
           dense
@@ -116,40 +141,13 @@
         ></v-text-field>
       </v-col>
 
-       <v-col
-        cols="12"
-        md="6"
-      >
-        <v-text-field
-          v-model="waterDepth"
-          label="Water Depth"
-          outlined
-          dense
-          placeholder="Water Depth"
-          hide-details
-        ></v-text-field>
-      </v-col>
-
       <v-col
         cols="12"
         md="6"
       >
         <v-text-field
-          v-model="reservoir"
-          label="Reservoir"
-          outlined
-          dense
-          placeholder="Reservoir"
-          hide-details
-        ></v-text-field>
-      </v-col>
-
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <v-text-field
-          v-model="sourceRock"
+        required
+          v-model="children.sourceRock"
           label="Source Rock"
           outlined
           dense
@@ -162,7 +160,8 @@
         md="6"
       >
         <v-text-field
-          v-model="play"
+        required
+          v-model="children.play"
           label="Play"
           outlined
           dense
@@ -171,18 +170,72 @@
         ></v-text-field>
       </v-col>
 
+<v-col
+        cols="12"
+        md="6"
+      >
+        <!-- <v-text-field
+          v-model="children.waterDepth"
+          label="Water Depth"
+          outlined
+          dense
+          placeholder="Water Depth"
+          hide-details
+        ></v-text-field> -->
+        <v-autocomplete
+        required
+        dense
+        outlined
+            v-model="children.waterDepth"
+            :items="waterDepthchoose"
+            label="Water Depth"
+            >
+         
+          </v-autocomplete>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <!-- <v-text-field
+          v-model="children.reservoir"
+          label="Reservoir"
+          outlined
+          dense
+          placeholder="Reservoir"
+          hide-details
+        ></v-text-field> -->
+        <v-autocomplete
+        required
+        dense
+        outlined
+            v-model="children.reservoir"
+            :items="reserviorchoose"
+            label="Reservoir"
+            >
+         
+          </v-autocomplete>
+      </v-col>
+
       <v-col  cols="12"
         md="6">
         <v-file-input
+        :disabled="fileDisabled"
+        required
+        dense
           accept="image/*"
-          v-model="files"
+          v-model="imgFiles"
           color="primary"
           counter
           label="File input"
           multiple
           placeholder="Select your files"
-          outlined
+          outlined  
           :show-size="1000"
+          type="file"
+          @change="selectFiles(index)"
+          :rules="fileRules"
         >
           <template v-slot:selection="{ index, text }">
             <v-chip
@@ -202,20 +255,34 @@
             </span>
           </template>
         </v-file-input>
+        <!-- <input type="file" @change="readmultifiles" multiple/> -->
+      </v-col>
+
+      <v-col  cols="12"
+        md="6">
+         <v-btn
+          type="reset"
+          outlined
+          color="error"
+          class="mx-2" @click="deleteWell(index)"
+        >
+          Delete
+        </v-btn>
       </v-col>
     </v-row>
     </div>
 
       <v-col cols="12">
-        <v-btn color="primary">
+        <v-btn color="primary" :disabled="!valid" @click="submitData">
           Submit
         </v-btn>
         <v-btn
           type="reset"
           outlined
-          class="mx-2" @click="addNewChildren"
+          class="mx-2" 
+          @click="backPage"
         >
-          Reset
+          BACK
         </v-btn>
       </v-col>
   </v-form>
@@ -225,6 +292,8 @@
 <script>
 // import { ref } from '@vue/composition-api'
 // import { mdiPaperclip  } from '@mdi/js'
+import {postDatatoDB, getDatafromDB, getDB, getListFieldWell, uploadImages} from './MapEndPoint.js';
+import SearchLocation from "./SearchLocation.vue";
 
 export default {
   // setup() {
@@ -246,47 +315,259 @@ export default {
   //     // mdiPaperclip
   //   }
   // },
-
+  components:{
+    SearchLocation
+  },
   data: function(){
     return{
-      fieldName: '',
-   
-childrens: [
-            {
-              wellName:'',
-              area:'',
-              latitude:'',
-              longitude:'',
-              oilVolume:'',
-              gasVolume:'',
-              waterDepth:'',
-              reservoir:'',
-              sourceRock:'',
-              play:'',
+      valid: true,
 
-              files: [],
-            }
-        ]
+      fieldName: '',
+      dialog: false,
+      location: {},
+      key: 1,
+      childrens: [
+          {
+            name:'',
+            area:0,
+            latitude:'',
+            longitude:'',
+            oilVolume:0,
+            gasVolume:0,
+            waterDepth:'',
+            reservoir:'',
+            sourceRock:'',
+            play:'',
+
+            // files: undefined,
+          }
+        ],
+        imageDatas: [],
+        tempImg: [],
+        waterDepthchoose: ['Onshore (darat)', 'Offshore shallow (laut <= 200 m)', 'Offshore deep (laut > 200m)'],
+        reserviorchoose: ['Sandstone', 'Carbonate'],
+        existingFieldsWells: null,
+        existingFields: null,
+        existingWells: null,
+        exD: null,
+        selectedFiles: undefined,
+        selectedImages: undefined,
+        fileDisabled: true,
+
+//         fileRules:[
+//    v => !!v || 'File is required',
+//    v => (v && v.size > 0) || 'File is required',
+// ], 
+wellRules:[v => !!v || 'Well Name is required']
     }
   },
   methods: {
-        addNewChildren() {
-            this.children.push({
-                wellName:'',
-              area:'',
-              latitude:'',
-              longitude:'',
-              oilVolume:'',
-              gasVolume:'',
-              waterDepth:'',
-              reservoir:'',
-              sourceRock:'',
-              play:'',
 
-              files: [],
-            })
-        },
+    addNewChildren() {
+        this.childrens.push({
+          name:'',
+          area:'',
+          latitude:'',
+          longitude:'',
+          oilVolume:'',
+          gasVolume:'',
+          waterDepth:'',
+          reservoir:'',
+          sourceRock:'',
+          play:'',
+          // files: undefined,
+
+        })
+
+        // this.imageData.push({
+        //   wellName: '',
+        //   imgFiles: undefined,
+
+        // })
+        console.log(this.childrens)
+    },
+
+    deleteWell(id) {
+        // this.childrens[id].pull({
+        //     item: ''
+        // })
+
+        this.childrens.splice(id, 1);
+
+        console.log(this.childrens)
+    },
+    
+    storeloc(choseLoc){
+      console.log('loc', choseLoc)
+      console.log(choseLoc)
+      this.childrens[choseLoc.index].latitude = choseLoc.position.lat
+      this.childrens[choseLoc.index].longitude = choseLoc.position.lng
+    },
+    submitData(){
+      // for (let i=0; i<this.imageDatas.length;i++){
+      //   for (var value of this.imageDatas[i].values()) {
+      //     console.log(value);
+      //   }      
+      // }
+      this.$refs.form.validate()
+      if(this.$refs.form.validate() === true){
+        const data = {
+        fieldName: this.fieldName,
+        wells: this.childrens
+        }
+        console.log(data)
+        postDatatoDB(data);
+
+        for (let i=0; i<this.imageDatas.length;i++){
+          uploadImages(this.imageDatas[i])
+      }
+      }
         
+    },
+    
+    readmultifiles(e) {
+      // console.log(Fileindex)
+      console.log(e.target.files[0])
+    //    var files = e.currentTarget.files;
+    // console.log(Object.keys(files))
+      // Object.keys(files).forEach(i => {
+      //   const file = files[i];
+      //   const reader = new FileReader();
+      //   reader.onload = function() {
+      //               console.log('RESULT', reader.result)
+
+      //     //server call for uploading or reading the files one-by-one
+      //     //by using 'reader.result' or 'file'
+      //   }
+      //   reader.readAsDataURL(file);
+      // })
+    },
+
+    selectFiles (index){
+      let categoryChoosen = 'showcase'
+      // console.log(this.imgFiles[0])
+      let submitData = new FormData();
+      for(let i = 0; i < this.imgFiles.length; i++){
+        console.log(this.imgFiles[i])
+          submitData.append('files', this.imgFiles[i]);
+      }
+
+      submitData.append('foldername', this.childrens[index].name);
+      submitData.append('pointer', categoryChoosen);
+      this.imageDatas.push(submitData)
+      for (var pair of submitData.entries()) {
+          console.log(pair[0]+ ', ' + pair[1]); 
+      }
+      // console.log(this.imageDatas[0])
+//       for (let i=0; i<this.imageDatas.length;i++){
+// for (var value of this.imageDatas[i].values()) {
+//         console.log(value);
+//       }      
+//       }
+      },
+
+      
+      // console.log(index)
+      // for (let i = 0; i<this.imgFiles.length;i++){
+      //   let file = this.imgFiles[i];
+      //   console.log(file)
+      //   var reader = new FileReader();
+
+      //   reader.onloadend = (function(f) {
+      //     return function(e) {
+      //       console.log('RESULT', e.target.result)
+      //       // this.tempImg.push(e.target.result)
+      //       console.log(f)
+      //       };
+      //   })(file);
+      //   //   console.log('RESULT', reader.result)
+      //   // }
+      //                   reader.readAsDataURL(file);
+
+      // }
+      //             console.log(this.tempImg)
+
+      // console.log(this.childrens[index].name)
+      // this.imageData.push({
+      //   wellName: this.childrens[index].name,
+      //   imageFiles: this.tempImg,
+
+      // })
+      // console.log(this.imageData)
+     
+    
+
+    backPage(){
+      this.$router.push('/map-showcase')
+    },
+
+    reset() {
+      this.key += 1;
+      this.location = {};
+    },
+
+    enableFileInput(index){
+      const isEmpty = str => !str.trim().length;
+
+      if(isEmpty(this.childrens[index].name)){
+        this.fileDisabled = true
+
+      }else{
+        this.fileDisabled = false
+      }
     }
-}
+    
+  },
+  async mounted(){
+ 
+      this.existingFieldsWells = await getListFieldWell()
+            console.log(this.existingFieldsWells)
+
+      this.existingFields = this.existingFieldsWells.map(a => a.fieldName);
+      this.existingWells = this.existingFieldsWells.map(a => a.wellName);
+      
+         this.exD = getDatafromDB()
+         console.log(this.exD)
+       this.ex = getDB()
+         console.log(this.ex)
+
+         if(this.existingWells){
+        const rule =
+        v => (this.existingWells.includes(v) === false) || 'Well name exist!'
+        this.wellRules.push(rule)
+
+      }
+
+  },
+  computed:{
+    fileRules(){
+      console.log(this.childrens)
+      const fileRules = []
+      if(this.childrens.length > 0){
+        const rule =
+        v => (this.existingWells.includes(v) === false) || 'Well name exist!'
+        fileRules.push(rule)
+      }
+
+      // if(this.childrens.name)
+      return fileRules
+
+    }
+    // wellRules(){
+    //   console.log(this.existingWells)
+    //   const wellRules = []
+
+    //   if(this.existingWells){
+    //     const rule =
+    //     v => (this.existingWells.includes(v) === false) || 'Well name exist!'
+    //     wellRules.push(rule)
+
+    //   }
+
+    //   // if(this.childrens.name)
+    //   return wellRules
+
+    // }
+  },
+  }
 </script>

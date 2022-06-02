@@ -3,9 +3,9 @@
     <div id="mapContainer">
       <!-- <h6>{{dataMaps}}</h6> -->
       <!-- <v-card> -->
-        <l-map class="map-size" :zoom="zoom" :center="center">
+        <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-          <l-marker 
+          <!-- <l-marker 
             :key="index"
             v-for="(dataMap,index) in dataMaps"
             :lat-lng="latLng(dataMap.data.coordinates.pos[0], dataMap.data.coordinates.pos[1])"
@@ -15,13 +15,30 @@
             :icon ="getIcon(dataMap)"
            >
                 <l-tooltip>{{dataMap.title}}</l-tooltip>
-          </l-marker>
+          </l-marker> -->
+          <l-circle
+            :key="index"
+            v-for="(dataMap,index) in dataMaps"
+            :lat-lng="[dataMap.wellLatitude, dataMap.wellLongitude]"
+            :radius="dataMap.wellArea * 1000"
+            :color='dataMap.iconColor'
+            :fillColor='dataMap.fillIcon'
+            :fillOpacity="dataMap.iconfillColor"
+            :opacity="dataMap.iconborderColor"
+            @click="cardshown(dataMap.id)"
+            @mouseover="recenterMap(dataMap.id)"
+          />
         </l-map>
       <!-- </v-card> -->
     </div>
     <v-overlay style="z-index: 9999;" :absolute="true" :value="overlay">
       <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
+  <!-- <v-card style="height: 400px; width:500px; z-index: 9999;"> -->
+    <v-overlay :absolute="true" :value="overlaymap">
+      <MaponFilter  :dataFilter="this.dataFilter"/>
+    </v-overlay>
+  <!-- </v-card> -->
     <!-- <div style="height: 800px" id="maptryit"></div> -->
   </div>
 </template>
@@ -29,9 +46,10 @@
 <script>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
+import { LMap, LTileLayer, LCircle } from 'vue2-leaflet'
 import ChoiceCard from './ChoiceCard.vue'
-
+// import MaponFilter from './MaponFilter.vue'
+// LMarker, LTooltip
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgasonhover from '../../assets/images/oil&gashover.png'
 // import oilgas from '../../assets/images/map-marker.svg'
@@ -46,11 +64,13 @@ export default {
   components: {
     LMap,
     LTileLayer,
-    LMarker,
+    // LMarker,
     // LIcon,
     // Card,
     ChoiceCard,
-    LTooltip
+    // MaponFilter,
+    LCircle
+    // LTooltip
   },
   props:{
     dataMaps: Array,
@@ -68,7 +88,10 @@ export default {
      
       iconhover: '#00000',
       datacard: {},
+      dataFilter: {},
       overlay: false,
+      overlaymap: false,
+
       prevColor: []
     }
   },
@@ -134,7 +157,19 @@ export default {
       </svg>`,
       tooltipAnchor: [ -10, 20 ]
       });
-    }
+    },
+
+    recenterMap(key) {
+      var filteredResult = this.dataMaps.find((e) => e.id == key);
+
+      this.$refs.myMap.mapObject.flyTo([filteredResult.wellLatitude, filteredResult.wellLongitude], 9)
+  },
+    markeronhover(key){
+      var filteredResult = this.dataMaps.find((e) => e.id == key);
+      console.log(filteredResult)
+      this.dataFilter = filteredResult
+      this.overlaymap = true
+    },
   },
 
   mounted() {
@@ -300,4 +335,7 @@ export default {
 }
 
 #maptryit { height: 800px; }
+
+      /* :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)" */
+
 </style>

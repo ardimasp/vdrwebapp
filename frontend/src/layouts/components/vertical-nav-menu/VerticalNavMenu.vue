@@ -58,7 +58,7 @@
       
       <nav-menu-link
         title="Data Showcase"
-        :to="{ name: 'showcase' }"
+        :to="{ name: 'mapShowcase' }"
         :icon="icons.mdiCardSearchOutline"
       ></nav-menu-link>
 
