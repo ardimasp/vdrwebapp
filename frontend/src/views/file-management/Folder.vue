@@ -1,7 +1,5 @@
 <template>
     <div>
-      <p>tree: {{tree}}</p>
-      <p>active: {{active}}</p>
       <div class="d-flex flex-row-reverse">
         <div>
           <v-btn class="mr-3" color="primary" @click="openFileDialog">

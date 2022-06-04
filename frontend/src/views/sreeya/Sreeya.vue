@@ -24,6 +24,14 @@
             <!-- search n select file -->
             <v-stepper-content step="1">
                 <div>
+                     <div class="d-flex flex-row-reverse">
+                        <v-btn color="primary">
+                            <v-icon left>
+                                {{iconFolderPlus}}
+                            </v-icon> 
+                            Download Template
+                        </v-btn>
+                    </div>
                     <v-text-field
                     v-model="search"
                     label="Search File | Folder"
