@@ -3,7 +3,7 @@ import {URL, checkExpire} from './api'
 // import tokenService from "./token.service"
 
 const url = URL + "/registration"
-let headers = {
+const headers = {
     headers: {
         Authorization: "Bearer " + localStorage.getItem("user")
     }
@@ -29,7 +29,7 @@ class AdminService{
             )
     }
     addUser(data) {
-        console.log("aaaa",localStorage.getItem("user"));
+        // console.log("aaaa",localStorage.getItem("user"));
         return axios.post(`${url}/profile`, data, headers)
             .then(
                 (res) => {
@@ -44,7 +44,11 @@ class AdminService{
             )
     }
     editUser(data) {
-        return axios.put(`${url}/profile`, data, headers)
+        return axios.put(`${url}/profile`, data, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("user")
+            }
+        })
         .then(
             (res)=> {
                 console.log(res);
@@ -52,7 +56,7 @@ class AdminService{
             },
             (err) => {
                 console.log(err);
-                // checkExpire(err);
+                checkExpire(err);
                 return err.response.status
             }
         )

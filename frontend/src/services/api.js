@@ -14,13 +14,6 @@ export const checkExpire = (err) => {
     }
 }
 
-// export const checkAdmin = (err) => {
-//     if(err.response && err.response.status == 403){
-//         store.dispatch('logout');
-//         router.push('/login');
-//     }
-// }
-
 const instance = axios.create({
     baseURL: URL,
     headers: {

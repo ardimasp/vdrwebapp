@@ -179,6 +179,8 @@ export default defineComponent({
             if(check == 200){
                 profPic.value = newImage.value;
                 clearImage();
+                store.dispatch("setProfile", profPic.value);
+                localStorage.setItem("profile", profPic.value)
             }
         }
         // END IMAGEEE

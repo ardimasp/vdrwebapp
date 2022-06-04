@@ -14,7 +14,7 @@ export default {
     },
     actions: {
         setUserToken(context, data){
-            localStorage.setItem("token", data);
+            localStorage.setItem("user", data);
             context.commit("UPDATE_TOKEN", data);
         },
         setProfile(context, data){

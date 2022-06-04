@@ -150,7 +150,7 @@
 <script>
 // eslint-disable-next-line object-curly-newline
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
-import { computed, ref } from '@vue/composition-api'
+import { computed, onMounted, ref } from '@vue/composition-api'
 import store from '../../store'
 import router from '../../router'
 
@@ -187,10 +187,12 @@ export default {
       return false;
     })
 
+    onMounted(() => {
+      store.dispatch("logout");
+    })
+
     const errorMsg = ref(false);
     const submitForm = async () => {
-      
-
       let submitData = new FormData();
       submitData.append("username", email.value);
       submitData.append("password", password.value);
