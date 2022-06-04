@@ -60,6 +60,11 @@
         :to="{ name: 'file-management' }"
         :icon="icons.mdiTable"
       ></nav-menu-link>
+      <nav-menu-link
+        title="Sreeya AI"
+        :to="{ name: 'production' }"
+        :icon="icons.mdiChartLine"
+      ></nav-menu-link>
       
     </v-list>
     
@@ -79,6 +84,7 @@ import {
   mdiFormSelect,
   mdiAccountCogOutline,
   mdiMap,
+  mdiChartLine
 } from '@mdi/js'
 import NavMenuLink from './components/NavMenuLink.vue'
 
@@ -108,7 +114,8 @@ export default {
         mdiFileOutline,
         mdiFormSelect,
         mdiAccountCogOutline,
-        mdiMap
+        mdiMap,
+        mdiChartLine,
       },
     }
   },

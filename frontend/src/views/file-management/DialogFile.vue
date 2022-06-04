@@ -10,7 +10,6 @@
                     counter
                     label="New File"
                     multiple
-                    @change="onFileSelected"
                     placeholder="Select your files"
                     :prepend-icon="iconPaperClip"
                     outlined
@@ -18,6 +17,13 @@
                     persistent-hint
                 >
                 </v-file-input>
+                <v-select
+                    :items="selectItems"
+                    label="Category"
+                    outlined
+                    dense
+                    v-model="categoryChoosen"
+                ></v-select>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="primary" text @click="closeDialog" > Close </v-btn>
@@ -31,18 +37,21 @@
 import { mdiPaperclip } from '@mdi/js';
 import { ref, computed } from '@vue/composition-api';
 import store from './../../store/index'
+import fileService from '../../services/file.service';
 
 export default{
     props: {
-        active: {type: Number, default: 0},
+        active: {type: String},
     },
     setup(props, {emit}){
         const iconPaperClip = mdiPaperclip;
         const dialog = ref(true);
         const selectedFile = ref([]);
+        const selectItems = ["chart", "showcase"];
+        const categoryChoosen = ref("");
 
         const checkFile = computed(() => {
-            if(selectedFile.value.length) return true;
+            if(selectedFile.value.length && !categoryChoosen.value == "") return true;
             return false;
         });
 
@@ -51,36 +60,27 @@ export default{
             emit("closedialog");
         }
 
-        const files = ref([]);
-        const id = store.state.tree.length;
-        const onFileSelected = () => {
-            files.value = [];
-            var currentDate = new Date();
-            let idx = id;
-            for (let i in selectedFile.value) {
-                files.value.push({
-                    id: idx,
-                    name: selectedFile.value[i].name,
-                    file: selectedFile.value[i].type,
-                    uploaddate: currentDate.toLocaleString(),
-                    type: 'file',
-                });
-                idx++;
+        const save = async () => {
+            let submitData = new FormData();
+            for(let i = 0; i < selectedFile.value.length; i++){
+                submitData.append('files', selectedFile.value[i]);
             }
-        }
+            // check if its root folder or not
+            if(!props.active || props.active.length == 0) submitData.append('foldername', ".")
+            else submitData.append('foldername', props.active);
+            submitData.append('pointer', categoryChoosen.value);
 
-        const save = () => {
-            store.dispatch('addFile', {
-                active: props.active, 
-                size: files.value.length,
-                newFile: files.value,
-            })
-            files.value = [];
+            // call API
+            await fileService.addFile(submitData);
+            await store.dispatch("fetchTreeList");
+
             closeDialog();
         }
 
-        return {iconPaperClip, dialog, selectedFile, checkFile,
-                closeDialog, onFileSelected, save}
+        return {
+            iconPaperClip, dialog, selectedFile, checkFile, selectItems, categoryChoosen,
+            closeDialog, save
+        }
     },
 }
 </script>

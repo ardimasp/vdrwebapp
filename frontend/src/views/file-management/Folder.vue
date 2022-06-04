@@ -1,41 +1,44 @@
 <template>
     <div>
-        <div class="d-flex flex-row-reverse">
-          <div>
-            <v-btn class="mr-3" color="primary" @click="openFileDialog">
-              <v-icon left>
-                {{iconFilePlus}}
-              </v-icon> 
-              Add file
-            </v-btn>
-            <v-btn color="primary" @click="openFolderDialog">
-              <v-icon left>
-                {{iconFolderPlus}}
-              </v-icon> 
-              Add folder
-            </v-btn>
-          </div>
+      <p>tree: {{tree}}</p>
+      <p>active: {{active}}</p>
+      <div class="d-flex flex-row-reverse">
+        <div>
+          <v-btn class="mr-3" color="primary" @click="openFileDialog">
+            <v-icon left>
+              {{iconFilePlus}}
+            </v-icon> 
+            Add file
+          </v-btn>
+          <v-btn color="primary" @click="openFolderDialog">
+            <v-icon left>
+              {{iconFolderPlus}}
+            </v-icon> 
+            Add folder
+          </v-btn>
         </div>
-        <div v-if="checkSelect">
-          <v-btn
-            color="secondary"
-            small
-            class="mr-3"
-          >Download</v-btn>
-          <v-btn
-            color="secondary"
-            small
-            @click="openDelFileDialog"
-          >Delete</v-btn>
-          <div class="caption">Selecting file(s)</div>
-        </div>
+      </div>
+      <div v-if="checkSelect">
+        <v-btn
+          color="secondary"
+          small
+          class="mr-3"
+          @click="downloadFiles"
+        >Download</v-btn>
+        <v-btn
+          color="secondary"
+          small
+          @click="openDelFileDialog"
+        >Delete</v-btn>
+        <div class="caption">Selecting file(s)</div>
+      </div>
         <v-text-field
           v-model="search"
           label="Search File | Folder"
           flat
           hide-details
           clearable
-          clear-icon="mdi-close-circle-outline"
+          :clear-icon="mdiclosecircleoutline"
         ></v-text-field>
         <v-treeview 
             v-model="tree" 
@@ -53,24 +56,29 @@
             selected-color="secondary"
         >
             <template v-slot:prepend="{ item, open }">
-              <v-icon v-if="!item.file">
+              <v-icon v-if="!item.filetype">
                 {{ open ? iconFolderOpen : iconFolder }}          
               </v-icon>
               <v-icon v-else>
-                {{ fileTypes[item.file] }}
+                {{ fileTypes[item.filetype] }}
               </v-icon>
             </template>
             <template slot="append" slot-scope="props">
                 <div>
+                  <!-- <span class="mr-6">
+                    {{props.item.filetype}}
+                  </span> -->
                   <span class="mr-6">
-                    {{props.item.file}}
-                  </span>
-                  <span>
                     {{props.item.uploaddate}}
                   </span>
                   <span v-if="props.item.type == 'folder'">
                     <v-icon small @click.prevent="saveSelectedFolder(props.item.id)">
                       {{iconDelete}}
+                    </v-icon>
+                  </span>
+                  <span v-else>
+                    <v-icon small @click.prevent="downloadFile(props.item.id)">
+                      {{iconDownload}}
                     </v-icon>
                   </span>
                 </div>
@@ -105,14 +113,16 @@
 
 <script>
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
-mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
-mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete} from '@mdi/js'
+      mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
+      mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload,
+      mdiCloseCircleOutline} from '@mdi/js'
 import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
 import CardConfirm from './../cards/CardConfirm.vue'
 import store from '../../store'
+import fileService from './../../services/file.service'
 
 export default{
   components: {
@@ -121,10 +131,14 @@ export default{
       CardConfirm,
   },
   setup(){
+    // const items = store.state.tree.list;
+    const items = computed(() => {return store.state.tree.list;})
+
     const iconFolderPlus = mdiFolderPlus;
     const iconFilePlus = mdiFilePlus;
     const iconFolderOpen = mdiFolderOpen;
     const iconFolder = mdiFolder;
+    const iconDownload = mdiDownload;
     const iconDelete = mdiDelete;
     const active = ref([]);
     const fileTypes= {
@@ -134,13 +148,13 @@ export default{
                     md: mdiLanguageMarkdown,
                     "application/pdf": mdiFilePdf,
                     "image/png": mdiFileImage,
+                    "image/jpeg": mdiFileImage,
                     txt: mdiFileDocumentOutline,
                     xls: mdiFileExcel,
                   };
 
     const open= ["public"];
     const tree = ref([]); //selected
-    const items = store.state.tree.list;
     const search = ref("");
 
     // computed
@@ -161,8 +175,12 @@ export default{
 
     // delete file(s)
     const delFileDialog = ref(false);
-    const deleteFile = (bool) => {
-      if(bool) store.dispatch('deleteFile', tree.value);
+    const userId = store.state.user.id;
+    const deleteFile = async (bool) => {
+      if(bool) {
+        await fileService.deleteFile(tree.value);
+        await store.dispatch("fetchTreeList");
+      }
       delFileDialog.value = false;
     }
     const openDelFileDialog = () => {delFileDialog.value = true}
@@ -170,8 +188,11 @@ export default{
     // delete folder
     const selectedFolder = ref(0);
     const delFolderDialog = ref(false);
-    const deleteFolder = () => {
-      store.dispatch('deleteFolder', selectedFolder.value);
+    const deleteFolder = async (bool) => {
+      if(bool) {
+        await fileService.deleteFolder(selectedFolder.value);
+        await store.dispatch("fetchTreeList", userId);
+      }
       delFolderDialog.value = false;
     }
     const saveSelectedFolder = (id) => {
@@ -179,12 +200,25 @@ export default{
       delFolderDialog.value = true;
     }
 
+    // download file
+    const downloadFile = async (path) => {
+      await fileService.downloadFile(path);
+    }
+
+    const downloadFiles = async () => {
+      var submitData = {
+        "paths": tree.value
+      }
+      await fileService.downloadFiles(submitData);
+    }
+
     return {
       iconFolderPlus, open, tree, items, search, iconDelete,
       active, iconFilePlus, checkSelect, deleteFile, deleteFolder,
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
-      delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder
+      delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
+      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline,
     }
   },
 }

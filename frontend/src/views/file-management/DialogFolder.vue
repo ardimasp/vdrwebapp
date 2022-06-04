@@ -45,11 +45,12 @@
 
 <script>
 import { computed, defineComponent, ref } from '@vue/composition-api'
+import fileService from '../../services/file.service';
 import store from './../../store/index'
 
 export default defineComponent({
     props: {
-        active: {type: Number, default: 0},
+        active: {type: String},
     },
     setup(props, {emit}) {
         const dialog = ref(true);
@@ -65,12 +66,14 @@ export default defineComponent({
             emit("closedialog");
         }
 
-        const save = () => {
-            store.dispatch("addFolder", {
-                active: props.active,
-                name: folderName.value,
-                id: store.state.tree.length,
-                });
+        const save = async () => {
+            var submitData;
+            if(!props.active || props.active.length == 0) submitData = {"paths": ["./" + folderName.value]};
+            else submitData = {"paths": [props.active + "/" + folderName.value]};
+
+            // call APi
+            await fileService.addFolder(submitData);
+            await store.dispatch("fetchTreeList");
             closeDialog();
         }
 

@@ -1,20 +1,25 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import adminModule from './admin.module'
 
-import FileModule from './file.module'
-import folderModule from './folder.module'
 import treeModule from './tree.module'
+import userModule from './user.module'
+import viewerModule from './viewer.module'
+import authModule from './auth.module'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    url: "https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common"
   },
   mutations: {},
   actions: {},
   modules: {
-    files: FileModule,
-    folder: folderModule,
-    tree: treeModule
+    tree: treeModule,
+    viewer: viewerModule,
+    user: userModule,
+    admin: adminModule,
+    auth: authModule,
   },
 })
