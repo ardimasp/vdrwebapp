@@ -33,6 +33,25 @@
           <MapSort v-on:input="sortSelected" />
      </template>
     </regular-card>
+<regular-card 
+      :x="700"
+      :y="50"
+      title="Data"
+
+      :w="110"
+      :h="70"
+    >
+      <v-btn
+              elevation="2"
+              text
+              large
+              plain
+              color="primary"
+              @click="addData"
+            >
+              Add
+            </v-btn>        
+            </regular-card>
 
     </div>
 
@@ -43,20 +62,20 @@
 </template>
 
 <script>
-import MapNavigation from './MapNavigation.vue'
+import MapNavigation from '../map/MapNavigation.vue'
 import 'leaflet/dist/leaflet.css'
 // import L from 'leaflet'
-import { cardData } from './Dummy.js'
-import { colorRange } from './Color.js'
+// import { cardData } from './Dummy.js'
+import { colorRange } from '../map/Color.js'
 // import MapList from './MapList.vue'
-import MapSort from './MapSort.vue'
+import MapSort from '../map/MapSort.vue'
 
-import MapFilter from './MapFilter.vue'
+import MapFilter from '../map/MapFilter.vue'
 
 import RegularCard from '../viewer/RegularCard.vue'
 
 // import axios from 'axios';
-import {getDatafromDB, getDB, restructureData} from '../showcase/MapEndPoint.js'
+import {getDatafromDB, getDB, restructureData} from './MapEndPoint.js'
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgas from '../../assets/images/map-marker.svg'
 
@@ -70,7 +89,7 @@ export default {
   },
     data: function() {
     return {
-      dataMaps: cardData,
+      // dataMaps: cardData,
       colorSort: colorRange,
       value: [],
       selectedP: [],
@@ -98,11 +117,35 @@ export default {
 
   methods: {
 
+    // getFieldWell(){
+    //   return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
+    //   {
+    //     accept: 'application/json',
+    //     Authorization: "Bearer " + this.token,
+    //   }
+    //   })
+    //         .then((res) => {
+    //             //Perform Success Action
+                
+    //       this.dataDB = res.data.data;
+    //       return this.dataDB
+    //       // console.log(dataDB)
+
+    //         })
+    //         .catch((error) => {
+    //             console.log(error.response.data);
+
+    //             // error.response.status Check status code
+    //         }).finally(() => {
+    //           //  console.log(data)
+    //             //Perform action in always
+    //         });
+    // },
     placeSelected(point){
       this.selectedP = point
       // console.log(this.selectedP)
       for (var s in this.selectedP){
-        // console.log(this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].fillIcon)
+        console.log(this.selectedP[s])
 
         // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
         // console.log(this.datas)
@@ -118,14 +161,16 @@ export default {
           return f !== el.wellName;
         });
       });
-      console.log(myArrayFiltered)
+
       for (var ns in myArrayFiltered){
         
         this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconfillColor = this.lessopacity
         this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].fillIcon = this.deffillcolor
+
         // this.datas[nsid].iconborderColor = this.transparent
 
       }
+      console.log(myArrayFiltered)
     },
 
     funcVol(arrayGas){
@@ -134,7 +179,7 @@ export default {
           });
           // HERE COLOR
           // this.colorSort = colorRange
-          // console.log(sortedarrayGas)
+
           // OPACITY SORT
           var totalColor
           var intensity = 1/sortedarrayGas.length
@@ -156,9 +201,9 @@ export default {
             }else{
               totalColor = Math.round(sortedarrayGas.length / this.colorSort.length)
             }
-            // console.log(sortedarrayGas.length)
-            // console.log(this.colorSort.length)
-            // console.log(totalColor)
+            console.log(sortedarrayGas.length)
+            console.log(this.colorSort.length)
+            console.log(totalColor)
             for(let i in this.colorSort){
               var tempAr = Array(totalColor).fill(this.colorSort[i])
               newtotalC = newtotalC.concat(tempAr)
@@ -167,7 +212,7 @@ export default {
               sortedarrayGas[i].push(newtotalC[i])
             }
           }
-          console.log(sortedarrayGas)
+
           for (let s in sortedarrayGas){
             var sortSelect = this.datas.findIndex(dataC => dataC.wellName === sortedarrayGas[s][0]) 
             console.log(sortSelect)
@@ -175,9 +220,8 @@ export default {
 
             this.datas[sortSelect].iconborderColor = this.opacity
             this.datas[sortSelect].iconColor = sortedarrayGas[s][5]
-          }
-          console.log(this.datas)
 
+          }
     },
     
     sortSelected(sortp){
@@ -233,6 +277,10 @@ export default {
       // this.heatmap = x
       // console.log(x)
 
+    },
+
+    addData(){
+      this.$router.push('/showcase')
     }
   },
   async mounted(){
@@ -259,7 +307,7 @@ export default {
 .container{
     z-index: 999;
     position: relative;
-    margin-top: -50px;
+    margin-top: 20px;
     left: 50%;
     transform: translate(-50%, 0);
   }

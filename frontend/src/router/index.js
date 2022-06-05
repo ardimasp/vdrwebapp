@@ -34,6 +34,16 @@ const routes = [
     component: () => import('@/views/dashboard/Dashboard.vue'),
   },
   {
+    path: '/map-showcase',
+    name: 'mapShowcase',
+    component: () => import('@/views/showcase/MapShowcase.vue'),
+  },
+  {
+    path: '/showcase',
+    name: 'showcase',
+    component: () => import('@/views/showcase/FormLayouts.vue'),
+  },
+  {
     path: '/production',
     name: 'production',
     component: () => import('@/views/sreeya/Sreeya.vue'),

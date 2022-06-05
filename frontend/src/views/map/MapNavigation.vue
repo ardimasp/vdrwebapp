@@ -3,25 +3,30 @@
     <div id="mapContainer">
       <!-- <h6>{{dataMaps}}</h6> -->
       <!-- <v-card> -->
-        <l-map class="map-size" :zoom="zoom" :center="center">
+        <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-          <l-marker 
+          <!-- <l-marker 
             :key="index"
             v-for="(dataMap,index) in dataMaps"
             :lat-lng="latLng(dataMap.data.coordinates.pos[0], dataMap.data.coordinates.pos[1])"
             :opacity="dataMap.opac"
-            @mouseover="markeronhover(dataMap.id)"
-            @mouseleave="markeronleave(dataMap.id)"
             @click="cardshown(dataMap.id)"
-            id="maptry" >
-            >
-            <l-icon class="iconcolor" :icon-size="dataMap.iconSize" :icon-url="dataMap.iconImg"> </l-icon>
-    
-          </l-marker>
+            id="maptry"
+            :icon ="getIcon(dataMap)"
+           >
+                <l-tooltip>{{dataMap.title}}</l-tooltip>
+          </l-marker> -->
           <l-circle
-          :lat-lng="circle.center"
-      :radius="circle.radius"
-      :color="circle.color"
+            :key="index"
+            v-for="(dataMap,index) in dataMaps"
+            :lat-lng="[dataMap.wellLatitude, dataMap.wellLongitude]"
+            :radius="dataMap.wellArea * 1000"
+            :color='dataMap.iconColor'
+            :fillColor='dataMap.fillIcon'
+            :fillOpacity="dataMap.iconfillColor"
+            :opacity="dataMap.iconborderColor"
+            @click="cardshown(dataMap.wellName)"
+            @mouseover="recenterMap(dataMap.id)"
           />
         </l-map>
       <!-- </v-card> -->
@@ -29,6 +34,11 @@
     <v-overlay style="z-index: 9999;" :absolute="true" :value="overlay">
       <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
+  <!-- <v-card style="height: 400px; width:500px; z-index: 9999;"> -->
+    <v-overlay :absolute="true" :value="overlaymap">
+      <MaponFilter  :dataFilter="this.dataFilter"/>
+    </v-overlay>
+  <!-- </v-card> -->
     <!-- <div style="height: 800px" id="maptryit"></div> -->
   </div>
 </template>
@@ -36,21 +46,16 @@
 <script>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { LMap, LTileLayer, LMarker, LIcon, LCircle } from 'vue2-leaflet'
-// import Card from './Card.vue'
+import { LMap, LTileLayer, LCircle } from 'vue2-leaflet'
 import ChoiceCard from './ChoiceCard.vue'
+// import MaponFilter from './MaponFilter.vue'
+// LMarker, LTooltip
+// import oilgas from '../../assets/images/oil&gas.svg'
+// import oilgasonhover from '../../assets/images/oil&gashover.png'
+// import oilgas from '../../assets/images/map-marker.svg'
+// import oilgasonhover from '../../assets/images/map-marker-onhover.svg'
 
-// import {heatLayer} from './heatmap/dist/leaflet-heat'
-// import { Icon } from 'leaflet';
 
-// delete Icon.Default.prototype._getIconUrl;
-// Icon.Default.mergeOptions({
-//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
-//   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-// });
-import oilgas from '../../assets/images/oil&gas.svg'
-import oilgasonhover from '../../assets/images/oil&gashover.png'
 // import Vue from "vue";
 import ClickOutside from 'vue-click-outside'
 
@@ -59,11 +64,13 @@ export default {
   components: {
     LMap,
     LTileLayer,
-    LMarker,
-    LIcon,
-    LCircle,
+    // LMarker,
+    // LIcon,
     // Card,
-    ChoiceCard
+    ChoiceCard,
+    // MaponFilter,
+    LCircle
+    // LTooltip
   },
   props:{
     dataMaps: Array,
@@ -77,16 +84,15 @@ export default {
       zoom: 6,
       center: [-3.092642, 115.283758],
       marker: [-3.092642, 115.283758],
-      icon: oilgas,
       iconSize: [50, 50],
-      circle: {
-        center: [-3.092642, 115.283758],
-        radius: 5000,
-        color: 'red'
-      },
-      iconhover: oilgasonhover,
+     
+      iconhover: '#00000',
       datacard: {},
-      overlay: false
+      dataFilter: {},
+      overlay: false,
+      overlaymap: false,
+
+      prevColor: []
     }
   },
   methods: {
@@ -100,21 +106,35 @@ export default {
     //   return heat
     // },
 
-    markeronhover(key){
-      // console.log(key)
-      var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
-      this.dataMaps[data].iconImg = this.iconhover
-    },
-    markeronleave(key){
+    // markeronhover(key){
+    //   var data = this.dataMaps.find(dataC => dataC.id === key) 
+    //   this.prevColor.push(data.iconColor)
+    //   console.log(this.prevColor)
+    //   data.iconColor = this.iconhover
+    //   this.getIcon(data)
+
+    //   // var data = this.dataMaps.find(dataC => dataC.id === key) 
+    //   // data.iconSize = [150, 150]
+    //   // this.getIcon(data)
+
+    // },
+    // markeronleave(key){
     
-      // console.log(key)
-      var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
-      this.dataMaps[data].iconImg = this.icon
-    },
-    cardshown(key){
-      var filteredResult = this.dataMaps.find((e) => e.id == key);
+    //   console.log(this.prevColor)
+    //   var data = this.dataMaps.find(dataC => dataC.id === key) 
+    //   data.iconColor = this.prevColor[0]
+    //   this.getIcon(data)
+    //   this.prevColor = []
+
+    //   // var data = this.dataMaps.find(dataC => dataC.id === key) 
+    //   // data.iconSize = [50, 50]
+    //   // this.getIcon(data)
+    // },
+
+    cardshown(keyName){
+      var filteredResult = this.dataMaps.find((e) => e.wellName == keyName);
       this.datacard = filteredResult
-      console.log(this.datacard.image)
+      // console.log(this.datacard.image)
       this.overlay = true
       // var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
       // this.dataMaps[data].iconImg = this.icon
@@ -127,41 +147,83 @@ export default {
     changeOverlay(over){
       this.overlay = over
       console.log(over);
-    }
+    },
+    getIcon(item) {
+      // console.log(item.iconColor)
+      return L.divIcon({
+        className: "my-custom-pin",
+        html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="${item.iconSize[0]}" height="${item.iconSize[1]}" viewBox="0 0 24 24">
+        <path class="new_color" fill="${item.iconColor}" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
+      </svg>`,
+      tooltipAnchor: [ -10, 20 ]
+      });
+    },
+
+    recenterMap(key) {
+      var filteredResult = this.dataMaps.find((e) => e.id == key);
+
+      this.$refs.myMap.mapObject.flyTo([filteredResult.wellLatitude, filteredResult.wellLongitude], 9)
+  },
+    markeronhover(key){
+      var filteredResult = this.dataMaps.find((e) => e.id == key);
+      console.log(filteredResult)
+      this.dataFilter = filteredResult
+      this.overlaymap = true
+    },
   },
 
-  mounted: function() {
-    this.popupItem = this.$el
+  mounted() {
+
+    // this.popupItem = this.$el
 
     // var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
-    var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
-    
-    L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
-      {
-        maxZoom: 18,
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1,
-      },
-    ).addTo(maptryit)
-    var greenIcon = new L.Icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
 
-    for(let i in this.dataMaps){
-      L.marker([this.dataMaps[i].data.coordinates.pos[0], this.dataMaps[i].data.coordinates.pos[1]],{icon: greenIcon})
-            .addTo(maptryit)
-            .setOpacity(this.dataMaps[i].opac)
-    }
+    // IF NEED VUE
+    // var maptryit = L.map('maptryit').setView([-3.092642, 115.283758], 5)
+    
+    // L.tileLayer(
+    //   'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
+    //   {
+    //     maxZoom: 18,
+    //     attribution:
+    //       'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+    //       'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    //     id: 'mapbox/streets-v11',
+    //     tileSize: 512,
+    //     zoomOffset: -1,
+    //   },
+    // ).addTo(maptryit)
+
+    // var greenIcon = new L.Icon({
+    //   iconUrl: require('../../assets/images/map-marker.svg'),
+    //   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    //   iconSize: [25, 41],
+    //   iconAnchor: [12, 41],
+    //   popupAnchor: [1, -34],
+    //   shadowSize: [41, 41]
+    // });
+
+    // for(let i in this.dataMaps){
+    //   console.log(this.dataMaps[i].data.coordinates.pos[0], this.dataMaps[i].data.coordinates.pos[1])
+    //   L.marker([this.dataMaps[i].data.coordinates.pos[0], this.dataMaps[i].data.coordinates.pos[1]],{icon: greenIcon})
+    //         .addTo(maptryit)
+    //         .setOpacity(this.dataMaps[i].opac)
+    //         // .on('click', this.cardshown(this.dataMaps[i].id))
+    //         .on('mouseover', this.markeronhover(this.dataMaps[i].id))
+    //         // .on('mouseleave', this.markeronleave(this.dataMaps[i].id))
+
+    // }
+
+    // this.svgIcon = L.divIcon({
+    //     html: `
+    //        {{ <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="24" height="24" viewBox="0 0 24 24">
+    //     <path class="new_color" fill="currentColor" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
+    //   </svg>}}`,
+    //     className: "svg-icon",
+    //     iconSize: [24, 40],
+    //     iconAnchor: [12, 40],
+    //   })
+
       // L.marker([dataMap.data.coordinates.pos[0], dataMap.data.coordinates.pos[1]])
       // .addTo(maptryit)
       // .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
@@ -225,7 +287,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 /* // .tab-index {
 //   position: relative;
 //   z-index: 1;
@@ -263,4 +325,17 @@ export default {
   max-height: 90vh;
 }
 }
+
+.new_color{
+  fill: green;
+}
+
+.svg-icon path {
+  fill: crimson;
+}
+
+#maptryit { height: 800px; }
+
+      /* :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)" */
+
 </style>
