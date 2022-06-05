@@ -56,7 +56,7 @@
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
 
-            <p  class="text-caption" style="color:red" v-if="errorMsg">
+            <p  class="caption" style="color:red" v-if="errorMsg">
               You typed the wrong username or password!
             </p>
 

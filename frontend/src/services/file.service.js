@@ -92,11 +92,39 @@ class FileService{
             )
     }
     downloadFile(path){
-        var url = `${url}/file?path=`+path;
-        var link = document.createElement("a");
-        link.href = encodeURI(url);
-        link.target = "_blank";
-        link.click();
+        // var urlDownload = `${url}/file?path=`+encodeURIComponent(path);
+        // console.log(urlDownload)
+        // var link = document.createElement("a");
+        // document.body.appendChild(link);
+        // link.href = urlDownload;
+        // link.setAttribute('download', path);
+        // link.click();
+        // link.remove();
+        return axios.get(`${url}/file?path=`+encodeURIComponent(path), 
+            {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("user")
+                },
+                responseType: 'arraybuffer'
+            }
+        )
+            .then(
+                (res) => {
+                    var name = path.split("/").pop();
+                    var url = window.URL.createObjectURL(new Blob([res.data]))
+                    var link = document.createElement('a');
+                    document.body.appendChild(link);
+                    link.href = url;
+                    link.setAttribute('download', name);
+                    link.click();
+                    link.remove()
+                },
+                (err) => {
+                    console.log(err)
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
     }
     downloadFiles(data){
         var option = {

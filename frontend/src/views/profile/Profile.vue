@@ -35,7 +35,7 @@
                         </v-img>
                     </v-avatar>
                     <div v-if="newImage">
-                        <p  class="text-caption" style="color:red" v-if="!checkImg">
+                        <p  class="caption" style="color:red" v-if="!checkImg">
                             Your file input exceeds the 4MB limit!
                         </p>
                         <v-btn color="error" class="mr-3" @click="clearImage">
@@ -105,7 +105,7 @@
                                 :prepend-icon="mdiKey"
                                 type="password"
                             ></v-text-field>
-                            <p  class="text-caption" style="color:red" v-if="!checkPassword">
+                            <p  class="caption" style="color:red" v-if="!checkPassword">
                                 Your confirm password is not the same!
                             </p>
                             <div class="d-flex">

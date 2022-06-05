@@ -61,6 +61,7 @@ export default{
         }
 
         const save = async () => {
+            console.log(selectedFile.value);
             let submitData = new FormData();
             for(let i = 0; i < selectedFile.value.length; i++){
                 submitData.append('files', selectedFile.value[i]);

@@ -36,7 +36,7 @@
           flat
           hide-details
           clearable
-          :clear-icon="mdiclosecircleoutline"
+          :clear-icon="mdiCloseCircleOutline"
         ></v-text-field>
         <v-treeview 
             v-model="tree" 
