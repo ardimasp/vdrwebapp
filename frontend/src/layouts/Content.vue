@@ -5,6 +5,7 @@
     <v-app-bar class="header-pos"
       app
       flat
+      color="#F4F5FA"
       style="z-index: 9999"
 
     >
@@ -47,8 +48,8 @@
       app
       inset
       height="56"
+      color="#F4F5FA"
       bottom
-      style="background-color: #f4f5fa;"
       class="px-0 footer-pos"
     >
       <div class="boxed-container w-full">

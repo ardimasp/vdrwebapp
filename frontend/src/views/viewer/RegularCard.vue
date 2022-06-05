@@ -8,6 +8,7 @@
     :style="{border: 'none'}"
     :x="x"
     :y="y"
+    :parent="true"
     @resizing="onResize"
     >
     <v-system-bar

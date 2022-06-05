@@ -5,6 +5,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
 import store from './store'
+import axios from 'axios'
 
 import VueDraggableResizable from 'vue-draggable-resizable'
 import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
@@ -17,6 +18,7 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
+  axios,
   store,
   vuetify,
   VueDraggableResizable,

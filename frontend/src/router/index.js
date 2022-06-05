@@ -3,6 +3,11 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err);
+}
+
 const routes = [
   {
     path: '/',
@@ -12,6 +17,11 @@ const routes = [
     path: '/viewer',
     name: 'viewer',
     component: () => import('@/views/viewer/Viewer.vue'),
+  },
+  {
+    path: '/filemanagement',
+    name: 'file-management',
+    component: () => import('@/views/file-management/Folder.vue'),
   },
   {
     path: '/maps',
@@ -32,6 +42,22 @@ const routes = [
     path: '/showcase',
     name: 'showcase',
     component: () => import('@/views/showcase/FormLayouts.vue'),
+  },
+  {
+    path: '/production',
+    name: 'production',
+    component: () => import('@/views/sreeya/Sreeya.vue'),
+  },
+  {
+    path: '/not-authorized',
+    name: 'not-authorized',
+    component: () => import('@/views/sreeya/NotAuthorized.vue'),
+  },
+  {
+    path: '/test',
+    name: 'testtt-HELP',
+    component: () => import('@/views/test/testing.vue'),
+    meta: {layout: "blank"}
   },
   {
     path: '/typography',
@@ -64,16 +90,16 @@ const routes = [
     component: () => import('@/views/pages/account-settings/AccountSettings.vue'),
   },
   {
-    path: '/pages/login',
-    name: 'pages-login',
+    path: '/login',
+    name: 'login',
     component: () => import('@/views/pages/Login.vue'),
     meta: {
       layout: 'blank',
     },
   },
   {
-    path: '/pages/register',
-    name: 'pages-register',
+    path: '/register',
+    name: 'register',
     component: () => import('@/views/pages/Register.vue'),
     meta: {
       layout: 'blank',
@@ -91,6 +117,38 @@ const routes = [
     path: '*',
     redirect: 'error-404',
   },
+  {
+    path: '/profile/:userid',
+    name: "profile",
+    component: () => import("@/views/profile/Profile.vue"),
+    meta: {
+      layout: 'top',
+    },
+  },
+  {
+    path: '/admin',
+    name: "admin",
+    component: () => import("@/views/admin/Main.vue"),
+    meta: {
+      layout: 'top',
+    },
+  },
+  {
+    path: '/admin/adduser',
+    name: "admin_adduser",
+    component: () => import("@/views/admin/addUser.vue"),
+    meta: {
+      layout: 'top',
+    },
+  },
+  {
+    path: '/admin/profile/:userid',
+    name: "admin_edituser",
+    component: () => import("@/views/admin/editUser.vue"),
+    meta: {
+      layout: 'top',
+    },
+  },
 ]
 
 const router = new VueRouter({
@@ -98,5 +156,18 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('user');
+  // trying to access a restricted page + not logged in
+  // redirect to login page
+  if (authRequired && !loggedIn) {
+    next('/login');
+  } else {
+    next();
+  }
+});
 
 export default router
