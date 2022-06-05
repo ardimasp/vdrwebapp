@@ -259,7 +259,7 @@ export default {
 .container{
     z-index: 999;
     position: relative;
-    margin-top: 20px;
+    margin-top: -50px;
     left: 50%;
     transform: translate(-50%, 0);
   }

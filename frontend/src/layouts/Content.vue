@@ -9,11 +9,11 @@
       style="z-index: 9999"
 
     >
-      <div class="header-margin boxed-container w-full h-5">
-        <div class="d-flex align-center mx-6 my-6">
+      <div class="boxed-container w-full h-5">
+        <div class="d-flex align-center mx-6">
           <!-- Left Content -->
           <v-app-bar-nav-icon
-            class="d-block me-2 mt-5"
+            class="d-block me-2"
             @click="isDrawerOpen = !isDrawerOpen"
           >
             <v-icon>
@@ -27,7 +27,7 @@
           <v-btn
             icon
             small
-            class="ms-3 mt-4"
+            class="ms-3"
           >
             <v-icon>
               {{ icons.mdiBellOutline }}
@@ -123,10 +123,6 @@ export default {
   // margin-right: auto;
   background-color: #f4f5fa;
 
-}
-
-.app-content-container {
-  margin-top: -50px;
 }
 
 .footer-pos{
