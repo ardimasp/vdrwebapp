@@ -32,6 +32,7 @@ import { LMap, LMarker, LTileLayer, LTooltip } from "vue2-leaflet";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import LGeosearch from "vue2-leaflet-geosearch";
 import { icon } from "leaflet";
+
 export default {
     name: 'SearchLocation',
 
@@ -68,7 +69,9 @@ export default {
       icon: icon({
         iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
         iconUrl: require("leaflet/dist/images/marker-icon.png"),
-        shadowUrl: require("leaflet/dist/images/marker-shadow.png")
+        shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+        iconSize: [24,36],
+        iconAnchor: [12,36]      
       }),
       position: {},
       address: "",
@@ -150,7 +153,7 @@ export default {
           };
         });
       }
-    }
+    },
   }
 };
 // https://medium.com/swlh/create-an-interactive-location-selector-with-vue-js-and-leaflet-5808c55b4636

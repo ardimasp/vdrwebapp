@@ -62,6 +62,9 @@
           dense
           placeholder="Area (km2)"
           hide-details
+          type="number"
+          min="0"
+          :rules="generalRules"
         ></v-text-field>
       </v-col>
      
@@ -78,6 +81,7 @@
               dense
               placeholder="Latitude (Ex: -0.847199)"
               hide-details
+              :rules="generalRules"
             ></v-text-field>
         
       </v-col>
@@ -94,6 +98,8 @@
               dense
               placeholder="Longitude (Ex: 117.015818)"
               hide-details
+              :rules="generalRules"
+
             ></v-text-field>
       </v-col>
 </v-row>
@@ -123,6 +129,8 @@
           dense
           placeholder="Oil Volume"
           hide-details
+          type="number"
+          min="0"
         ></v-text-field>
       </v-col>
 
@@ -138,6 +146,8 @@
           dense
           placeholder="Gas Volume"
           hide-details
+          type="number"
+          min="0"
         ></v-text-field>
       </v-col>
 
@@ -153,6 +163,8 @@
           dense
           placeholder="Source Rock"
           hide-details
+          :rules="generalRules"
+
         ></v-text-field>
       </v-col>
       <v-col
@@ -167,6 +179,8 @@
           dense
           placeholder="Play"
           hide-details
+          :rules="generalRules"
+  
         ></v-text-field>
       </v-col>
 
@@ -358,7 +372,8 @@ export default {
 //    v => !!v || 'File is required',
 //    v => (v && v.size > 0) || 'File is required',
 // ], 
-wellRules:[v => !!v || 'Well Name is required']
+        wellRules:[v => !!v || 'Well Name is required'],
+        generalRules:[v => !!v || 'Field is required']
     }
   },
   methods: {

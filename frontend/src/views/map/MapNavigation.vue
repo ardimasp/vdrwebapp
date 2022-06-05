@@ -25,7 +25,7 @@
             :fillColor='dataMap.fillIcon'
             :fillOpacity="dataMap.iconfillColor"
             :opacity="dataMap.iconborderColor"
-            @click="cardshown(dataMap.id)"
+            @click="cardshown(dataMap.wellName)"
             @mouseover="recenterMap(dataMap.id)"
           />
         </l-map>
@@ -131,8 +131,8 @@ export default {
     //   // this.getIcon(data)
     // },
 
-    cardshown(key){
-      var filteredResult = this.dataMaps.find((e) => e.id == key);
+    cardshown(keyName){
+      var filteredResult = this.dataMaps.find((e) => e.wellName == keyName);
       this.datacard = filteredResult
       // console.log(this.datacard.image)
       this.overlay = true

@@ -20,7 +20,7 @@
       no-gutters>
         <v-col  cols="auto"
                 class="mr-auto">
-            <v-card-title class="pa-2 ml-2 mt-2">{{ this.datacard.title }}</v-card-title>
+            <v-card-title class="pa-2 ml-2 mt-2">{{ this.datacard.wellName }}</v-card-title>
         </v-col>
         
             <v-col  cols="auto">
@@ -56,22 +56,22 @@
             multiple
           >
             <v-virtual-scroll
-              :items="datacard.images"
+              :items="this.takeImages"
               :item-height="50"
               height="260"
             >
               <template v-slot="{ item }">
-                <v-list-item :key="item" :value="item">
+                <v-list-item :key="item.name" :value="item.name">
                   <v-list-item-action>
                     <v-checkbox
-                      :input-value="val.includes(item)"
+                      :input-value="val.includes(item.name)"
 
                       color="primary"
                     />
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title class="black--text">
-                      {{ item }}
+                      {{ item.name }}
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
@@ -96,7 +96,7 @@
 
     </v-card>
      <v-overlay style="z-index: 99999" :absolute="true" :value="overlayAgain">
-      <CardContent :dataD="this.chosenImg" :dataTitle="this.datacard.title" :details="this.dataDetail.displayed" v-on:click="changeOverlay"/>
+      <CardContent :dataD="this.chosenImgPath" :dataTitle="this.datacard.wellName" :details="this.info" v-on:click="changeOverlay"/>
     </v-overlay>
     </div>
   <!-- </v-hover> -->
@@ -105,6 +105,7 @@
 
 <script>
 import {mdiDownload, mdiCloseThick} from "@mdi/js"
+import {getImages} from '../showcase/MapEndPoint.js';
 
 import CardContent from './CardContent.vue'
 
@@ -124,15 +125,18 @@ export default {
       loading: false,
       selection: 1,
       datacard: this.dataDetail,
+      takeImages: [],
+      imgShowcase: undefined,
+      info: undefined,
       images: this.dataDetail.images,
     //   imgsort: null,
-      sortitems: ['Oil Volume', 'Gas Volume', 'Mix oil & gas volume'],
       icons:{
         mdiDownload,
         mdiCloseThick
       },
       overlayAgain: false,
       chosenImg: [],
+      chosenImgPath: [],
       chosenData: []
     }
   },
@@ -164,7 +168,13 @@ export default {
 
     choseImg:function(){
         this.chosenImg = this.val
-        console.log(this.chosenImg)
+        // let imgD = this.takeImages.filter(tImg => this.chosenImg.includes(tImg.name))
+        // console.log(imgD)
+        for(let i in this.chosenImg){
+          this.chosenImgPath.push('/'+this.datacard.wellName+'/'+this.chosenImg[i])
+        }
+        console.log(this.chosenImgPath)
+        // console.log(this.chosenImg)
         this.overlayAgain = true
     },
 
@@ -173,9 +183,39 @@ export default {
       console.log(closeover);
     }
   },
-  mounted: function() {
+  async mounted() {
     this.images = this.datacard.images
-    // console.log(this.images)
+
+    var copy = Object.assign({}, this.datacard)
+    delete copy.fieldName;
+    delete copy.wellName;
+    delete copy.iconSize;
+    delete copy.iconColor;
+    delete copy.iconfillColor;
+    delete copy.iconborderColor;
+    delete copy.fillIcon;
+    delete copy.id;
+
+    this.info = copy
+    this.imgShowcase = await getImages();
+    // console.log(this.imgShowcase)
+    let result = this.imgShowcase.filter(obj => {
+      return obj.name === this.datacard.wellName
+    })
+    // console.log(result[0].children)
+    for (let i in result[0].children){
+      this.takeImages.push(result[0].children[i])
+    }
+    console.log(this.takeImages)
+
+
+    // for (let i in result){
+    //   for(let j=0; j <result[i].children.length; j++){
+
+    //   }
+    //   console.log(result.children[])
+    //   this.takeImages.push(result.children[i].name)
+    // }
 
   },
   computed: {

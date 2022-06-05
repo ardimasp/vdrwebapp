@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJzaXJiYWd1cyIsInR5cGUiOiJQcmVtaXVtIFVzZXIiLCJuYW1lIjoiU2lyIEJhZ3VzIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTEyLTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyBVbml2ZXJzaXR5IiwiZXhwIjoxNjU0MTc2Mjg5fQ.fi3Uw2FgBOnSut_shLD1GpL6lwmTEw3DYE7atge2uYM"
+var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJzaXJiYWd1cyIsInR5cGUiOiJQcmVtaXVtIFVzZXIiLCJuYW1lIjoiU2lyIEJhZ3VzIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTEyLTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyBVbml2ZXJzaXR5IiwiZXhwIjoxNjU0MzU1NDM3fQ.f3toftZ5sJWLda7lzSJXTL3F3NWxxdW--PlG-yyWWvI"
 function postDatatoDB(data){
     axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
     {
@@ -24,24 +24,7 @@ function postDatatoDB(data){
                //Perform action in always
            });
 }
-// const getTodoItems = async () => {
-//   try {
-//     const response = await axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
-//     {
-//       accept: 'application/json',
-//       Authorization: "Bearer " + token,
-//     }
-//     })
 
-//     const todoItems = response.data.data;
-
-//     console.log(`GET: Here's the list of todos`, todoItems);
-
-//     return todoItems;
-//   } catch (errors) {
-//     console.error(errors);
-//   }
-// };
 let list =[];
 async function getListFieldWell(){
   return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
@@ -96,31 +79,7 @@ function getDatafromDB(){
          }).finally(() => {
           //  console.log(data)
              //Perform action in always
-         });
-//          axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', dataDB, {headers:
-//          {
-//            accept: 'application/json',
-//            Authorization: "Bearer " + token,
-//            'Content-Type': 'application/json'
-//          }
-//          })
-//                 .then((res) => {
-//                     //Perform Success Action
-                    
-//              allData = res.data;
-//                 })
-//                 .catch((error) => {
-//                    console.log(error.response.data);
-       
-//                     // error.response.status Check status code
-//                 }).finally(() => {
-//                   console.log('s')
-//                     //Perform action in always
-//                 });
-// console.log(allData)
-// return(allData)
-
-        
+         });    
 }
 
 
@@ -144,19 +103,6 @@ function getDB(dat){
              console.log(res.data.data);
              var tempD = res.data.data
              tempD.forEach((o, i) => o.id = i + 1);
-
-            //  var prev = res.data.data.fieldName
-            //   var ind = 1
-            //   res.data.data.id = ind
-            //  for (let x=1; x < res.data.data.length; x++){
-            //   if(prev === res.data.data[x].fieldName){
-            //     res.data.data[x].id = ind
-            //   }else{
-            //     ind = ind + 1
-            //     res.data.data[x].id = ind
-            //   }
-            //  }
-
              
       allData = tempD;
       return(allData)
@@ -239,28 +185,67 @@ console.log(teest)
                   //Perform action in always
               });
   }
-  // return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', dataFW, {headers:
-  // {
-  //   accept: 'application/json',
-  //   Authorization: "Bearer " + token,
-  //   'Content-Type': 'application/json'
-  // }
-  // })
-  //        .then((res) => {
-  //            //Perform Success Action
-             
-  //     console.log(res.data);
-  //     allData = res.data;
-  //     return(allData)
-  //        })
-  //        .catch((error) => {
-  //           console.log(error.response.data);
+  
+  function getImages(){
+    return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/showcase',{headers:
+    {
+      accept: 'application/json',
+      Authorization: "Bearer " + token,
+    }})
+           .then((res) => {
+               //Perform Success Action
+               
+        let imagesD = res.data.data;
+  
+        return imagesD
+        // console.log(dataDB)
+  
+           })
+           .catch((error) => {
+              console.log(error.response.data);
+  
+               // error.response.status Check status code
+           }).finally(() => {
+            //  console.log(data)
+               //Perform action in always
+           });
+  }
 
-  //            // error.response.status Check status code
-  //        }).finally(() => {
-  //          console.log('s')
-  //            //Perform action in always
-  //        });
+  function displayImages(imagePath){
+    // var data = {path:imagePath}
+    // var params = new URLSearchParams([['path', imagePath]]);
+    // let imagesArray = []
+    // for (let i in imagePath){
+
+    return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=${encodeURIComponent(imagePath)}`, {
+    responseType: 'blob', 
+    headers:
+    {
+      accept: 'application/json',
+      Authorization: "Bearer " + token,
+    }})
+    .then((res) => {
+      //Perform Success Action
+      let imagesD = URL.createObjectURL(res.data)
+      return imagesD      
+// let imagesD = res.data;
+// let imagesD = 'data:image/jpeg;base64,' + btoa(images);
+// console.log(imagesD)
+// console.log(dataDB)
+
+  })
+  .catch((error) => {
+     console.log(error.response.data);
+
+      // error.response.status Check status code
+  }).finally(() => {
+   //  console.log(data)
+      //Perform action in always
+  });
+  }
 
 
-export{postDatatoDB, getListFieldWell, getDatafromDB, getDB, restructureData, uploadImages}
+
+export{postDatatoDB, getListFieldWell, getDatafromDB, getDB, restructureData, uploadImages, getImages, displayImages}
+// https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=%2FWell+13-1%2Ftimeframe.jpg
+// https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=%2FWell%2013-1%2Ftimeframe.jpg

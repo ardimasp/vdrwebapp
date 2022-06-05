@@ -68,12 +68,14 @@
       <v-simple-table class="ml-4" style="background-color: #00796B;" height="300px">
         <template v-slot:default>
         <tbody>
+          
             <tr
-                v-for="(item,i) in showcaseDetails"
+                v-for="(item,i) in dataKeys"
                 :key="i"
             >
-                <td>{{ item.name }}</td>
-                <td> {{ item.data }} </td>
+
+                <td>{{ item }}</td>
+                <td> {{ dataValues[i] }} </td>
             </tr>
         </tbody>
         </template>
@@ -86,6 +88,7 @@
 
 // import VtkCard from '../viewer/VtkCard.vue'
 // import VtkContent from '../viewer/VtkContent.vue'
+import {displayImages} from '../showcase/MapEndPoint.js';
 
 import {mdiDownload, mdiCloseThick} from "@mdi/js"
 
@@ -99,7 +102,7 @@ export default {
   props: {
     dataD: Array,
     dataTitle: String,
-    details: Array
+    details: Object
   },
   data: function(){
     // console.log(this.details)
@@ -115,21 +118,53 @@ export default {
       icons:{
         mdiDownload,
         mdiCloseThick
-      }
+      },
+      dataKeys: [],
+      dataValues: []
     }
   },
   methods: {
 
      closeOverlay:function(){
       var over = false
+      // this.images = []
+      this.images.length = 0
       this.$emit('click', over)
     },
+
+    async imagesTake(imgInfo){
+      let ims = []
+      for (let i in imgInfo){
+
+      ims.push(await displayImages(imgInfo[i]))
+      }
+      return ims
+      
+    }
   },
-  mounted: function() {
-    this.images = this.datacard
+  async mounted() {
+    // this.images = this.datacard
+    var d = []
+    for (let i in this.datacard){
+
+      var valI = await displayImages(this.datacard[i])
+      console.log(valI)
+      d.push(valI)
+    }
+
+    this.images = d
+
+    // this.images = this.imagesTake(this.datacard)
+    //   console.log(valI)
+    // this.images = valI
     console.log(this.images)
     this.showcaseDetails = this.sD
     console.log(this.showcaseDetails)
+    this.dataKeys = Object.keys(this.showcaseDetails)
+    console.log(this.dataKeys)
+    this.dataValues = Object.values(this.showcaseDetails)
+    console.log(this.dataValues)
+
   }
 }
 </script>
