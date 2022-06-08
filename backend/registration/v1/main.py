@@ -11,7 +11,7 @@ from fastapi.openapi.docs import (
 from fastapi.staticfiles import StaticFiles
 
 from datetime import timedelta, datetime, date
-from app.models.login import Token, Profile, User, profile_example, EditProfile
+from app.models.login import Token, Profile, User, profile_example, EditProfile, UserType
 from app.utils.authentication import (
     get_current_active_user, 
     authenticate_user,
@@ -223,6 +223,10 @@ async def add_profile(profile: Profile = Body(...,examples=profile_example), cur
         try:
             filename = "files/"+(f"{profile.userid}")
             os.makedirs(filename, exist_ok=True)
+
+            if profile.type == UserType.premium:
+                shutil.copyfile("/app/app/template.xlsx", filename+"/template.xlsx")
+
         except:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -408,6 +412,15 @@ async def edit_profile(profile: EditProfile, current_user: User = Depends(get_cu
             myquery = { 'userid': profile.userid }
             newvalues = { "$set": to_be_modified }
             accounts_list.update_one(myquery, newvalues)
+
+
+            if profile.type == UserType.premium:
+                filename = "files/"+(f"{profile.userid}")
+                shutil.copyfile("/app/app/template.xlsx", filename+"/template.xlsx")
+            elif profile.type == UserType.regular:
+                filename = "files/"+(f"{profile.userid}")
+                os.remove(filename+"/template.xlsx")
+
             return {"status": "success"}
         else:
             raise HTTPException(
