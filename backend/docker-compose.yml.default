@@ -26,6 +26,7 @@ services:
     command: ["/start-reload.sh"]
     volumes:
       - ./registration/v1/main.py:/app/app/main.py
+      - ./files/:/app/files/
     environment:
       - ACCESS_TOKEN_EXPIRE_MINUTES=30
   nginx:

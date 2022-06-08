@@ -21,6 +21,8 @@ from app.utils.authentication import (
     )
 from app.profpict import default_profile_pict
 
+import os
+import shutil
 
 import pymongo
 mongo_client = pymongo.MongoClient("mongodb://mongo:27017/")
@@ -216,6 +218,17 @@ async def add_profile(profile: Profile = Body(...,examples=profile_example)):
         "profile_pict":profile.profile_pict
         }
     accounts_list.insert_one(to_db).inserted_id
+
+    try:
+        filename = "files/"+(f"{profile.userid}")
+        os.makedirs(filename, exist_ok=True)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Cannot create a directory",
+        )
+        
+
     return {"status": "success"}
 
 
@@ -275,7 +288,6 @@ async def get_detail_userid(
                 }
             )
             result = list(query_result)
-            print(result)
 
             return {
                 "data": result[0]
@@ -309,6 +321,14 @@ async def delete_userid(userid: str, current_user: User = Depends(get_current_ac
             myquery = { 'userid': userid }
 
             accounts_list.delete_one(myquery)
+
+            try:
+                shutil.rmtree("files/"+f"{userid}")
+            except:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Cannot remove a directory",
+                ) 
 
             return {
                 "status": "success"
