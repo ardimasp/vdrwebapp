@@ -150,7 +150,7 @@ async def startup_event():
 
 
 ################
-@app.post("/token", response_model=Token, include_in_schema=False)
+@app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -191,45 +191,52 @@ def size(b64string):
     return (len(b64string) * 3) / 4 - b64string.count('=', -2)
 
 @app.post("/profile")
-async def add_profile(profile: Profile = Body(...,examples=profile_example)):
+async def add_profile(profile: Profile = Body(...,examples=profile_example), current_user: User = Depends(get_current_active_user)):
     
-    if "profiles" in mongo_client.list_database_names():
-        is_exist(profile.userid)
-    
-    t = profile.userid.split(" ")
-    if len(t) > 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST ,
-            detail="Contains white space",
-        )
-    if size(profile.profile_pict) > 4000000:
-        raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
-            detail="Profile picture cannot be larger than 4MB",
-        )
-
-    to_db = {
-        "userid":profile.userid,
-        "hashed_password": pwd_context.hash(profile.password),
-        "type":"Regular User",
-        "name":profile.name,
-        "expiry_date":str(date(datetime.now().year+1,datetime.now().month,datetime.now().day)),
-        "affiliation":profile.affiliation,
-        "profile_pict":profile.profile_pict
-        }
-    accounts_list.insert_one(to_db).inserted_id
-
-    try:
-        filename = "files/"+(f"{profile.userid}")
-        os.makedirs(filename, exist_ok=True)
-    except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Cannot create a directory",
-        )
+    if current_user.type == 'Administrator':
+        if "profiles" in mongo_client.list_database_names():
+            is_exist(profile.userid)
         
+        t = profile.userid.split(" ")
+        if len(t) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST ,
+                detail="Contains white space",
+            )
+        if size(profile.profile_pict) > 4000000:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE ,
+                detail="Profile picture cannot be larger than 4MB",
+            )
 
-    return {"status": "success"}
+        to_db = {
+            "userid":profile.userid,
+            "hashed_password": pwd_context.hash(profile.password),
+            "type":"Regular User",
+            "name":profile.name,
+            "expiry_date":str(date(datetime.now().year+1,datetime.now().month,datetime.now().day)),
+            "affiliation":profile.affiliation,
+            "profile_pict":profile.profile_pict
+            }
+        accounts_list.insert_one(to_db).inserted_id
+
+        try:
+            filename = "files/"+(f"{profile.userid}")
+            os.makedirs(filename, exist_ok=True)
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Cannot create a directory",
+            )
+            
+
+        return {"status": "success"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not an admin",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 # @app.get("/profile/password/{userid}")

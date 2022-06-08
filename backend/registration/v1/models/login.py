@@ -30,10 +30,22 @@ class UserInDB(BaseModel):
 
 profile_example = {
     "regular": {
-        "summary": "Example",
+        "summary": "Regular User",
         "value": {
                 "userid": "userdummy",
                 "password": "yoursecurepassword",
+                "type": "Regular User",
+                "name": "User Dummy",
+                "affiliation": "Binus University",
+                "profile_pict": default_profile_pict
+        }
+    },
+    "premium": {
+        "summary": "Premium",
+        "value": {
+                "userid": "userdummy",
+                "password": "yoursecurepassword",
+                "type": "Premium User",
                 "name": "User Dummy",
                 "affiliation": "Binus University",
                 "profile_pict": default_profile_pict
@@ -44,6 +56,7 @@ profile_example = {
 class Profile(BaseModel):
     userid: str
     password: str
+    type: UserType = None
     name: str 
     affiliation: str 
     profile_pict: str 
@@ -53,6 +66,7 @@ class Profile(BaseModel):
             "example": {
                 "userid": "userdummy",
                 "password": "yoursecurepassword",
+                "type": "Regular User",
                 "name": "User Dummy",
                 "affiliation": "Binus University",
                 "profile_pict": default_profile_pict
