@@ -212,7 +212,7 @@ async def add_profile(profile: Profile = Body(...,examples=profile_example), cur
         to_db = {
             "userid":profile.userid,
             "hashed_password": pwd_context.hash(profile.password),
-            "type":"Regular User",
+            "type":profile.type,
             "name":profile.name,
             "expiry_date":str(date(datetime.now().year+1,datetime.now().month,datetime.now().day)),
             "affiliation":profile.affiliation,
