@@ -168,6 +168,7 @@ export default {
 
     choseImg:function(){
         this.chosenImg = this.val
+        this.chosenImgPath = []
         // let imgD = this.takeImages.filter(tImg => this.chosenImg.includes(tImg.name))
         // console.log(imgD)
         for(let i in this.chosenImg){

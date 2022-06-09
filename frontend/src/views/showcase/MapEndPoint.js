@@ -1,12 +1,21 @@
 import axios from 'axios';
+import {checkExpire} from '../../services/api';
+import tokenService from "../../services/token.service";
 
 
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJzaXJiYWd1cyIsInR5cGUiOiJQcmVtaXVtIFVzZXIiLCJuYW1lIjoiU2lyIEJhZ3VzIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTEyLTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyBVbml2ZXJzaXR5IiwiZXhwIjoxNjU0MzU1NDM3fQ.f3toftZ5sJWLda7lzSJXTL3F3NWxxdW--PlG-yyWWvI"
+// var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJzaXJiYWd1cyIsInR5cGUiOiJQcmVtaXVtIFVzZXIiLCJuYW1lIjoiU2lyIEJhZ3VzIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTEyLTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyBVbml2ZXJzaXR5IiwiZXhwIjoxNjU0Nzg0NDIyfQ.DDeQIti9VfAthsFJQ2josALH8OTn6TWkvNO3ioPCul0"
+const headers = {
+  headers: {
+    accept: 'application/json',
+    Authorization: "Bearer " + tokenService.getLocalAccessToken()
+  }
+}
+// localStorage.getItem("user")
 function postDatatoDB(data){
     axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
       'Content-Type': 'application/json'
     }
     })
@@ -17,6 +26,7 @@ function postDatatoDB(data){
            })
            .catch((error) => {
               console.log(error.response.data);
+              checkExpire(error);
 
                // error.response.status Check status code
            }).finally(() => {
@@ -27,12 +37,7 @@ function postDatatoDB(data){
 
 let list =[];
 async function getListFieldWell(){
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
-  {
-    accept: 'application/json',
-    Authorization: "Bearer " + token,
-  }
-  })
+  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', headers)
          .then((res) => {
              //Perform Success Action
              
@@ -43,6 +48,8 @@ async function getListFieldWell(){
          })
          .catch((error) => {
             console.log(error.response.data);
+            checkExpire(error);
+
 
              // error.response.status Check status code
          }).finally(() => {
@@ -56,12 +63,7 @@ let allData = [];
 let da = [];
 function getDatafromDB(){
 
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
-  {
-    accept: 'application/json',
-    Authorization: "Bearer " + token,
-  }
-  })
+  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', headers)
          .then((res) => {
              //Perform Success Action
              
@@ -73,6 +75,8 @@ function getDatafromDB(){
 
          })
          .catch((error) => {
+          checkExpire(error);
+
             console.log(error.response.data);
 
              // error.response.status Check status code
@@ -94,7 +98,7 @@ function getDB(dat){
   return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', data, {headers:
   {
     accept: 'application/json',
-    Authorization: "Bearer " + token,
+    Authorization: "Bearer " + tokenService.getLocalAccessToken(),
     'Content-Type': 'application/json'
   }
   })
@@ -108,6 +112,8 @@ function getDB(dat){
       return(allData)
          })
          .catch((error) => {
+          checkExpire(error);
+
             console.log(error.response.data);
 
              // error.response.status Check status code
@@ -118,8 +124,8 @@ function getDB(dat){
 
   async function restructureData(dataRestructure){
     
-    var t = typeof(dataRestructure)
-    console.log(t)
+    // var t = typeof(dataRestructure)
+    // console.log(t)
     var teest = Object.values(dataRestructure)
    
   var fieldIdcheck = []
@@ -168,7 +174,7 @@ console.log(teest)
     return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files', data, {headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
       'Content-Type': 'multipart/form-data'
     }
     })
@@ -179,19 +185,21 @@ console.log(teest)
               
               .catch((error) => {
                  console.log(error.response.data);
-     
+                 checkExpire(error);
+
                   // error.response.status Check status code
               }).finally(() => {
                   //Perform action in always
               });
   }
-  
+
   function getImages(){
     return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/showcase',{headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + token,
-    }})
+      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+    }
+    })
            .then((res) => {
                //Perform Success Action
                
@@ -203,7 +211,8 @@ console.log(teest)
            })
            .catch((error) => {
               console.log(error.response.data);
-  
+              checkExpire(error);
+
                // error.response.status Check status code
            }).finally(() => {
             //  console.log(data)
@@ -218,12 +227,12 @@ console.log(teest)
     // for (let i in imagePath){
 
     return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=${encodeURIComponent(imagePath)}`, {
-    responseType: 'blob', 
-    headers:
-    {
-      accept: 'application/json',
-      Authorization: "Bearer " + token,
-    }})
+    responseType: 'blob',headers:
+      {
+        accept: 'application/json',
+        Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+      }
+      })
     .then((res) => {
       //Perform Success Action
       let imagesD = URL.createObjectURL(res.data)
@@ -236,6 +245,7 @@ console.log(teest)
   })
   .catch((error) => {
      console.log(error.response.data);
+     checkExpire(error);
 
       // error.response.status Check status code
   }).finally(() => {
@@ -247,5 +257,3 @@ console.log(teest)
 
 
 export{postDatatoDB, getListFieldWell, getDatafromDB, getDB, restructureData, uploadImages, getImages, displayImages}
-// https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=%2FWell+13-1%2Ftimeframe.jpg
-// https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=%2FWell%2013-1%2Ftimeframe.jpg

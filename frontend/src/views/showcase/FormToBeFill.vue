@@ -68,14 +68,14 @@
         ></v-text-field>
       </v-col>
      
-      <div v-if="location.position">
+      <div v-if="children.location.position">
 <v-row class="mt-2 ml-3">
       <v-col
         cols="6"
       >
             <v-text-field
             required
-              v-model="location.position.lat"
+              v-model="children.location.position.lat"
               label="Latitude"
               outlined
               dense
@@ -92,7 +92,7 @@
 
             <v-text-field
             required
-              v-model="location.position.lng"
+              v-model="children.location.position.lng"
               label="Longitude"
               outlined
               dense
@@ -102,19 +102,19 @@
 
             ></v-text-field>
       </v-col>
-</v-row>
-      </div>
-      <div v-else>
-        <br>
-        <h4 class="ml-3">Please choose the location of the Well by double tapping on a location on the map, drag and place the marker or use the search tool on the top left</h4>
-      </div>
+      </v-row>
+            </div>
+            <div v-else>
+              <br>
+              <h4 class="ml-3">Please choose the location of the Well by double tapping on a location on the map, drag and place the marker or use the search tool on the top left</h4>
+            </div>
 
- <v-col
+      <v-col
               cols="12"
               md="12"
             >
         <div style="width:100%;height: 500px">
-          <SearchLocation v-model="location" :key="key" :ind="index" v-on:input="storeloc" />
+          <SearchLocation v-model="children.location" :key="key" :ind="index" v-on:input="storeloc" />
         </div>
       </v-col>
       <v-col
@@ -239,7 +239,7 @@
         required
         dense
           accept="image/*"
-          v-model="imgFiles"
+          v-model="children.imgFiles"
           color="primary"
           counter
           label="File input"
@@ -338,7 +338,6 @@ export default {
 
       fieldName: '',
       dialog: false,
-      location: {},
       key: 1,
       childrens: [
           {
@@ -352,6 +351,8 @@ export default {
             reservoir:'',
             sourceRock:'',
             play:'',
+            location: {},
+        imgFiles: undefined,
 
             // files: undefined,
           }
@@ -367,6 +368,7 @@ export default {
         selectedFiles: undefined,
         selectedImages: undefined,
         fileDisabled: true,
+        // imgFiles: undefined,
 
 //         fileRules:[
 //    v => !!v || 'File is required',
@@ -390,6 +392,9 @@ export default {
           reservoir:'',
           sourceRock:'',
           play:'',
+          location: {},
+        imgFiles: undefined,
+
           // files: undefined,
 
         })
@@ -424,6 +429,11 @@ export default {
       //     console.log(value);
       //   }      
       // }
+      delete this.childrens.location;
+      delete this.childrens.imgFiles
+      // const result = this.childrens.map(({name, area, }) => ({name}));
+
+
       this.$refs.form.validate()
       if(this.$refs.form.validate() === true){
         const data = {
@@ -516,10 +526,10 @@ export default {
       this.$router.push('/map-showcase')
     },
 
-    reset() {
-      this.key += 1;
-      this.location = {};
-    },
+    // reset() {
+    //   this.key += 1;
+    //   this.location = {};
+    // },
 
     enableFileInput(index){
       const isEmpty = str => !str.trim().length;

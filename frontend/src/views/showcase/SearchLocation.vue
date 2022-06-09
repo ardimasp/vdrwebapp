@@ -105,12 +105,12 @@ export default {
     tooltipContent() {
       if (this.dragging) return "...";
       if (this.loading) return "Loading...";
-      return `<strong>${this.address.replace(
+      return `<strong style="font-family: "Inter", sans-serif;">${this.address.replace(
         ",",
         "<br/>"
-      )}</strong> <hr/><strong>lat:</strong> ${
+      )}</strong> <hr/><strong class="toolTip" style="font-family: "Inter", sans-serif;">lat:</strong> ${
         this.position.lat
-      }<br/> <strong>lng:</strong> ${this.position.lng}`;
+      }<br/> <strong style="font-family: "Inter", sans-serif;">lng:</strong> ${this.position.lng}`;
     }
   },
   methods: {
@@ -158,3 +158,23 @@ export default {
 };
 // https://medium.com/swlh/create-an-interactive-location-selector-with-vue-js-and-leaflet-5808c55b4636
 </script>
+
+<style scoped>
+.toolTip{
+  font-family: "Inter", sans-serif;
+}
+
+.leaflet-container {
+    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: "Inter", sans-serif;
+}
+</style>
