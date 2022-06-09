@@ -124,7 +124,9 @@ class Production(BaseModel):
 n_features = 5
 
 @app.post("/oil-production", tags=["Oil Prediction"])
-async def oil_production(oil_data: Production, current_user: User = Depends(get_current_active_user)):
+async def oil_production(oil_data: Production, 
+    current_user: User = Depends(get_current_active_user)
+    ):
     if current_user.type == 'Premium User':
         data = oil_data.dict()
         data_in = [[data["Hours_Online"], data["Downhole_temp"], data["Downhole_press"], data["Press_diff"],
@@ -140,79 +142,193 @@ async def oil_production(oil_data: Production, current_user: User = Depends(get_
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+@app.post("/gas-production", tags=["Gas Prediction"])
+async def gas_production(gas_data: Production,
+    current_user: User = Depends(get_current_active_user)
+    ):
+    if current_user.type == 'Premium User':
+        data = gas_data.dict()
+
+        data_in = [[data["Hours_Online"], data["Downhole_temp"], data["Downhole_press"], data["Press_diff"],
+                    data["Temp_diff"]]]
+        prediction = gas_loaded_model.predict(data_in)
+        return {
+            'prediction': prediction[0]
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not a premium user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 @app.post("/oil-production-excel", tags=["Oil Prediction"])
 async def oil_production_excel(path:str, 
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user)
     ):
-    try:
-        userid = current_user.username
-        file_path = "files/"+(f"{userid}")+"/"+f"{path}"
-        data = pd.read_excel(file_path).astype(float)
-        data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
-        data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
-        data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
-        data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
-        data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
-    except:
+    if current_user.type == 'Premium User':
+        try:
+            userid = current_user.username
+            file_path = "files/"+(f"{userid}")+"/"+f"{path}"
+            data = pd.read_excel(file_path).astype(float)
+            data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
+            data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
+            data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
+            data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
+            data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
+        except:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
+            )
+
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+
+        #checking empty values
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+
+        #checking column name
+        checking = data.columns.values.tolist()
+        for i in range(len(checking)):
+            if checking[0] != "Hours_Online":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[1] != "Downhole_temp":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[2] != "Downhole_press":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[3] != "Temp_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[4] != "Press_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+        #predicting
+        y_pred = oil_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
+
+        inputs = [
+            {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
+            {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
+            {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
+            {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
+            {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
+            {"label": "Oil Prediction Value", "data": y_pred.tolist()}
+        ]
+
+        return {"data": inputs}
+    else:
         raise HTTPException(
-            status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not a premium user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+@app.post("/gas-production-excel", tags=["Gas Prediction"])
+async def gas_production_excel(path:str, 
+    current_user: User = Depends(get_current_active_user)
+    ):
+    if current_user.type == 'Premium User':
+        try:
+            userid = current_user.username
+            file_path = "files/"+(f"{userid}")+"/"+f"{path}"
+            data = pd.read_excel(file_path).astype(float)
+            data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
+            data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
+            data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
+            data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
+            data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
+        except:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
+            )
+            
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+
+        #checking for missing data
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+
+        # Make sure column names are the same
+        checking = data.columns.values.tolist()
+        for i in range(len(checking)):
+            if checking[0] != "Hours_Online":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[1] != "Downhole_temp":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[2] != "Downhole_press":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[3] != "Temp_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[4] != "Press_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+
+        #predicting
+        y_pred = gas_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
+
+        inputs = [
+            {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
+            {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
+            {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
+            {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
+            {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
+            {"label": "Gas Prediction Value", "data": y_pred.tolist()}
+        ]
+
+        return {"data": inputs}
+    
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not a premium user",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    #checking shape
-    data_n_instances, data_n_features = data.shape
-    if data_n_features != n_features:
-        raise HTTPException(
-            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="There should be exactly 5 columns filled in!"
-        )
-
-    #checking empty values
-    missing = data.isnull().sum().sum()
-    print(missing)
-    if missing != 0:
-        raise HTTPException(
-            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Your file contains missing values, please fill it in!"
-        )
-
-    #checking column name
-    checking = data.columns.values.tolist()
-    for i in range(len(checking)):
-        if checking[0] != "Hours_Online":
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="File does not follow the template"
-            )
-        if checking[1] != "Downhole_temp":
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="File does not follow the template"
-            )
-        if checking[2] != "Downhole_press":
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="File does not follow the template"
-            )
-        if checking[3] != "Temp_diff":
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="File does not follow the template"
-            )
-        if checking[4] != "Press_diff":
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="File does not follow the template"
-            )
-    #predicting
-    y_pred = oil_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
-
-    inputs = [
-        {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
-        {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
-        {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
-        {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
-        {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-        {"label": "Oil Prediction Value", "data": y_pred.tolist()}
-    ]
-
-    return {"data": inputs}
