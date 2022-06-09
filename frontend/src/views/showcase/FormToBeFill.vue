@@ -31,7 +31,6 @@
     </v-row>
   <div v-for="(children, index) in this.childrens" :key="index">
     <v-card-title class="mt-5">Well</v-card-title>
-<p>{{children.name}}</p>
     <v-row class="mx-2">
       <v-col
         cols="12"
@@ -188,14 +187,7 @@
         cols="12"
         md="6"
       >
-        <!-- <v-text-field
-          v-model="children.waterDepth"
-          label="Water Depth"
-          outlined
-          dense
-          placeholder="Water Depth"
-          hide-details
-        ></v-text-field> -->
+      
         <v-autocomplete
         required
         dense
@@ -212,14 +204,7 @@
         cols="12"
         md="6"
       >
-        <!-- <v-text-field
-          v-model="children.reservoir"
-          label="Reservoir"
-          outlined
-          dense
-          placeholder="Reservoir"
-          hide-details
-        ></v-text-field> -->
+       
         <v-autocomplete
         required
         dense
@@ -269,7 +254,6 @@
             </span>
           </template>
         </v-file-input>
-        <!-- <input type="file" @change="readmultifiles" multiple/> -->
       </v-col>
 
       <v-col  cols="12"
@@ -304,31 +288,10 @@
 </template>
 
 <script>
-// import { ref } from '@vue/composition-api'
-// import { mdiPaperclip  } from '@mdi/js'
 import {postDatatoDB, getDatafromDB, getDB, getListFieldWell, uploadImages} from './MapEndPoint.js';
 import SearchLocation from "./SearchLocation.vue";
 
 export default {
-  // setup() {
-  //   fieldName = ref('')
-  //   wellName = ref('')
-  //   const city = ref('')
-  //   const country = ref('')
-  //   const company = ref('')
-  //   const email = ref('')
-
-  //   return {
-  //     firstName,
-  //     lastName,
-  //     city,
-  //     country,
-  //     company,
-  //     email,
-  //     checkbox,
-  //     // mdiPaperclip
-  //   }
-  // },
   components:{
     SearchLocation
   },
@@ -395,22 +358,12 @@ export default {
           location: {},
         imgFiles: undefined,
 
-          // files: undefined,
-
         })
 
-        // this.imageData.push({
-        //   wellName: '',
-        //   imgFiles: undefined,
-
-        // })
         console.log(this.childrens)
     },
 
     deleteWell(id) {
-        // this.childrens[id].pull({
-        //     item: ''
-        // })
 
         this.childrens.splice(id, 1);
 
@@ -424,14 +377,9 @@ export default {
       this.childrens[choseLoc.index].longitude = choseLoc.position.lng
     },
     submitData(){
-      // for (let i=0; i<this.imageDatas.length;i++){
-      //   for (var value of this.imageDatas[i].values()) {
-      //     console.log(value);
-      //   }      
-      // }
+    
       delete this.childrens.location;
-      delete this.childrens.imgFiles
-      // const result = this.childrens.map(({name, area, }) => ({name}));
+      delete this.childrens.imgFiles;
 
 
       this.$refs.form.validate()
@@ -449,24 +397,6 @@ export default {
       }
         
     },
-    
-    readmultifiles(e) {
-      // console.log(Fileindex)
-      console.log(e.target.files[0])
-    //    var files = e.currentTarget.files;
-    // console.log(Object.keys(files))
-      // Object.keys(files).forEach(i => {
-      //   const file = files[i];
-      //   const reader = new FileReader();
-      //   reader.onload = function() {
-      //               console.log('RESULT', reader.result)
-
-      //     //server call for uploading or reading the files one-by-one
-      //     //by using 'reader.result' or 'file'
-      //   }
-      //   reader.readAsDataURL(file);
-      // })
-    },
 
     selectFiles (index){
       let categoryChoosen = 'showcase'
@@ -483,53 +413,11 @@ export default {
       for (var pair of submitData.entries()) {
           console.log(pair[0]+ ', ' + pair[1]); 
       }
-      // console.log(this.imageDatas[0])
-//       for (let i=0; i<this.imageDatas.length;i++){
-// for (var value of this.imageDatas[i].values()) {
-//         console.log(value);
-//       }      
-//       }
       },
-
-      
-      // console.log(index)
-      // for (let i = 0; i<this.imgFiles.length;i++){
-      //   let file = this.imgFiles[i];
-      //   console.log(file)
-      //   var reader = new FileReader();
-
-      //   reader.onloadend = (function(f) {
-      //     return function(e) {
-      //       console.log('RESULT', e.target.result)
-      //       // this.tempImg.push(e.target.result)
-      //       console.log(f)
-      //       };
-      //   })(file);
-      //   //   console.log('RESULT', reader.result)
-      //   // }
-      //                   reader.readAsDataURL(file);
-
-      // }
-      //             console.log(this.tempImg)
-
-      // console.log(this.childrens[index].name)
-      // this.imageData.push({
-      //   wellName: this.childrens[index].name,
-      //   imageFiles: this.tempImg,
-
-      // })
-      // console.log(this.imageData)
-     
-    
 
     backPage(){
       this.$router.push('/map-showcase')
     },
-
-    // reset() {
-    //   this.key += 1;
-    //   this.location = {};
-    // },
 
     enableFileInput(index){
       const isEmpty = str => !str.trim().length;
@@ -573,26 +461,9 @@ export default {
         v => (this.existingWells.includes(v) === false) || 'Well name exist!'
         fileRules.push(rule)
       }
-
-      // if(this.childrens.name)
       return fileRules
 
     }
-    // wellRules(){
-    //   console.log(this.existingWells)
-    //   const wellRules = []
-
-    //   if(this.existingWells){
-    //     const rule =
-    //     v => (this.existingWells.includes(v) === false) || 'Well name exist!'
-    //     wellRules.push(rule)
-
-    //   }
-
-    //   // if(this.childrens.name)
-    //   return wellRules
-
-    // }
   },
   }
 </script>
