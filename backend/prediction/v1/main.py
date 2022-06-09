@@ -1,3 +1,4 @@
+from calendar import c
 from xml.etree.ElementInclude import include
 import joblib
 import pandas as pd
@@ -136,11 +137,18 @@ async def oil_production(oil_data: Production,
             'prediction': prediction[0]
         }
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not a premium user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if current_user.type == "Administrator":
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        elif current_user.type == "Regular User":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 @app.post("/gas-production", tags=["Gas Prediction"])
 async def gas_production(gas_data: Production,
@@ -156,11 +164,18 @@ async def gas_production(gas_data: Production,
             'prediction': prediction[0]
         }
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not a premium user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if current_user.type == "Administrator":
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        elif current_user.type == "Regular User":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
 @app.post("/oil-production-excel", tags=["Oil Prediction"])
@@ -240,12 +255,21 @@ async def oil_production_excel(path:str,
         ]
 
         return {"data": inputs}
+
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not a premium user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if current_user.type == "Administrator":
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        elif current_user.type == "Regular User":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
 @app.post("/gas-production-excel", tags=["Gas Prediction"])
 async def gas_production_excel(path:str, 
     current_user: User = Depends(get_current_active_user)
@@ -326,9 +350,16 @@ async def gas_production_excel(path:str,
         return {"data": inputs}
     
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not a premium user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if current_user.type == "Administrator":
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        elif current_user.type == "Regular User":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not a premium user",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
