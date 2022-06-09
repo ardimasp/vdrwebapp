@@ -82,7 +82,7 @@
 }
 
 .card:nth-child(3):before {
-    background-image: url('../images/sreeya.png');
+    background-image: url('../images/data.jpeg');
     opacity: 0.5;
     background-position: center;
 }

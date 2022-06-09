@@ -116,11 +116,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 # Request body specification
 class Production(BaseModel):
-    Hours_Online: float
-    Downhole_temp: float
-    Downhole_press: float
-    Press_diff: float
-    Temp_diff: float
+    hours_online: float
+    downhole_temp: float
+    downhole_press: float
+    press_diff: float
+    temp_diff: float
 
 n_features = 5
 
@@ -130,8 +130,8 @@ async def oil_production(oil_data: Production,
     ):
     if current_user.type == 'Premium User':
         data = oil_data.dict()
-        data_in = [[data["Hours_Online"], data["Downhole_temp"], data["Downhole_press"], data["Press_diff"],
-                    data["Temp_diff"]]]
+        data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                    data["temp_diff"]]]
         prediction = oil_loaded_model.predict(data_in)
         return {
             'prediction': prediction[0]
@@ -157,8 +157,8 @@ async def gas_production(gas_data: Production,
     if current_user.type == 'Premium User':
         data = gas_data.dict()
 
-        data_in = [[data["Hours_Online"], data["Downhole_temp"], data["Downhole_press"], data["Press_diff"],
-                    data["Temp_diff"]]]
+        data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                    data["temp_diff"]]]
         prediction = gas_loaded_model.predict(data_in)
         return {
             'prediction': prediction[0]
