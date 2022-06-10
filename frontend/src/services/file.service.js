@@ -4,11 +4,11 @@ import {URL, checkExpire} from './api'
 import tokenService from "./token.service";
 
 const url = URL + "/common"
-const headers = {
-    headers: {
-        Authorization: "Bearer " + tokenService.getLocalAccessToken()
-    }
-}
+// const headers = {
+//     headers: {
+//         Authorization: "Bearer " + tokenService.getLocalAccessToken()
+//     }
+// }
 
 class FileService{
     fetchFiles() {
@@ -32,7 +32,7 @@ class FileService{
     deleteFile(data) {
         return axios.delete(`${url}/files`, 
         {headers: {
-            Authorization: "Bearer " + tokenService.getLocalAccessToken()
+            Authorization: "Bearer " + store.state.auth.user
         }, data:{"paths": data}})
             .then(
                 (res) => {
@@ -47,7 +47,11 @@ class FileService{
             )
     }
     addFile(data){
-        return axios.post(`${url}/files`, data, headers)
+        return axios.post(`${url}/files`, data, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
             .then(
                 (res) => {
                     return res.status;
@@ -60,7 +64,11 @@ class FileService{
             )
     }
     addFolder(data){
-        return axios.post(`${url}/folders`, data, headers)
+        return axios.post(`${url}/folders`, data, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
             .then(
                 (res) => {
                     console.log(res);

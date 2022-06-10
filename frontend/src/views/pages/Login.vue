@@ -2,6 +2,12 @@
   <div class="auth-wrapper auth-v1">
     <div class="auth-inner">
       <v-card class="auth-card">
+        
+        <v-progress-linear
+          v-if="loading"
+          indeterminate
+          color="primary"
+        ></v-progress-linear>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
           <router-link
@@ -88,37 +94,6 @@
             </v-btn>
           </v-form>
         </v-card-text>
-
-        <!-- create new account  -->
-        <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
-          <span class="me-2">
-            New on our platform?
-          </span>
-          <router-link :to="{name:'register'}">
-            Create an account
-          </router-link>
-        </v-card-text>
-
-        <!-- divider -->
-        <v-card-text class="d-flex align-center mt-2">
-          <v-divider></v-divider>
-          <span class="mx-5">or</span>
-          <v-divider></v-divider>
-        </v-card-text>
-
-        <!-- social links -->
-        <v-card-actions class="d-flex justify-center">
-          <v-btn
-            v-for="link in socialLink"
-            :key="link.icon"
-            icon
-            class="ms-1"
-          >
-            <v-icon :color="$vuetify.theme.dark ? link.colorInDark : link.color">
-              {{ link.icon }}
-            </v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </div>
 
@@ -153,9 +128,12 @@ import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOff
 import { computed, onMounted, ref } from '@vue/composition-api'
 import store from '../../store'
 import router from '../../router'
+import adminService from './../../services/admin.service'
+import {detectMimeType} from './../../function'
 
 export default {
   setup() {
+    const loading = ref(false)
     const isPasswordVisible = ref(false)
     const email = ref('')
     const password = ref('')
@@ -183,7 +161,7 @@ export default {
     ]
 
     const checkValid = computed(() => {
-      if(email.value !== "" && password.value !== "") return true;
+      if(email.value !== "" && password.value !== "" && loading.value ==false) return true;
       return false;
     })
 
@@ -193,6 +171,8 @@ export default {
 
     const errorMsg = ref(false);
     const submitForm = async () => {
+      loading.value = true;
+
       let submitData = new FormData();
       submitData.append("username", email.value);
       submitData.append("password", password.value);
@@ -202,8 +182,18 @@ export default {
       if(result == 200) {
         errorMsg.value = false;
         await store.dispatch("setUsername", email.value)
+        
+        var res = await adminService.getUserDetail(email.value);
+        if(res.status == 200) {
+            let pic = res.data.data.profile_pict;
+            let mime = detectMimeType(pic);
+            let profile
+            if(mime == "") profile = pic
+            else profile = "data:" + mime + ";base64," + pic
+            // profile.value = "data:" + mime + ";base64," + pic
+            localStorage.setItem("profile", profile)
+        }
 
-        console.log(store.state.auth.permission)
         if(store.state.auth.permission == "Administrator") {
           await store.dispatch("fetchUserList")
           await router.push('/admin')
@@ -219,6 +209,7 @@ export default {
         }
       }
       else errorMsg.value = true;
+      loading.value = false;
     }
 
     return {
@@ -229,6 +220,7 @@ export default {
       submitForm,
       checkValid,
       errorMsg,
+      loading,
 
       icons: {
         mdiEyeOutline,

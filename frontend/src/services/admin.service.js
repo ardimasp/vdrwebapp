@@ -1,13 +1,14 @@
 import axios from "axios"
 import {URL, checkExpire} from './api'
+import store from "../store"
 // import tokenService from "./token.service"
 
 const url = URL + "/registration"
-const headers = {
-    headers: {
-        Authorization: "Bearer " + localStorage.getItem("user")
-    }
-}
+// const headers = {
+//     headers: {
+//         Authorization: "Bearer " + localStorage.getItem("user")
+//     }
+// }
 
 class AdminService{
     fetchUsers() {
@@ -30,7 +31,11 @@ class AdminService{
     }
     addUser(data) {
         // console.log("aaaa",localStorage.getItem("user"));
-        return axios.post(`${url}/profile`, data, headers)
+        return axios.post(`${url}/profile`, data, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
             .then(
                 (res) => {
                     console.log(res)

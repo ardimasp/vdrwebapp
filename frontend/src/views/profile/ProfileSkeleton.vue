@@ -11,6 +11,7 @@
                     type="image, list-item-two-line"
                 ></v-skeleton-loader>
             </v-col>
+            <v-spacer></v-spacer>
             <v-col
                 cols="12"
                 sm="8"

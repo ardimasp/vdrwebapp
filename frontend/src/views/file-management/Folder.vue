@@ -172,14 +172,23 @@ export default{
     const text = `
           <ul>
             <b>Adding new file or folder:</b>
-            <li>To add new file or folder into the root folder, don't press on any text and activate them</li>
+            <li>To add new file(s) or folder into the root folder, don't press on any text and activate them</li>
             <li>Respectively, press and activate on the text in which it is a folder to add new file or folder into existing folder</li>
+            <li>There are categories when adding new file(s):</li>
+            <ul>
+              <li>Choose '*' for general use</li>
+              <li>Choose 'Chart' to use on Viewer's page</li>
+              <li>Choose 'Showchase' to use on Map's and Showcase's page</li> 
+              <li>Choose 'Sreeya' to use on Production's page (for Premium user)</li>
+            </ul>
           </ul>
+          <br>
           <ul>
             <b>Deleting file or folder:</b>
             <li>To delete file(s), select the checkbox(es) and press delete</li>
             <li>Whilst deleting a folder, the file(s) inside the folder would be deleted</li>
           </ul>
+          <br>
           <ul>
             <b>Downloading file or folder:</b>
             <li>To download a file, press the download button on the right side of the file name</li>
