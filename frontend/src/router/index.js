@@ -39,6 +39,11 @@ const routes = [
     component: () => import('@/views/sreeya/Sreeya.vue'),
   },
   {
+    path: '/production/prediction',
+    name: 'production-prediction',
+    component: () => import('@/views/sreeya/SreeyaPrediction.vue'),
+  },
+  {
     path: '/not-authorized',
     name: 'not-authorized',
     component: () => import('@/views/sreeya/NotAuthorized.vue'),
@@ -151,13 +156,12 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
+
   // trying to access a restricted page + not logged in
   // redirect to login page
-  if (authRequired && !loggedIn) {
-    next('/login');
-  } else {
-    next();
-  }
+  if (authRequired && !loggedIn) next('/login');
+  else next();
+  
 });
 
 export default router

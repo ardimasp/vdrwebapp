@@ -1,4 +1,5 @@
 import axios from "axios";
+import { decode, } from "../function";
 import {URL} from './api';
 import tokenService from "./token.service";
 
@@ -10,10 +11,9 @@ class AuthService{
             .then(
                 (res) => {
                     let token = res.data.access_token;
+                    localStorage.setItem("string", decode(token).exp)
                     tokenService.setUser(token);
-                    // localStorage.setItem("username", res.data.name);
-                    localStorage.setItem("type", res.data.type);
-                    console.log("successful login", localStorage.getItem("user"));
+                    // console.log("successful login", localStorage.getItem("user"));
                     return res;
                 },
                 (err) => {

@@ -201,13 +201,17 @@ export default {
 
       if(result == 200) {
         errorMsg.value = false;
-        localStorage.setItem("username", email.value);
-        await store.dispatch("setPermission", localStorage.getItem("type"))
-        await store.dispatch("setUsername", localStorage.getItem("username"))
-        
-        if(localStorage.getItem("type") == "Administrator") {
+        await store.dispatch("setUsername", email.value)
+
+        console.log(store.state.auth.permission)
+        if(store.state.auth.permission == "Administrator") {
           await store.dispatch("fetchUserList")
           await router.push('/admin')
+        }
+        else if(store.state.auth.permission == "Premium User") {
+          await store.dispatch("fetchTreeList")
+          await store.dispatch("fetchSreeyaList")
+          await router.push('/');
         }
         else {
           await store.dispatch("fetchTreeList");

@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import adminModule from './admin.module'
 
 import treeModule from './tree.module'
-import userModule from './user.module'
 import viewerModule from './viewer.module'
 import authModule from './auth.module'
 
@@ -18,7 +17,6 @@ export default new Vuex.Store({
   modules: {
     tree: treeModule,
     viewer: viewerModule,
-    user: userModule,
     admin: adminModule,
     auth: authModule,
   },

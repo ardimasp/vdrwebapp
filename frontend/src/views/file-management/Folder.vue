@@ -2,6 +2,9 @@
     <div>
       <div class="d-flex flex-row-reverse">
         <div>
+          <v-icon @click="toggleInfo" class="mr-3">
+            {{mdiInformationOutline}}
+          </v-icon>
           <v-btn class="mr-3" color="primary" @click="openFileDialog">
             <v-icon left>
               {{iconFilePlus}}
@@ -106,6 +109,13 @@
 
           @confirmdialog="deleteFolder"
         ></card-confirm>
+
+        <!-- dialogues -->
+        <card-dialog
+          v-if="information"
+          title="Guide"
+          :text="text"
+        ></card-dialog>
     </div>
 </template>
 
@@ -113,12 +123,13 @@
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
       mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
       mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload,
-      mdiCloseCircleOutline} from '@mdi/js'
+      mdiCloseCircleOutline, mdiInformationOutline} from '@mdi/js'
 import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
 import CardConfirm from './../cards/CardConfirm.vue'
+import CardDialog from './../cards/CardDialog.vue'
 import store from '../../store'
 import fileService from './../../services/file.service'
 
@@ -127,6 +138,7 @@ export default{
       DialogFile,
       DialogFolder,
       CardConfirm,
+      CardDialog,
   },
   setup(){
     // const items = store.state.tree.list;
@@ -155,6 +167,28 @@ export default{
     const tree = ref([]); //selected
     const search = ref("");
 
+    // information
+    const information = ref(false);
+    const text = `
+          <ul>
+            <b>Adding new file or folder:</b>
+            <li>To add new file or folder into the root folder, don't press on any text and activate them</li>
+            <li>Respectively, press and activate on the text in which it is a folder to add new file or folder into existing folder</li>
+          </ul>
+          <ul>
+            <b>Deleting file or folder:</b>
+            <li>To delete file(s), select the checkbox(es) and press delete</li>
+            <li>Whilst deleting a folder, the file(s) inside the folder would be deleted</li>
+          </ul>
+          <ul>
+            <b>Downloading file or folder:</b>
+            <li>To download a file, press the download button on the right side of the file name</li>
+            <li>To download multiple files, select the chechboxes and press download</li>
+          </ul>`;
+    const toggleInfo = () => {
+      information.value = !information.value
+    }
+
     // computed
     const checkSelect = computed(() => {
       if (tree.value.length) return true;
@@ -173,9 +207,13 @@ export default{
 
     // delete file(s)
     const delFileDialog = ref(false);
-    const userId = store.state.user.id;
     const deleteFile = async (bool) => {
       if(bool) {
+        if(store.state.auth.permission == "Premium User" && tree.value.includes("/template.xlsx")){
+          let idx = tree.value.indexOf("/template.xlsx")
+          tree.value.splice(idx, 1)
+          console.log("template exist")
+        }
         await fileService.deleteFile(tree.value);
         await store.dispatch("fetchTreeList");
       }
@@ -189,7 +227,7 @@ export default{
     const deleteFolder = async (bool) => {
       if(bool) {
         await fileService.deleteFolder(selectedFolder.value);
-        await store.dispatch("fetchTreeList", userId);
+        await store.dispatch("fetchTreeList");
       }
       delFolderDialog.value = false;
     }
@@ -216,7 +254,8 @@ export default{
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
       delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
-      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline,
+      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline, information,
+      mdiInformationOutline, toggleInfo, text
     }
   },
 }

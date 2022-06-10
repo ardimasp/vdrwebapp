@@ -1,5 +1,8 @@
 <template>
     <v-container>
+        <profile-skeleton
+            v-if="load"
+        ></profile-skeleton>
         <v-alert
             border="left"
             color="secondary"
@@ -132,8 +135,12 @@ import store from '../../store';
 import router from '../../router';
 import adminService from '../../services/admin.service';
 import {detectMimeType} from './../../function'
+import ProfileSkeleton from './ProfileSkeleton.vue'
 
 export default defineComponent({
+    components: {
+        ProfileSkeleton
+    },
     setup() {
         const username = store.state.auth.username;
         const type = ref("");
@@ -179,13 +186,14 @@ export default defineComponent({
             if(check == 200){
                 profPic.value = newImage.value;
                 clearImage();
-                store.dispatch("setProfile", profPic.value);
                 localStorage.setItem("profile", profPic.value)
             }
         }
         // END IMAGEEE
 
+        const load = ref(false)
         onMounted(async () => {
+            load.value = true;
             if(router.app["_route"].params.userid !== username){
                 router.push({
                     name: 'profile',
@@ -208,6 +216,7 @@ export default defineComponent({
                     else profPic.value = "data:" + mime + ";base64," + pic
                 }
             }
+            load.value = false;
         })
 
         // password
@@ -244,7 +253,7 @@ export default defineComponent({
             mdiCardAccountDetails, imageProfile, checkImg, clearImage,
             setNewProfile, submitImage, newImage, editPassword,
             changeEditStat, password, confirmPassword, submitPassword,
-            checkPassword, mdiKey, passwordUpdated
+            checkPassword, mdiKey, passwordUpdated, load
         }
     },
 })

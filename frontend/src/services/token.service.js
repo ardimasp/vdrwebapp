@@ -1,3 +1,5 @@
+import { encryptToken } from "../function";
+
 class TokenService {
     getLocalRefreshToken() {
       const user = localStorage.getItem("user");
@@ -5,6 +7,7 @@ class TokenService {
     }
     getLocalAccessToken() {
       const user = localStorage.getItem("user");
+      // decryptToken(user)
       return user;
     }
     updateLocalAccessToken(token) {
@@ -16,8 +19,8 @@ class TokenService {
       return localStorage.getItem("user");
     }
     setUser(user) {
-      console.log(user);
       localStorage.setItem("user", user);
+      console.log("set local user", encryptToken(user))
     }
     removeUser() {
       localStorage.removeItem("user");

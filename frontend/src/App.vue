@@ -12,6 +12,8 @@ import LayoutContent from '@/layouts/Content.vue'
 import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
+import {decode, decryptToken, } from './function'
+// import CryptoJS from "crypto-js";
 // import {checkToken} from './check.js'
 
 export default {
@@ -23,18 +25,30 @@ export default {
   async mounted() {
     store.dispatch("resetFileList")
     // fetchAPI
-    store.dispatch("setUserToken", localStorage.getItem("user"));
     const state = store.state.auth.logged;
-    console.log("at mounted", state, localStorage.getItem("user"));
+    console.log("check at main",localStorage.getItem("user"))
 
     if(state) {
+      store.dispatch("setToken", localStorage.getItem("user"))
       store.dispatch("fetchTreeList")
-      store.dispatch("setUsername", localStorage.getItem("username"))
-      store.dispatch("setPermission", localStorage.getItem("type"))
-      console.log("login data check user", store.state.auth.username, store.state.auth.permission, store.state.auth.logged)
+
+      // const decrypt = await decryptToken(store.state.auth.user)
+      // const data = await decode(decrypt);
+      const data = decode(store.state.auth.user)
+      store.dispatch("setUsername", data.userid)
+      store.dispatch("setPermission", data.type)
+      store.dispatch("setString", data.exp);
+
+      if(store.state.auth.permission == "Premium User") store.dispatch("fetchSreeyaList")
+
+      // test
+      var encrypt = localStorage.getItem("user")
+      console.log("at main encrypt", encrypt)
+      console.log("decrypt", decryptToken(encrypt))
+      console.log("localstorage", localStorage.getItem("user"))
+      console.log("jwt", decode(decryptToken(encrypt)))
     }
     else route.push('/login');
-    
     // end fetchAPI
   },
   setup() {

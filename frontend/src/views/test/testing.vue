@@ -1,63 +1,50 @@
 <template>
     <div>
-        <v-btn @click="checkList" color="primary">AAAAAAAAAAAA</v-btn>
-        {{list}}
+        <button @click="setToken">set token</button> <br>
+        <button @click="getProfile">fetch data</button>
+        <p>{{profile}}</p>
+        <p>{{token}}</p>
+        <p>{{encrypt}}</p>
     </div>
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
-import store from '../../store'
+import { defineComponent, ref, } from '@vue/composition-api'
+import { decryptToken, encryptToken } from '../../function';
+import axios from "axios"
 
 export default defineComponent({
     setup() {
-        const list = store.state.tree.list;
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJ2eW5zc3MiLCJ0eXBlIjoiUmVndWxhciBVc2VyIiwibmFtZSI6InZpY2t5IHZhbmVzc2FhIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTA1LTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyIsImV4cCI6MTY1NDY5NzQ4N30.5aQdvYV9PVkOnPy0LVtuDKQPF0RUd3trcI-EHgtgwhA"
 
-        const checkList = () => {
-            for (let i = 0; i < list.length; i++){
-                console.log("looping", i, "...");
-                searchList(list[i]);
-
-                if(search.value) break;
-                continue;
-            }
-
-            search.value = false;
-            console.log("..........................................")
+        const setToken = () => {
+            localStorage.setItem("token", encryptToken(token));
+            localStorage.setItem("string", 11111111)
         }
 
-        const search = ref(false);
-        const searchList = (item) => {
-            search.value = false;
-            if(item.type == "folder") {
-                console.log("inside folder", item.children);
-                if(item.children.length){
-                    console.log("this folder is not empty!");
-                    if(item.children.find(x => x.id == 5)){
-                        console.log("file is found...");
-                        search.value = true;
+        const encrypt = localStorage.getItem("token");
+
+        const profile = ref()
+        const getProfile = async () => {
+            await axios.get("https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/registration/profile/vynsss", {
+                headers: {
+                    Authorization: "Bearer " + decryptToken(localStorage.getItem("token"))
+                }
+            })
+                .then(
+                    (res) => {
+                        console.log(res);
+                        profile.value = res;
+                        return res;
+                    },
+                    (err) => {
+                        console.log(err);
+                        return err;
                     }
-                    else searchList(item.children);
-                } else console.log("folder is empty");
-            }
-            else if (item.length){
-                console.log("relooping...");
-                reSearchList(item);
-            }
-            return
+                )
         }
 
-        const reSearchList = (item) => {
-            for(let i = 0; i < item.length; i++){
-                console.log("the inside of item", item[i])
-                searchList(item[i])
-
-                if(search.value) break;
-                continue;
-            }
-        }
-
-        return {list, checkList};
+        return {setToken, getProfile, profile, token, encrypt};
     },
 })
 </script>
