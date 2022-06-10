@@ -1,96 +1,102 @@
 <template>
     <div>
-        <v-alert
-            border="left"
-            color="secondary"
-            dark
-            v-if="alertMsgShow"
-        >
-            Data is updated successfully!
-        </v-alert>
-        <div class="text-center">
-        <v-avatar size="200">
-            <v-img :src="profile"></v-img>
-        </v-avatar>
-        </div>
-        <v-form>
-            <v-container>
-                <v-text-field
-                    v-model="username"
-                    label="username"
-                    required
-                    :prepend-icon="mdiAccount"
-                    readonly
-                ></v-text-field>
-                <v-autocomplete
-                    v-model="type"
-                    label="User Type"
-                    required
-                    :prepend-icon="mdiCardAccountDetails"
-                    :items="userTypes"
-                ></v-autocomplete>
-                <v-text-field
-                    v-model="name"
-                    label="Name"
-                    required
-                    :prepend-icon="mdiAccountOutline"
-                ></v-text-field>
-                <v-menu
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
+        <edit-user-skeleton v-if="loading"></edit-user-skeleton>
+        <div v-else>
+            <v-alert
+                border="left"
+                color="secondary"
+                dark
+                v-if="alertMsgShow"
+            >
+                Data is updated successfully!
+            </v-alert>
+            <v-breadcrumbs
+                :items="breadcrumb"
+            ></v-breadcrumbs>
+            <div class="text-center">
+            <v-avatar size="200">
+                <v-img :src="profile"></v-img>
+            </v-avatar>
+            </div>
+            <v-form>
+                <v-container>
+                    <v-text-field
+                        v-model="username"
+                        label="username"
+                        required
+                        :prepend-icon="mdiAccount"
+                        readonly
+                    ></v-text-field>
+                    <v-autocomplete
+                        v-model="type"
+                        label="User Type"
+                        required
+                        :prepend-icon="mdiCardAccountDetails"
+                        :items="userTypes"
+                    ></v-autocomplete>
+                    <v-text-field
+                        v-model="name"
+                        label="Name"
+                        required
+                        :prepend-icon="mdiAccountOutline"
+                    ></v-text-field>
+                    <v-menu
+                        v-model="menu"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                                v-model="expiryDate"
+                                label="Expiry Date"
+                                :prepend-icon="mdiCalendarRange"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                required
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker
                             v-model="expiryDate"
-                            label="Expiry Date"
-                            :prepend-icon="mdiCalendarRange"
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            required
-                        ></v-text-field>
-                    </template>
-                    <v-date-picker
-                        v-model="expiryDate"
-                        @input="menu = false"
-                    ></v-date-picker>
-                </v-menu>
-                <v-text-field
-                    v-model="affiliation"
-                    label="Affiliation"
-                    required
-                    :prepend-icon="mdiDomain"
-                ></v-text-field>
-                <v-text-field
-                    v-model="password"
-                    label="new password"
-                    required
-                    :prepend-icon="mdiKey"
-                    :append-icon="showPass ? mdiEye: mdiEyeOff"
-                    :type="showPass ? 'text':'password'"
-                    @click:append="showPass = !showPass"
-                    v-if="editPassword"
-                ></v-text-field>
-                <div class="d-flex">
-                    <v-btn color="error" class="mr-3" @click="clearForm">
-                        Cancel
-                    </v-btn>
-                    <v-btn color="warning" class="mr-3" @click="changeEditStat" v-if="!editPassword">
-                        Change Password
-                    </v-btn>
-                    <v-btn v-else class="mr-3" color="warning" @click="changeEditStat">
-                        Cancel New Password
-                    </v-btn>
-                    <v-btn color="secondary" @click="submitForm">
-                        Submit
-                    </v-btn>
-                </div>
-            </v-container>
-        </v-form>
+                            @input="menu = false"
+                        ></v-date-picker>
+                    </v-menu>
+                    <v-text-field
+                        v-model="affiliation"
+                        label="Affiliation"
+                        required
+                        :prepend-icon="mdiDomain"
+                    ></v-text-field>
+                    <v-text-field
+                        v-model="password"
+                        label="new password"
+                        required
+                        :prepend-icon="mdiKey"
+                        :append-icon="showPass ? mdiEye: mdiEyeOff"
+                        :type="showPass ? 'text':'password'"
+                        @click:append="showPass = !showPass"
+                        v-if="editPassword"
+                    ></v-text-field>
+                    <div class="d-flex">
+                        <v-btn color="error" class="mr-3" @click="clearForm">
+                            Cancel
+                        </v-btn>
+                        <v-btn color="warning" class="mr-3" @click="changeEditStat" v-if="!editPassword">
+                            Change Password
+                        </v-btn>
+                        <v-btn v-else class="mr-3" color="warning" @click="changeEditStat">
+                            Cancel New Password
+                        </v-btn>
+                        <v-btn color="secondary" @click="submitForm">
+                            Submit
+                        </v-btn>
+                    </div>
+                </v-container>
+            </v-form>
+        </div>
     </div>
 </template>
 
@@ -102,8 +108,12 @@ import router from './../../router'
 import store from '../../store';
 import adminService from '../../services/admin.service';
 import {detectMimeType} from '../../function'
+import editUserSkeleton from './editUserSkeleton.vue'
 
 export default defineComponent({
+    components: {
+        editUserSkeleton,
+    },
     setup() {
         const userid = router.app["_route"].params.userid;
         const detail = computed(() => {
@@ -121,8 +131,18 @@ export default defineComponent({
         const profile64 = ref(""); //for submit update
 
         const menu = ref(false);
+        const breadcrumb = [
+            {
+                text: '< Back',
+                href: '/admin',
+                disable: false,
+            }
+        ]
+
+        const loading = ref(false)
 
         onMounted(async() => {
+            loading.value = true;
             var res = await adminService.getUserDetail(userid);
             if(res.status == 200) {
                 name.value = res.data.data.name;
@@ -136,6 +156,7 @@ export default defineComponent({
                 else profile.value = "data:" + mime + ";base64," + profile64.value
                 // profile.value = "data:" + mime + ";base64," + profile64.value
             }
+            loading.value = false;
         })
 
         const clearForm = () => {
@@ -192,7 +213,7 @@ export default defineComponent({
             showPass, clearForm, submitForm, userid, detail,
             alertMsgShow, mdiAccountOutline, mdiCalendarRange, mdiDomain,
             mdiCardAccountDetails, userTypes, type, name, expiryDate, affiliation,
-            menu, profile, changeEditStat, editPassword
+            menu, profile, changeEditStat, editPassword, breadcrumb, loading
         }
     },
 })

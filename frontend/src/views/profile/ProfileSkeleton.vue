@@ -17,11 +17,11 @@
                 sm="8"
                 md="8"
             >
-                    <v-form>
-                        <v-skeleton-loader
-                            type="article, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line, actions"
-                        ></v-skeleton-loader>
-                    </v-form>
+                <v-form>
+                    <v-skeleton-loader
+                        type="article, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line, list-item-two-line, actions"
+                    ></v-skeleton-loader>
+                </v-form>
             </v-col>
         </v-row>
     </v-container>

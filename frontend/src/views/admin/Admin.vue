@@ -25,6 +25,7 @@
             :items-per-page="10"
             :search="search"
             class="elevation-1"
+            :loading="load"
         >
             <template v-slot:item.actions="{ item }">
                 <v-icon
@@ -53,24 +54,28 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 import router from '../../router';
 import store from '../../store';
 import {mdiAccount, mdiKey, mdiEye, mdiEyeOff, mdiDelete, mdiPencil,
         mdiMagnify} from '@mdi/js'
 import adminService from '../../services/admin.service';
-import CardConfirm from './../cards/CardConfirm.vue'
+import CardConfirm from '../cards/CardConfirm.vue'
 
 export default defineComponent({
     components: {
         CardConfirm
     },
-    async mounted() {
-        if(store.state.admin.userList.length == 0) {
-            await store.dispatch("fetchUserList")
-        }
-    },
     setup() {
+        const load = ref(false)
+        onMounted(async() => {
+            load.value = true;
+            if(store.state.admin.userList.length == 0) {
+                await store.dispatch("fetchUserList")
+            }
+            load.value = false;
+        })
+
         const headers= [
           { text: 'User ID', value: 'userid' },
           { text: 'Actions', value: 'actions', sortable: false },
@@ -105,7 +110,7 @@ export default defineComponent({
         return {
             headers, list, editUser, mdiAccount, mdiKey, mdiEye, mdiEyeOff,
             mdiDelete, deleteUser, mdiPencil, deleteUserOpenDialog, delUserDialog,
-            mdiMagnify, search
+            mdiMagnify, search, load
         }
     },
 })

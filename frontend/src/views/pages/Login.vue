@@ -2,12 +2,6 @@
   <div class="auth-wrapper auth-v1">
     <div class="auth-inner">
       <v-card class="auth-card">
-        
-        <v-progress-linear
-          v-if="loading"
-          indeterminate
-          color="primary"
-        ></v-progress-linear>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
           <router-link
@@ -83,6 +77,12 @@
               </a>
             </div>
 
+            
+            <v-progress-linear
+              v-if="loading"
+              indeterminate
+              color="secondary"
+            ></v-progress-linear>
             <v-btn
               block
               color="primary"

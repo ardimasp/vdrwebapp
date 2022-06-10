@@ -1,12 +1,14 @@
 <template>
     <div>
         <div class="d-flex flex-row-reverse mb-3">
-            <v-btn color="secondary" @click="addPrediction">
-                <!-- <v-icon left>
-                {{iconFolderPlus}}
-                </v-icon>  -->
-                Additional Prediction
-            </v-btn>
+            <div>
+                <v-icon @click="toggleInfo" class="mr-3">
+                    {{mdiInformationOutline}}
+                </v-icon>
+                <v-btn color="secondary" @click="addPrediction">
+                    Additional Prediction
+                </v-btn>
+            </div>
         </div>
         <v-stepper v-model="e1">
             <v-stepper-header>
@@ -122,24 +124,50 @@
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
+        <card-dialog
+            v-if="information"
+            title="Guide"
+            :text="text"
+        ></card-dialog>
     </div>
 </template>
 
 <script>
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
-import {mdiCloseCircleOutline, mdiDownload} from "@mdi/js"
+import {mdiCloseCircleOutline, mdiDownload, mdiInformationOutline} from "@mdi/js"
 import store from '../../store'
 import router from '../../router'
 import Result from './Result.vue'
+import fileService from './../../services/file.service'
+import CardDialog from './../cards/CardDialog.vue'
 
 export default defineComponent({
     components: { 
-        Result 
+        Result ,
+        CardDialog,
     },
     setup() {
         onMounted(() => {
             if(store.state.auth.permission !== "Premium User") router.push('/not-authorized')
         })
+
+        // info
+        const information = ref(false);
+        const text = `
+            <p>Note: this feature will only accept files following this template, which you can download by clicking the "Download Template" button or "template.xlsx" through the file management. Please ensure you follow this format exactly. Do not rename the headers or leave any blanks and ensure you only input numerical values.</p>
+            <ol>
+                <b>Steps:</b>
+                <li>To choose the file, press on the file to activate it and press continue. Only file with '.xls' or '.xlsx' can be choosen</li>
+                <li>Choose the to-be-predicted category</li>
+                <li>The result will be loaded in a moment</li>
+            </ol>
+            <br>
+            <ul>
+                <li>To upload a new file with data in accordance to the template, choose category 'Sreeya' before uploading.</li>
+                <li>'Additional Prediction' button is to predict the oil and gas value based on 5 columns with a singular data.</li>
+            </ul>
+        `
+        const toggleInfo = () => {information.value = !information.value}
 
         // redirect to additional prediction
         const addPrediction = () => {
@@ -175,15 +203,16 @@ export default defineComponent({
             return /\.(xls|xlsx)$/.test(url);
         }
 
-        const downloadTemplate = () => {
-            window.open('http://localhost:8000/src/views/sreeya/warning.svg', 'Download');
+        const downloadTemplate = async () => {
+            await fileService.downloadFile("/template.xlsx");
         }
 
         return {
             open, items, active, search, mdiDownload,
             mdiCloseCircleOutline, e1, selectFeatures,
             nextStep, cancelStep, checkFirst, checkSecond,
-            downloadTemplate, addPrediction
+            downloadTemplate, addPrediction, information, text,
+            mdiInformationOutline, toggleInfo
         }
     },
 })

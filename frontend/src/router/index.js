@@ -123,7 +123,7 @@ const routes = [
   {
     path: '/admin',
     name: "admin",
-    component: () => import("@/views/admin/Main.vue"),
+    component: () => import("@/views/admin/Admin.vue"),
     meta: {
       layout: 'top',
     },

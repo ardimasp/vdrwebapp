@@ -8,6 +8,9 @@
         >
             {{alertMsg}}
         </v-alert>
+        <v-breadcrumbs
+            :items="breadcrumb"
+        ></v-breadcrumbs>
         <v-form style="color:white">
             <v-container>
                 <v-text-field
@@ -101,6 +104,13 @@ export default defineComponent({
         const affiliation = ref("");
 
         const menu = ref(false);
+        const breadcrumb = [
+            {
+                text: '< Back',
+                href: '/admin',
+                disable: false,
+            }
+        ]
 
         const clearForm = () => {
             username.value = "";
@@ -155,7 +165,7 @@ export default defineComponent({
             showPass, clearForm, submitForm, alertMsg, alertMsgShow, alertColour,
             checkForm, userTypes, type, name, expiryDate, affiliation,
             menu, mdiAccountOutline, mdiCalendarRange, mdiDomain,
-            mdiCardAccountDetails
+            mdiCardAccountDetails, breadcrumb
         }
     },
 })
