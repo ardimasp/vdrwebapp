@@ -2,12 +2,15 @@
   <div class="auth-wrapper auth-v1">
     <div class="auth-inner">
       <v-card class="auth-card">
+        <!-- alert -->
+        <v-snackbar
+          v-model="setAlert"
+          rounded="pill"
+          color="secondary"
+          timeout="5000"
+        >Your session have expired, please login again.</v-snackbar>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
-          <router-link
-            to="/"
-            class="d-flex align-center"
-          >
             <v-img
               :src="require('@/assets/images/logos/logo.svg')"
               max-height="30px"
@@ -20,7 +23,6 @@
             <h2 class="text-2xl font-weight-semibold">
               VDR
             </h2>
-          </router-link>
         </v-card-title>
 
         <!-- title -->
@@ -83,6 +85,13 @@
               indeterminate
               color="secondary"
             ></v-progress-linear>
+            <v-snackbar 
+              v-model="loading"
+              rounded="pill"
+              color="secondary"
+            >
+              Logging you in, preparing your data...
+            </v-snackbar>
             <v-btn
               block
               color="primary"
@@ -160,13 +169,15 @@ export default {
       },
     ]
 
+    const setAlert = computed(() => {return store.state.auth.alert})
+
     const checkValid = computed(() => {
       if(email.value !== "" && password.value !== "" && loading.value ==false) return true;
       return false;
     })
 
     onMounted(() => {
-      store.dispatch("logout");
+      // store.dispatch("logout");
     })
 
     const errorMsg = ref(false);
@@ -220,7 +231,7 @@ export default {
       submitForm,
       checkValid,
       errorMsg,
-      loading,
+      loading, setAlert,
 
       icons: {
         mdiEyeOutline,

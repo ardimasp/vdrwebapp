@@ -12,7 +12,7 @@ import LayoutContent from '@/layouts/Content.vue'
 import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
-import {decode, decryptToken, } from './function'
+import {decode, decryptToken, encryptToken } from './function'
 // import CryptoJS from "crypto-js";
 // import {checkToken} from './check.js'
 
@@ -26,10 +26,10 @@ export default {
     store.dispatch("resetFileList")
     // fetchAPI
     const state = store.state.auth.logged;
-    console.log("check at main",localStorage.getItem("user"))
+    // console.log("check at main",localStorage.getItem("user"))
 
     if(state) {
-      store.dispatch("setToken", localStorage.getItem("user"))
+      store.dispatch("setToken", decryptToken(localStorage.getItem("user")))
       store.dispatch("fetchTreeList")
 
       // const decrypt = await decryptToken(store.state.auth.user)
@@ -42,7 +42,7 @@ export default {
       if(store.state.auth.permission == "Premium User") store.dispatch("fetchSreeyaList")
 
       // test
-      var encrypt = localStorage.getItem("user")
+      var encrypt = encryptToken(localStorage.getItem("user"))
       console.log("at main encrypt", encrypt)
       console.log("decrypt", decryptToken(encrypt))
       console.log("localstorage", localStorage.getItem("user"))

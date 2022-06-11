@@ -6,7 +6,7 @@ import store from "../store"
 const url = URL + "/registration"
 // const headers = {
 //     headers: {
-//         Authorization: "Bearer " + localStorage.getItem("user")
+//         Authorization: "Bearer " + store.state.auth.user
 //     }
 // }
 
@@ -14,7 +14,7 @@ class AdminService{
     fetchUsers() {
         return axios.get(`${url}/profile`, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem("user")
+                Authorization: "Bearer " + store.state.auth.user
             }
         })
             .then(
@@ -30,7 +30,6 @@ class AdminService{
             )
     }
     addUser(data) {
-        // console.log("aaaa",localStorage.getItem("user"));
         return axios.post(`${url}/profile`, data, {
             headers: {
                 Authorization: "Bearer " + store.state.auth.user
@@ -51,7 +50,7 @@ class AdminService{
     editUser(data) {
         return axios.put(`${url}/profile`, data, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem("user")
+                Authorization: "Bearer " + store.state.auth.user
             }
         })
         .then(
@@ -69,7 +68,7 @@ class AdminService{
     deleteUser(data) {
         return axios.delete(`${url}/profile/${data}`, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem("user")
+                Authorization: "Bearer " + store.state.auth.user
             }
         })
             .then(
@@ -87,7 +86,7 @@ class AdminService{
     getUserDetail(data) {
         return axios.get(`${url}/profile/${data}`, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem("user")
+                Authorization: "Bearer " + store.state.auth.user
             }
         })
             .then(

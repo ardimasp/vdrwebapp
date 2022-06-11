@@ -1,12 +1,12 @@
 import axios from "axios";
 import store from "../store";
 import {URL, checkExpire} from './api'
-import tokenService from "./token.service";
+// import tokenService from "./token.service";
 
 const url = URL + "/common"
 // const headers = {
 //     headers: {
-//         Authorization: "Bearer " + tokenService.getLocalAccessToken()
+//         Authorization: "Bearer " + store.state.auth.user
 //     }
 // }
 
@@ -84,7 +84,7 @@ class FileService{
     deleteFolder(data){
         return axios.delete(`${url}/folders`, {
             headers: {
-                Authorization: "Bearer " + tokenService.getLocalAccessToken()
+                Authorization: "Bearer " + store.state.auth.user
             }, 
             data:{"paths": [data]}
         })
@@ -101,18 +101,10 @@ class FileService{
             )
     }
     downloadFile(path){
-        // var urlDownload = `${url}/file?path=`+encodeURIComponent(path);
-        // console.log(urlDownload)
-        // var link = document.createElement("a");
-        // document.body.appendChild(link);
-        // link.href = urlDownload;
-        // link.setAttribute('download', path);
-        // link.click();
-        // link.remove();
         return axios.get(`${url}/file?path=`+encodeURIComponent(path), 
             {
                 headers: {
-                    Authorization: "Bearer " + localStorage.getItem("user")
+                    Authorization: "Bearer " + store.state.auth.user
                 },
                 responseType: 'arraybuffer'
             }
@@ -138,7 +130,7 @@ class FileService{
     downloadFiles(data){
         var option = {
             headers: {
-                Authorization: "Bearer " + tokenService.getLocalAccessToken()
+                Authorization: "Bearer " + store.state.auth.user
             },
             responseType: 'arraybuffer'
         }

@@ -2,14 +2,22 @@
     <div>
         <edit-user-skeleton v-if="loading"></edit-user-skeleton>
         <div v-else>
-            <v-alert
+            <!-- <v-alert
                 border="left"
                 color="secondary"
                 dark
                 v-if="alertMsgShow"
             >
                 Data is updated successfully!
-            </v-alert>
+            </v-alert> -->
+            <v-snackbar
+                v-model="alertMsgShow"
+                timeout=3000
+                rounded="pill"
+                color="secondary"
+            >
+                Data is updated successfully!
+            </v-snackbar>
             <v-breadcrumbs
                 :items="breadcrumb"
             ></v-breadcrumbs>

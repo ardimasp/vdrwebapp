@@ -19,7 +19,7 @@ class TokenService {
       return localStorage.getItem("user");
     }
     setUser(user) {
-      localStorage.setItem("user", user);
+      localStorage.setItem("user", encryptToken(user));
       console.log("set local user", encryptToken(user))
     }
     removeUser() {

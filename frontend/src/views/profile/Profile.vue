@@ -4,17 +4,23 @@
             v-if="load"
         ></profile-skeleton>
         <div v-else>
-            <v-alert
-                border="left"
+            <v-snackbar
                 color="secondary"
-                dark
-                v-if="passwordUpdated"
+                v-model="passwordUpdated"
+                timeout=3000
+                rounded="pill"
             >
                 Password is updated successfully!
-            </v-alert>
+            </v-snackbar>
             <v-breadcrumbs
                 :items="breadcrumb"
             ></v-breadcrumbs>
+            <v-progress-linear
+                v-if="loadUpload"
+                class="mb-3"
+                indeterminate
+                color="secondary"
+            ></v-progress-linear>
             <v-row no-gutters>
                 <v-col
                     cols="12"
@@ -190,7 +196,9 @@ export default defineComponent({
             // console.log(b64);
         }
 
+        const loadUpload = ref(false);
         const submitImage = async () => {
+            loadUpload.value = true;
             var submitData = {
                 "userid": username,
                 "profile_pict": newImage.value
@@ -201,6 +209,7 @@ export default defineComponent({
                 clearImage();
                 localStorage.setItem("profile", profPic.value)
             }
+            loadUpload.value = false
         }
         // END IMAGEEE
 
@@ -266,7 +275,8 @@ export default defineComponent({
             mdiCardAccountDetails, imageProfile, checkImg, clearImage,
             setNewProfile, submitImage, newImage, editPassword,
             changeEditStat, password, confirmPassword, submitPassword,
-            checkPassword, mdiKey, passwordUpdated, load, breadcrumb
+            checkPassword, mdiKey, passwordUpdated, load, breadcrumb,
+            loadUpload
         }
     },
 })

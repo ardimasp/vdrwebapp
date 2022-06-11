@@ -18,7 +18,7 @@ export const detectMimeType = (b64) => {
 import CryptoJS from "crypto-js";
 
 // const key = parseInt(atob(localStorage.getItem("string")));
-const key = localStorage.getItem("string")
+const key = "1234567890"
 
 export const encryptToken = (token) => {
     if (token == null || token == undefined) return

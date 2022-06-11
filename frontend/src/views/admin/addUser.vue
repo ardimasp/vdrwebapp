@@ -1,13 +1,13 @@
 <template>
     <div>
-        <v-alert
-            border="left"
+        <v-snackbar
             :color="alertColour"
-            dark
-            v-if="alertMsgShow"
+            v-model="alertMsgShow"
+            rounded="pill"
+            timeout=3000
         >
             {{alertMsg}}
-        </v-alert>
+        </v-snackbar>
         <v-breadcrumbs
             :items="breadcrumb"
         ></v-breadcrumbs>
@@ -115,9 +115,9 @@ export default defineComponent({
         const clearForm = () => {
             username.value = "";
             password.value = "";
-            name.value == "";
-            expiryDate.value == "";
-            affiliation.value == ""
+            name.value = "";
+            expiryDate.value = "";
+            affiliation.value = ""
         }
 
         const checkForm = computed(() => {
