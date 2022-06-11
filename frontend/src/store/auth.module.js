@@ -2,7 +2,7 @@ import authService from "../services/auth.service";
 
 const user = localStorage.getItem('user');
 // user = token, username = userid, alert = login alert when access expire
-const initialState = user ? {logged: true, user, username:"", permission:"", string:"", alert:false} : {logged:false, user:null, username:null, permission:null, string:null, alert:false};
+const initialState = user ? {logged: true, user, username:"", permission:"", string:""} : {logged:false, user:null, username:null, permission:null, string:null};
 
 export default {
     state: initialState,
@@ -38,9 +38,6 @@ export default {
         },
         SET_TOKEN(state, data){
             state.user = data
-        },
-        SET_ALERT(state, data){
-            state.alert = data;
         }
     },
     actions: {
@@ -72,9 +69,6 @@ export default {
         },
         setToken(context, data){
             context.commit("SET_TOKEN", data)
-        },
-        setAlert(context, data){
-            context.commit("SET_ALERT", data);
         }
     }
 }

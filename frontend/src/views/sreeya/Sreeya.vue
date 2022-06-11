@@ -56,6 +56,11 @@
                         clearable
                         :clear-icon="mdiCloseCircleOutline"
                         ></v-text-field>
+                        <v-progress-linear
+                        v-if="load"
+                        color="secondary"
+                        indeterminate
+                        ></v-progress-linear>
                         <v-treeview
                             :open="open" 
                             :search="search"
@@ -151,6 +156,7 @@ export default defineComponent({
             if(store.state.auth.permission !== "Premium User") router.push('/not-authorized')
         })
 
+        const load = computed(() => {return store.state.initialLoad})
         // info
         const information = ref(false);
         const text = `
@@ -212,7 +218,7 @@ export default defineComponent({
             mdiCloseCircleOutline, e1, selectFeatures,
             nextStep, cancelStep, checkFirst, checkSecond,
             downloadTemplate, addPrediction, information, text,
-            mdiInformationOutline, toggleInfo
+            mdiInformationOutline, toggleInfo, load,
         }
     },
 })

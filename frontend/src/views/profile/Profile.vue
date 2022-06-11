@@ -15,12 +15,6 @@
             <v-breadcrumbs
                 :items="breadcrumb"
             ></v-breadcrumbs>
-            <v-progress-linear
-                v-if="loadUpload"
-                class="mb-3"
-                indeterminate
-                color="secondary"
-            ></v-progress-linear>
             <v-row no-gutters>
                 <v-col
                     cols="12"
@@ -47,14 +41,24 @@
                                 :src="newImage">
                             </v-img>
                         </v-avatar>
+                        <div class="pr-9 pl-9">
+                            <v-progress-linear
+                                v-if="loadUpload"
+                                height="6"
+                                class="mb-3"
+                                indeterminate
+                                rounded
+                                color="secondary"
+                            ></v-progress-linear>
+                        </div>
                         <div v-if="newImage">
                             <p  class="caption" style="color:red" v-if="!checkImg">
                                 Your file input exceeds the 4MB limit!
                             </p>
-                            <v-btn color="error" class="mr-3" @click="clearImage">
+                            <v-btn color="error" class="mr-3" @click="clearImage" :disabled="loadUpload">
                                 Cancel
                             </v-btn>
-                            <v-btn color="secondary" @click="submitImage" :disabled="!checkImg">
+                            <v-btn color="secondary" @click="submitImage" :disabled="!checkImg || loadUpload">
                                 Save
                             </v-btn>
                         </div>
@@ -171,6 +175,7 @@ export default defineComponent({
         ]
 
         // IMAGE
+        const loadUpload = ref(false);
         const checkImg = computed(() => {
             if(imageProfile.value == null || imageProfile.value == "") return false;
             else {
@@ -196,7 +201,6 @@ export default defineComponent({
             // console.log(b64);
         }
 
-        const loadUpload = ref(false);
         const submitImage = async () => {
             loadUpload.value = true;
             var submitData = {
@@ -216,6 +220,9 @@ export default defineComponent({
         const load = ref(false)
         onMounted(async () => {
             load.value = true;
+            // if(router.params.userid)
+            // console.log("at profile", router.app["_route"].params.userid)
+            // console.log(router.app["_route"])
             if(router.app["_route"].params.userid !== username){
                 router.push({
                     name: 'profile',

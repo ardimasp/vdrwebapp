@@ -1,38 +1,41 @@
 <template>
     <div>
-      <div class="d-flex flex-row-reverse">
-        <div>
-          <v-icon @click="toggleInfo" class="mr-3">
-            {{mdiInformationOutline}}
-          </v-icon>
-          <v-btn class="mr-3" color="primary" @click="openFileDialog">
-            <v-icon left>
-              {{iconFilePlus}}
-            </v-icon> 
-            Add file
-          </v-btn>
-          <v-btn color="primary" @click="openFolderDialog">
-            <v-icon left>
-              {{iconFolderPlus}}
-            </v-icon> 
-            Add folder
-          </v-btn>
+      <!-- {{load}}
+      <folder-skeleton v-if="load"></folder-skeleton> -->
+      <div>
+        <div class="d-flex flex-row-reverse">
+          <div>
+            <v-icon @click="toggleInfo" class="mr-3">
+              {{mdiInformationOutline}}
+            </v-icon>
+            <v-btn class="mr-3" color="primary" @click="openFileDialog">
+              <v-icon left>
+                {{iconFilePlus}}
+              </v-icon> 
+              Add file
+            </v-btn>
+            <v-btn color="primary" @click="openFolderDialog">
+              <v-icon left>
+                {{iconFolderPlus}}
+              </v-icon> 
+              Add folder
+            </v-btn>
+          </div>
         </div>
-      </div>
-      <div v-if="checkSelect">
-        <v-btn
-          color="secondary"
-          small
-          class="mr-3"
-          @click="downloadFiles"
-        >Download</v-btn>
-        <v-btn
-          color="secondary"
-          small
-          @click="openDelFileDialog"
-        >Delete</v-btn>
-        <div class="caption">Selecting file(s)</div>
-      </div>
+        <div v-if="checkSelect">
+          <v-btn
+            color="secondary"
+            small
+            class="mr-3"
+            @click="downloadFiles"
+          >Download</v-btn>
+          <v-btn
+            color="secondary"
+            small
+            @click="openDelFileDialog"
+          >Delete</v-btn>
+          <div class="caption">Selecting file(s)</div>
+        </div>
         <v-text-field
           v-model="search"
           label="Search File | Folder"
@@ -41,6 +44,11 @@
           clearable
           :clear-icon="mdiCloseCircleOutline"
         ></v-text-field>
+        <v-progress-linear
+          v-if="load"
+          color="secondary"
+          indeterminate
+        ></v-progress-linear>
         <v-treeview 
             v-model="tree" 
             :open="open" 
@@ -116,6 +124,7 @@
           title="Guide"
           :text="text"
         ></card-dialog>
+      </div>
     </div>
 </template>
 
@@ -142,6 +151,8 @@ export default{
   },
   setup(){
     // const items = store.state.tree.list;
+    const load = computed(() => {return store.state.initialLoad})
+    // const load = ref(store.state.initialLoad);
     const items = computed(() => {return store.state.tree.list;})
 
     const iconFolderPlus = mdiFolderPlus;
@@ -264,7 +275,7 @@ export default{
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
       delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
       iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline, information,
-      mdiInformationOutline, toggleInfo, text
+      mdiInformationOutline, toggleInfo, text, load
     }
   },
 }

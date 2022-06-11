@@ -8,7 +8,7 @@ export const checkExpire = (err) => {
     if(err.response && err.response.status == 403 || err.response.status == 401){
         store.dispatch('logout');
         store.dispatch('setAlert', true);
-        console.log("at 403 401",store.state.auth.alert)
+        console.log("at 403 401",store.state.alert)
         router.push('/login');
     }
     if(store.state.auth.permission == "Administrator" && err.response.status == 500){

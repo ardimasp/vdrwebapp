@@ -23,23 +23,25 @@ export default {
     LayoutAdmin,
   },
   async mounted() {
-    store.dispatch("resetFileList")
+    // store.dispatch("resetFileList")
     // fetchAPI
     const state = store.state.auth.logged;
-    // console.log("check at main",localStorage.getItem("user"))
 
     if(state) {
-      store.dispatch("setToken", decryptToken(localStorage.getItem("user")))
-      store.dispatch("fetchTreeList")
+      await store.dispatch("setLoad", true)
+      await store.dispatch("setToken", decryptToken(localStorage.getItem("user")))
+      await store.dispatch("fetchTreeList")
 
       // const decrypt = await decryptToken(store.state.auth.user)
       // const data = await decode(decrypt);
       const data = decode(store.state.auth.user)
-      store.dispatch("setUsername", data.userid)
-      store.dispatch("setPermission", data.type)
-      store.dispatch("setString", data.exp);
+      await store.dispatch("setUsername", data.userid)
+      await store.dispatch("setPermission", data.type)
+      await store.dispatch("setString", data.exp);
 
-      if(store.state.auth.permission == "Premium User") store.dispatch("fetchSreeyaList")
+      if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList")
+
+      await store.dispatch("setLoad", false)
 
       // test
       var encrypt = encryptToken(localStorage.getItem("user"))
@@ -47,6 +49,7 @@ export default {
       console.log("decrypt", decryptToken(encrypt))
       console.log("localstorage", localStorage.getItem("user"))
       console.log("jwt", decode(decryptToken(encrypt)))
+
     }
     else route.push('/login');
     // end fetchAPI

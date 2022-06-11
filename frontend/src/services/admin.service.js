@@ -1,7 +1,6 @@
 import axios from "axios"
 import {URL, checkExpire} from './api'
 import store from "../store"
-// import tokenService from "./token.service"
 
 const url = URL + "/registration"
 // const headers = {

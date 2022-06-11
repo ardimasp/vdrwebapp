@@ -169,7 +169,7 @@ export default {
       },
     ]
 
-    const setAlert = computed(() => {return store.state.auth.alert})
+    const setAlert = computed(() => {return store.state.alert})
 
     const checkValid = computed(() => {
       if(email.value !== "" && password.value !== "" && loading.value ==false) return true;

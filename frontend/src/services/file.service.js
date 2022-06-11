@@ -1,7 +1,6 @@
 import axios from "axios";
 import store from "../store";
 import {URL, checkExpire} from './api'
-// import tokenService from "./token.service";
 
 const url = URL + "/common"
 // const headers = {
