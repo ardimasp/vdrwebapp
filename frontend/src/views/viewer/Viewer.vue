@@ -72,7 +72,7 @@ export default{
   },
   setup(){
     const items = store.state.viewer.list;
-
+    console.log(items)
     return {
       items,
     }

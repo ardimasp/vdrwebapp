@@ -39,6 +39,12 @@
       class="vertical-nav-menu-items pr-5"
     >
       <nav-menu-link
+        title="3D Viewer"
+        :to="{ name: 'vtkviewer' }"
+        :icon="icons.mdiCubeScan"
+      ></nav-menu-link>
+
+      <nav-menu-link
         title="Viewer"
         :to="{ name: 'viewer' }"
         :icon="icons.mdiCardSearchOutline"
@@ -80,6 +86,7 @@
 <script>
 // eslint-disable-next-line object-curly-newline
 import {
+  mdiCubeScan, 
   mdiCardSearchOutline,
   mdiHomeOutline,
   mdiAlphaTBoxOutline,
@@ -111,6 +118,7 @@ export default {
   setup() {
     return {
       icons: {
+        mdiCubeScan,
         mdiCardSearchOutline,
         mdiHomeOutline,
         mdiAlphaTBoxOutline,

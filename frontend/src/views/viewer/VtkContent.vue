@@ -52,20 +52,17 @@ export default {
     }
 
     function onClick(){
-      console.log('clicked')
       const { renderWindow } = context.value;
-      console.log(renderWindow.getViews()[0])
       divWidth.value = 100
       divHeight.value = 100
       renderWindow.getViews()[0].setSize(100, 100)
     }
 
-    watch(() => [props.divWidthProp,props.divHeightProp], (currentValue,_oldValue) => {
+    watch(() => [props.divWidthProp,props.divHeightProp], (currentValue) => {
         const { renderWindow } = context.value;
         divWidth.value = currentValue[0]
         divHeight.value = currentValue[1]
         renderWindow.getViews()[0].setSize(currentValue[0], currentValue[1])
-        console.log(_oldValue);
     });
 
     watchEffect(() => {
