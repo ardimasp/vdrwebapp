@@ -14,6 +14,11 @@ const routes = [
     redirect: 'viewer',
   },
   {
+    path: '/vtkviewer',
+    name: 'vtkviewer',
+    component: () => import('@/views/viewer/VtkViewer.vue'),
+  },
+  {
     path: '/viewer',
     name: 'viewer',
     component: () => import('@/views/viewer/Viewer.vue'),
