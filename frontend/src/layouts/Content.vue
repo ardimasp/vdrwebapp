@@ -2,14 +2,14 @@
   <v-app>
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
 
-    <v-app-bar class="header-pos"
+    <v-app-bar
       app
       flat
       color="#F4F5FA"
       style="z-index: 9999"
 
     >
-      <div class="boxed-container w-full h-5">
+      <div class="boxed-container w-full">
         <div class="d-flex align-center mx-6">
           <!-- Left Content -->
           <v-app-bar-nav-icon

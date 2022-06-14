@@ -4,6 +4,7 @@ export default {
     state: {
         list: [],
         length: 20,
+        sreeya: [],
     },
     mutations: {
         UPDATE_TREE(state, payload){
@@ -12,6 +13,9 @@ export default {
         UPDATE_LENGTH(state, payload){
             state.length = payload;
         },
+        UPDATE_SREEYA(state, payload){
+            state.sreeya = payload;
+        }
     },
     actions: {
         fetchTreeList(context){
@@ -28,6 +32,18 @@ export default {
         },
         resetFileList(context){
             context.commit('UPDATE_TREE', [])
+        },
+        fetchSreeyaList(context){
+            return fileService.fetchFilesPointer("sreeya", true).then(
+                data => {
+                    context.commit('UPDATE_SREEYA', data.data);
+                    console.log("fetch sreeya", data.data)
+                    return data.data;
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            )
         }
     }
 }

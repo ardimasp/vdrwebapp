@@ -1,13 +1,16 @@
 <template>
     <div>
-        <v-alert
-            border="left"
+        <v-snackbar
             :color="alertColour"
-            dark
-            v-if="alertMsgShow"
+            v-model="alertMsgShow"
+            rounded="pill"
+            timeout=3000
         >
             {{alertMsg}}
-        </v-alert>
+        </v-snackbar>
+        <v-breadcrumbs
+            :items="breadcrumb"
+        ></v-breadcrumbs>
         <v-form style="color:white">
             <v-container>
                 <v-text-field
@@ -101,13 +104,20 @@ export default defineComponent({
         const affiliation = ref("");
 
         const menu = ref(false);
+        const breadcrumb = [
+            {
+                text: '< Back',
+                href: '/admin',
+                disable: false,
+            }
+        ]
 
         const clearForm = () => {
             username.value = "";
             password.value = "";
-            name.value == "";
-            expiryDate.value == "";
-            affiliation.value == ""
+            name.value = "";
+            expiryDate.value = "";
+            affiliation.value = ""
         }
 
         const checkForm = computed(() => {
@@ -155,7 +165,7 @@ export default defineComponent({
             showPass, clearForm, submitForm, alertMsg, alertMsgShow, alertColour,
             checkForm, userTypes, type, name, expiryDate, affiliation,
             menu, mdiAccountOutline, mdiCalendarRange, mdiDomain,
-            mdiCardAccountDetails
+            mdiCardAccountDetails, breadcrumb
         }
     },
 })

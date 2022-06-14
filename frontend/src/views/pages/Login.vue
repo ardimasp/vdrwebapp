@@ -2,12 +2,15 @@
   <div class="auth-wrapper auth-v1">
     <div class="auth-inner">
       <v-card class="auth-card">
+        <!-- alert -->
+        <v-snackbar
+          v-model="setAlert"
+          rounded="pill"
+          color="secondary"
+          timeout="5000"
+        >Your session have expired, please login again.</v-snackbar>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
-          <router-link
-            to="/"
-            class="d-flex align-center"
-          >
             <v-img
               :src="require('@/assets/images/logos/logo.svg')"
               max-height="30px"
@@ -20,7 +23,6 @@
             <h2 class="text-2xl font-weight-semibold">
               VDR
             </h2>
-          </router-link>
         </v-card-title>
 
         <!-- title -->
@@ -37,10 +39,10 @@
         <v-card-text>
           <v-form>
             <v-text-field
-              v-model="email"
+              v-model="username"
               outlined
-              label="Email"
-              placeholder="john@example.com"
+              label="Username"
+              placeholder="john"
               hide-details
               class="mb-3"
             ></v-text-field>
@@ -56,7 +58,7 @@
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
 
-            <p  class="text-caption" style="color:red" v-if="errorMsg">
+            <p  class="caption" style="color:red" v-if="errorMsg">
               You typed the wrong username or password!
             </p>
 
@@ -77,6 +79,19 @@
               </a>
             </div>
 
+            
+            <v-progress-linear
+              v-if="loading"
+              indeterminate
+              color="secondary"
+            ></v-progress-linear>
+            <v-snackbar 
+              v-model="loading"
+              rounded="pill"
+              color="secondary"
+            >
+              Logging you in, preparing your data...
+            </v-snackbar>
             <v-btn
               block
               color="primary"
@@ -88,37 +103,6 @@
             </v-btn>
           </v-form>
         </v-card-text>
-
-        <!-- create new account  -->
-        <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
-          <span class="me-2">
-            New on our platform?
-          </span>
-          <router-link :to="{name:'register'}">
-            Create an account
-          </router-link>
-        </v-card-text>
-
-        <!-- divider -->
-        <v-card-text class="d-flex align-center mt-2">
-          <v-divider></v-divider>
-          <span class="mx-5">or</span>
-          <v-divider></v-divider>
-        </v-card-text>
-
-        <!-- social links -->
-        <v-card-actions class="d-flex justify-center">
-          <v-btn
-            v-for="link in socialLink"
-            :key="link.icon"
-            icon
-            class="ms-1"
-          >
-            <v-icon :color="$vuetify.theme.dark ? link.colorInDark : link.color">
-              {{ link.icon }}
-            </v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </div>
 
@@ -153,11 +137,14 @@ import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOff
 import { computed, onMounted, ref } from '@vue/composition-api'
 import store from '../../store'
 import router from '../../router'
+import adminService from './../../services/admin.service'
+import {detectMimeType} from './../../function'
 
 export default {
   setup() {
+    const loading = ref(false)
     const isPasswordVisible = ref(false)
-    const email = ref('')
+    const username = ref('')
     const password = ref('')
     const socialLink = [
       {
@@ -182,32 +169,50 @@ export default {
       },
     ]
 
+    const setAlert = computed(() => {return store.state.alert})
+
     const checkValid = computed(() => {
-      if(email.value !== "" && password.value !== "") return true;
+      if(username.value !== "" && password.value !== "" && loading.value ==false) return true;
       return false;
     })
 
     onMounted(() => {
-      store.dispatch("logout");
+      // store.dispatch("logout");
     })
 
     const errorMsg = ref(false);
     const submitForm = async () => {
+      loading.value = true;
+
       let submitData = new FormData();
-      submitData.append("username", email.value);
+      submitData.append("username", username.value);
       submitData.append("password", password.value);
 
       const result = await store.dispatch('login', submitData);
 
       if(result == 200) {
         errorMsg.value = false;
-        localStorage.setItem("username", email.value);
-        await store.dispatch("setPermission", localStorage.getItem("type"))
-        await store.dispatch("setUsername", localStorage.getItem("username"))
+        await store.dispatch("setUsername", username.value)
         
-        if(localStorage.getItem("type") == "Administrator") {
+        var res = await adminService.getUserDetail(username.value);
+        if(res.status == 200) {
+            let pic = res.data.data.profile_pict;
+            let mime = detectMimeType(pic);
+            let profile
+            if(mime == "") profile = pic
+            else profile = "data:" + mime + ";base64," + pic
+            // profile.value = "data:" + mime + ";base64," + pic
+            localStorage.setItem("profile", profile)
+        }
+
+        if(store.state.auth.permission == "Administrator") {
           await store.dispatch("fetchUserList")
           await router.push('/admin')
+        }
+        else if(store.state.auth.permission == "Premium User") {
+          await store.dispatch("fetchTreeList")
+          await store.dispatch("fetchSreeyaList")
+          await router.push('/');
         }
         else {
           await store.dispatch("fetchTreeList");
@@ -215,16 +220,18 @@ export default {
         }
       }
       else errorMsg.value = true;
+      loading.value = false;
     }
 
     return {
       isPasswordVisible,
-      email,
+      username,
       password,
       socialLink,
       submitForm,
       checkValid,
       errorMsg,
+      loading, setAlert,
 
       icons: {
         mdiEyeOutline,

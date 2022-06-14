@@ -3,23 +3,37 @@ import Vuex from 'vuex'
 import adminModule from './admin.module'
 
 import treeModule from './tree.module'
-import userModule from './user.module'
 import viewerModule from './viewer.module'
 import authModule from './auth.module'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-    url: "https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common"
-  },
-  mutations: {},
-  actions: {},
   modules: {
     tree: treeModule,
     viewer: viewerModule,
-    user: userModule,
     admin: adminModule,
     auth: authModule,
+  },
+  state: {
+    initialLoad: false,
+    alert: false,
+  },
+  mutations: {
+    SET_LOAD(state, data){
+      state.initialLoad = data;
+      console.log("at set load commit", state.initialLoad)
+    },
+    SET_ALERT(state, data){
+        state.alert = data;
+    }
+  },
+  actions: {
+    setLoad(context, data){
+      context.commit('SET_LOAD', data)
+    },
+    setAlert(context, data){
+        context.commit("SET_ALERT", data);
+    }
   },
 })
