@@ -179,8 +179,6 @@ export default defineComponent({
             loading.value = false;
         })
 
-        // prediction thing
-
         return {
             loading, errMsg, showErr
         }
