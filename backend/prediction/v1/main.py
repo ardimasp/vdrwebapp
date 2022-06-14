@@ -251,7 +251,7 @@ async def oil_production_excel(path:str,
             {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
             {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
             {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Oil Prediction Value", "data": y_pred.tolist()}
+            {"label": "Oil Prediction Value / m3", "data": y_pred.tolist()}
         ]
 
         return {"data": inputs}
@@ -344,7 +344,7 @@ async def gas_production_excel(path:str,
             {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
             {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
             {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Gas Prediction Value", "data": y_pred.tolist()}
+            {"label": "Gas Prediction Value / m3", "data": y_pred.tolist()}
         ]
 
         return {"data": inputs}
