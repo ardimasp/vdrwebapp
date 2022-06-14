@@ -12,7 +12,7 @@ const headers = {
 }
 // localStorage.getItem("user")
 function postDatatoDB(data){
-    axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
+    return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
     {
       accept: 'application/json',
       Authorization: "Bearer " + tokenService.getLocalAccessToken(),
@@ -23,6 +23,7 @@ function postDatatoDB(data){
                //Perform Success Action
                
         console.log(res.status);
+        return res.status
            })
            .catch((error) => {
               console.log(error.response.data);
