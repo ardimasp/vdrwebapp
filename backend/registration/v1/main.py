@@ -418,8 +418,11 @@ async def edit_profile(profile: EditProfile, current_user: User = Depends(get_cu
                 filename = "files/"+(f"{profile.userid}")
                 shutil.copyfile("/app/app/template.xlsx", filename+"/template.xlsx")
             elif profile.type == UserType.regular:
-                filename = "files/"+(f"{profile.userid}")
-                os.remove(filename+"/template.xlsx")
+                try:
+                    filename = "files/"+(f"{profile.userid}")
+                    os.remove(filename+"/template.xlsx")
+                except:
+                    pass
 
             return {"status": "success"}
         else:
