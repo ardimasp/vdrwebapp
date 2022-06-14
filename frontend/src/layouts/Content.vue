@@ -9,7 +9,11 @@
       style="z-index: 9999"
 
     >
+<<<<<<< HEAD
       <div class="boxed-container w-full">
+=======
+      <div class="boxed-container w-full h-5">
+>>>>>>> branch-eliz
         <div class="d-flex align-center mx-6">
           <!-- Left Content -->
           <v-app-bar-nav-icon
@@ -123,10 +127,6 @@ export default {
   // margin-right: auto;
   background-color: #f4f5fa;
 
-}
-
-.app-content-container {
-  // margin-top: -50px;
 }
 
 .footer-pos{
