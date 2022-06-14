@@ -5,9 +5,6 @@
                 <v-icon @click="toggleInfo" class="mr-3">
                     {{mdiInformationOutline}}
                 </v-icon>
-                <v-btn color="secondary" @click="addPrediction">
-                    Additional Prediction
-                </v-btn>
             </div>
         </div>
         <v-stepper v-model="e1">
@@ -169,16 +166,10 @@ export default defineComponent({
             </ol>
             <br>
             <ul>
-                <li>To upload a new file with data in accordance to the template, choose category 'Sreeya' before uploading.</li>
-                <li>'Additional Prediction' button is to predict the oil and gas value based on 5 columns with a singular data.</li>
+                <li>To upload a new file with data in accordance to the template, choose category 'Sreeya' before uploading in the file management.</li>
             </ul>
         `
         const toggleInfo = () => {information.value = !information.value}
-
-        // redirect to additional prediction
-        const addPrediction = () => {
-            router.push('/production/prediction')
-        }
 
         // to move the timelines
         const e1 = ref(1)
@@ -217,7 +208,7 @@ export default defineComponent({
             open, items, active, search, mdiDownload,
             mdiCloseCircleOutline, e1, selectFeatures,
             nextStep, cancelStep, checkFirst, checkSecond,
-            downloadTemplate, addPrediction, information, text,
+            downloadTemplate, information, text,
             mdiInformationOutline, toggleInfo, load,
         }
     },

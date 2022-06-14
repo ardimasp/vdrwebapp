@@ -10,9 +10,22 @@
             class="mb-12"
             color="grey lighten-1"
         >
-            <!-- 3d subplot plot T_T <a href="https://plotly.com/javascript/3d-subplots/" target="_blank">link here</a> -->
-            <div id="plot3d"></div>
-            <div id="plot3d2" style="width:80vw"></div>
+            <v-row>
+                <v-col cols="12" md="6">
+                    <div id="plot3d"></div>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <div id="plot3d2"></div>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12" md="6">
+                    <div id="plot3d1"></div>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <sreeya-prediction :feature="feature"></sreeya-prediction>
+                </v-col>
+            </v-row>
             <div v-if="showErr">
                 <p class="headline font-weight-bold">{{errMsg}}!</p>
                 <p class="overline">Press the 'New Prediction' button below to reselect the file and make a new prediction</p>
@@ -25,11 +38,15 @@
 import { defineComponent, onMounted, ref, } from '@vue/composition-api'
 import sreeyaService from './../../services/sreeya.service'
 import Plotly from 'plotly.js-dist-min'
+import SreeyaPrediction from './SreeyaPrediction.vue'
 
 export default defineComponent({
     props:{
         active: {type: String},
         feature: {type: String}
+    },
+    components: {
+        SreeyaPrediction,
     },
     setup(props) {
         const loading = ref(false);
@@ -61,7 +78,6 @@ export default defineComponent({
                         x: prediction.data,
                         y: downholeTemp.data,
                         z: downholePress.data,
-                        scene: "scene1"
                     }
                     const trace2 = {
                         opacity: 0.5,
@@ -70,7 +86,6 @@ export default defineComponent({
                         x: prediction.data,
                         y: pressDiff.data,
                         z: tempDiff.data,
-                        scene: "scene2"
                     }
                     const trace3 = {
                         x: hoursOnline.data,
@@ -80,18 +95,7 @@ export default defineComponent({
                     }
 
                     const layout = {
-                        title: {
-                            text:'Prediction result',
-                            font: {
-                                family: 'Roboto',
-                                size: 24
-                            },
-                            xref: 'paper',
-                            x: 0.05,
-                        },
-                        height: 600,
-                        width: 1000,
-                        scene1: {
+                        scene: {
                             xaxis: {title: "x-"+prediction.label,
                                 titlefont: {
                                     family: 'Roboto',
@@ -113,11 +117,12 @@ export default defineComponent({
                                     color: '#7f7f7f'
                                 }
                             },
-                            domain: {
-                                x: [0.0,  0.5],
-                            },
                         },
-                        scene2: {
+                        width:500,
+                    }
+                    const layout1 = {
+                        width:500,
+                        scene: {
                             xaxis: {title: "x-"+prediction.label,
                                 titlefont: {
                                     family: 'Roboto',
@@ -138,13 +143,11 @@ export default defineComponent({
                                     size: 12,
                                     color: '#7f7f7f'
                                 }
-                            },
-                            domain: {
-                                x: [0.5, 1],
                             }
-                        },
+                        }
                     }
                     const layout2 = {
+                        width:500,
                         xaxis: {
                             title: {
                             text: "x-"+hoursOnline.label,
@@ -167,13 +170,16 @@ export default defineComponent({
                         }
                     };
 
-                    Plotly.newPlot('plot3d', [trace1, trace2], layout)
+                    Plotly.newPlot('plot3d', [trace1], layout)
+                    Plotly.newPlot('plot3d1', [trace2], layout1)
                     Plotly.newPlot('plot3d2', [trace3], layout2)
                     loading.value = false;
                 }
             }
             loading.value = false;
         })
+
+        // prediction thing
 
         return {
             loading, errMsg, showErr

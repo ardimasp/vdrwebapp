@@ -30,14 +30,12 @@ export default {
     if(state) {
       await store.dispatch("setLoad", true)
       await store.dispatch("setToken", decryptToken(localStorage.getItem("user")))
-      await store.dispatch("fetchTreeList")
-
-      // const decrypt = await decryptToken(store.state.auth.user)
-      // const data = await decode(decrypt);
       const data = decode(store.state.auth.user)
       await store.dispatch("setUsername", data.userid)
       await store.dispatch("setPermission", data.type)
       await store.dispatch("setString", data.exp);
+
+      await store.dispatch("fetchTreeList")
 
       if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList")
 
