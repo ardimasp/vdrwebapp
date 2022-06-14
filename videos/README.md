@@ -10,6 +10,10 @@
 	
 	![filemanagement.gif](filemanagement.gif) 
 
+- [sreeya_ai.gif](sreeya_ai.gif) 
+	
+	![sreeya_ai.gif](sreeya_ai.gif) 
+
 - [Map2.gif](Map2.gif) 
 	
 	![Map2.gif](Map2.gif) 
