@@ -2,7 +2,7 @@
   <!-- class viewer container act as a constraint -->
   <div>
     <viewer-skeleton v-if="load"></viewer-skeleton>
-    <div id="viewer-container" class="viewer-container">
+    <div id="viewer-container" class="viewer-container" v-else>
 
       <vtk-card 
         :x="600"
