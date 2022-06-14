@@ -53,8 +53,8 @@ app.add_middleware(
 def load_models():
     global oil_loaded_model
     global gas_loaded_model
-    oil_loaded_model = joblib.load("/app/app/oil_model_final.sav")
-    gas_loaded_model = joblib.load("/app/app/gas_model_final.sav")
+    oil_loaded_model = joblib.load("/app/app/oil_model.sav")
+    gas_loaded_model = joblib.load("/app/app/gas_model.sav")
 
 
 app.mount("/static", StaticFiles(directory="/app/app/static"), name="static")
