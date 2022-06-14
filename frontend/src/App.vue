@@ -12,6 +12,8 @@ import LayoutContent from '@/layouts/Content.vue'
 import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
+import {decode, decryptToken, encryptToken } from './function'
+// import CryptoJS from "crypto-js";
 // import {checkToken} from './check.js'
 
 export default {
@@ -21,20 +23,35 @@ export default {
     LayoutAdmin,
   },
   async mounted() {
-    store.dispatch("resetFileList")
+    // store.dispatch("resetFileList")
     // fetchAPI
-    store.dispatch("setUserToken", localStorage.getItem("user"));
     const state = store.state.auth.logged;
-    console.log("at mounted", state, localStorage.getItem("user"));
 
     if(state) {
-      store.dispatch("fetchTreeList")
-      store.dispatch("setUsername", localStorage.getItem("username"))
-      store.dispatch("setPermission", localStorage.getItem("type"))
-      console.log("login data check user", store.state.auth.username, store.state.auth.permission, store.state.auth.logged)
+      await store.dispatch("setLoad", true)
+      await store.dispatch("setToken", decryptToken(localStorage.getItem("user")))
+      await store.dispatch("fetchTreeList")
+
+      // const decrypt = await decryptToken(store.state.auth.user)
+      // const data = await decode(decrypt);
+      const data = decode(store.state.auth.user)
+      await store.dispatch("setUsername", data.userid)
+      await store.dispatch("setPermission", data.type)
+      await store.dispatch("setString", data.exp);
+
+      if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList")
+
+      await store.dispatch("setLoad", false)
+
+      // test
+      var encrypt = encryptToken(localStorage.getItem("user"))
+      console.log("at main encrypt", encrypt)
+      console.log("decrypt", decryptToken(encrypt))
+      console.log("localstorage", localStorage.getItem("user"))
+      console.log("jwt", decode(decryptToken(encrypt)))
+
     }
     else route.push('/login');
-    
     // end fetchAPI
   },
   setup() {

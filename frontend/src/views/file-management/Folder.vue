@@ -1,43 +1,54 @@
 <template>
     <div>
-      <div class="d-flex flex-row-reverse">
-        <div>
-          <v-btn class="mr-3" color="primary" @click="openFileDialog">
-            <v-icon left>
-              {{iconFilePlus}}
-            </v-icon> 
-            Add file
-          </v-btn>
-          <v-btn color="primary" @click="openFolderDialog">
-            <v-icon left>
-              {{iconFolderPlus}}
-            </v-icon> 
-            Add folder
-          </v-btn>
+      <!-- {{load}}
+      <folder-skeleton v-if="load"></folder-skeleton> -->
+      <div>
+        <div class="d-flex flex-row-reverse">
+          <div>
+            <v-icon @click="toggleInfo" class="mr-3">
+              {{mdiInformationOutline}}
+            </v-icon>
+            <v-btn class="mr-3" color="primary" @click="openFileDialog">
+              <v-icon left>
+                {{iconFilePlus}}
+              </v-icon> 
+              Add file
+            </v-btn>
+            <v-btn color="primary" @click="openFolderDialog">
+              <v-icon left>
+                {{iconFolderPlus}}
+              </v-icon> 
+              Add folder
+            </v-btn>
+          </div>
         </div>
-      </div>
-      <div v-if="checkSelect">
-        <v-btn
-          color="secondary"
-          small
-          class="mr-3"
-          @click="downloadFiles"
-        >Download</v-btn>
-        <v-btn
-          color="secondary"
-          small
-          @click="openDelFileDialog"
-        >Delete</v-btn>
-        <div class="caption">Selecting file(s)</div>
-      </div>
+        <div v-if="checkSelect">
+          <v-btn
+            color="secondary"
+            small
+            class="mr-3"
+            @click="downloadFiles"
+          >Download</v-btn>
+          <v-btn
+            color="secondary"
+            small
+            @click="openDelFileDialog"
+          >Delete</v-btn>
+          <div class="caption">Selecting file(s)</div>
+        </div>
         <v-text-field
           v-model="search"
           label="Search File | Folder"
           flat
           hide-details
           clearable
-          :clear-icon="mdiclosecircleoutline"
+          :clear-icon="mdiCloseCircleOutline"
         ></v-text-field>
+        <v-progress-linear
+          v-if="load"
+          color="secondary"
+          indeterminate
+        ></v-progress-linear>
         <v-treeview 
             v-model="tree" 
             :open="open" 
@@ -106,6 +117,14 @@
 
           @confirmdialog="deleteFolder"
         ></card-confirm>
+
+        <!-- dialogues -->
+        <card-dialog
+          v-if="information"
+          title="Guide"
+          :text="text"
+        ></card-dialog>
+      </div>
     </div>
 </template>
 
@@ -113,12 +132,13 @@
 import {mdiFolderPlus, mdiFilePlus, mdiFolderOpen, mdiFolder,
       mdiLanguageHtml5, mdiNodejs, mdiCodeJson, mdiLanguageMarkdown, mdiFilePdf,
       mdiFileImage, mdiFileDocumentOutline,mdiFileExcel, mdiDelete, mdiDownload,
-      mdiCloseCircleOutline} from '@mdi/js'
+      mdiCloseCircleOutline, mdiInformationOutline} from '@mdi/js'
 import { computed, ref } from '@vue/composition-api'
 
 import DialogFile from './DialogFile.vue'
 import DialogFolder from './DialogFolder.vue'
 import CardConfirm from './../cards/CardConfirm.vue'
+import CardDialog from './../cards/CardDialog.vue'
 import store from '../../store'
 import fileService from './../../services/file.service'
 
@@ -127,9 +147,12 @@ export default{
       DialogFile,
       DialogFolder,
       CardConfirm,
+      CardDialog,
   },
   setup(){
     // const items = store.state.tree.list;
+    const load = computed(() => {return store.state.initialLoad})
+    // const load = ref(store.state.initialLoad);
     const items = computed(() => {return store.state.tree.list;})
 
     const iconFolderPlus = mdiFolderPlus;
@@ -155,6 +178,37 @@ export default{
     const tree = ref([]); //selected
     const search = ref("");
 
+    // information
+    const information = ref(false);
+    const text = `
+          <ul>
+            <b>Adding new file or folder:</b>
+            <li>To add new file(s) or folder into the root folder, don't press on any text and activate them</li>
+            <li>Respectively, press and activate on the text in which it is a folder to add new file or folder into existing folder</li>
+            <li>There are categories when adding new file(s):</li>
+            <ul>
+              <li>Choose '*' for general use</li>
+              <li>Choose 'Chart' to use on Viewer's page</li>
+              <li>Choose 'Showchase' to use on Map's and Showcase's page</li> 
+              <li>Choose 'Sreeya' to use on Production's page (for Premium user)</li>
+            </ul>
+          </ul>
+          <br>
+          <ul>
+            <b>Deleting file or folder:</b>
+            <li>To delete file(s), select the checkbox(es) and press delete</li>
+            <li>Whilst deleting a folder, the file(s) inside the folder would be deleted</li>
+          </ul>
+          <br>
+          <ul>
+            <b>Downloading file or folder:</b>
+            <li>To download a file, press the download button on the right side of the file name</li>
+            <li>To download multiple files, select the chechboxes and press download</li>
+          </ul>`;
+    const toggleInfo = () => {
+      information.value = !information.value
+    }
+
     // computed
     const checkSelect = computed(() => {
       if (tree.value.length) return true;
@@ -173,9 +227,13 @@ export default{
 
     // delete file(s)
     const delFileDialog = ref(false);
-    const userId = store.state.user.id;
     const deleteFile = async (bool) => {
       if(bool) {
+        if(store.state.auth.permission == "Premium User" && tree.value.includes("/template.xlsx")){
+          let idx = tree.value.indexOf("/template.xlsx")
+          tree.value.splice(idx, 1)
+          console.log("template exist")
+        }
         await fileService.deleteFile(tree.value);
         await store.dispatch("fetchTreeList");
       }
@@ -189,7 +247,7 @@ export default{
     const deleteFolder = async (bool) => {
       if(bool) {
         await fileService.deleteFolder(selectedFolder.value);
-        await store.dispatch("fetchTreeList", userId);
+        await store.dispatch("fetchTreeList");
       }
       delFolderDialog.value = false;
     }
@@ -216,7 +274,8 @@ export default{
       iconFolderOpen, iconFolder, fileTypes, fileDialog, openFileDialog,
       openFolderDialog, folderDialog, closeFolderDialog, closeFileDialog,
       delFileDialog, delFolderDialog, openDelFileDialog, saveSelectedFolder,
-      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline,
+      iconDownload, downloadFile, downloadFiles, mdiCloseCircleOutline, information,
+      mdiInformationOutline, toggleInfo, text, load
     }
   },
 }

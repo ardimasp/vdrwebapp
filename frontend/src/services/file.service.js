@@ -1,19 +1,19 @@
 import axios from "axios";
+import store from "../store";
 import {URL, checkExpire} from './api'
-import tokenService from "./token.service";
 
 const url = URL + "/common"
-const headers = {
-    headers: {
-        Authorization: "Bearer " + tokenService.getLocalAccessToken()
-    }
-}
+// const headers = {
+//     headers: {
+//         Authorization: "Bearer " + store.state.auth.user
+//     }
+// }
 
 class FileService{
     fetchFiles() {
         return axios.get(`${url}/files/lists`, {
             headers: {
-                Authorization: "Bearer " + localStorage.getItem("user")
+                Authorization: "Bearer " + store.state.auth.user
             }
         })
             .then(
@@ -31,7 +31,7 @@ class FileService{
     deleteFile(data) {
         return axios.delete(`${url}/files`, 
         {headers: {
-            Authorization: "Bearer " + tokenService.getLocalAccessToken()
+            Authorization: "Bearer " + store.state.auth.user
         }, data:{"paths": data}})
             .then(
                 (res) => {
@@ -46,7 +46,11 @@ class FileService{
             )
     }
     addFile(data){
-        return axios.post(`${url}/files`, data, headers)
+        return axios.post(`${url}/files`, data, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
             .then(
                 (res) => {
                     return res.status;
@@ -59,7 +63,11 @@ class FileService{
             )
     }
     addFolder(data){
-        return axios.post(`${url}/folders`, data, headers)
+        return axios.post(`${url}/folders`, data, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
             .then(
                 (res) => {
                     console.log(res);
@@ -75,7 +83,7 @@ class FileService{
     deleteFolder(data){
         return axios.delete(`${url}/folders`, {
             headers: {
-                Authorization: "Bearer " + tokenService.getLocalAccessToken()
+                Authorization: "Bearer " + store.state.auth.user
             }, 
             data:{"paths": [data]}
         })
@@ -92,16 +100,36 @@ class FileService{
             )
     }
     downloadFile(path){
-        var url = `${url}/file?path=`+path;
-        var link = document.createElement("a");
-        link.href = encodeURI(url);
-        link.target = "_blank";
-        link.click();
+        return axios.get(`${url}/file?path=`+encodeURIComponent(path), 
+            {
+                headers: {
+                    Authorization: "Bearer " + store.state.auth.user
+                },
+                responseType: 'arraybuffer'
+            }
+        )
+            .then(
+                (res) => {
+                    var name = path.split("/").pop();
+                    var url = window.URL.createObjectURL(new Blob([res.data]))
+                    var link = document.createElement('a');
+                    document.body.appendChild(link);
+                    link.href = url;
+                    link.setAttribute('download', name);
+                    link.click();
+                    link.remove()
+                },
+                (err) => {
+                    console.log(err)
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
     }
     downloadFiles(data){
         var option = {
             headers: {
-                Authorization: "Bearer " + tokenService.getLocalAccessToken()
+                Authorization: "Bearer " + store.state.auth.user
             },
             responseType: 'arraybuffer'
         }
@@ -116,6 +144,23 @@ class FileService{
                     link.setAttribute('download', 'vdrfolder.zip');
                     link.click();
                     link.remove()
+                    return res.data;
+                },
+                (err) => {
+                    console.log(err)
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
+    }
+    fetchFilesPointer(data, bool) {
+        return axios.get(`${url}/files/lists/${data}?pathname=${bool}`, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
+            .then(
+                (res) => {
                     return res.data;
                 },
                 (err) => {

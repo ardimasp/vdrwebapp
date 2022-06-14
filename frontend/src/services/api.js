@@ -7,6 +7,8 @@ export const URL = "https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.c
 export const checkExpire = (err) => {
     if(err.response && err.response.status == 403 || err.response.status == 401){
         store.dispatch('logout');
+        store.dispatch('setAlert', true);
+        console.log("at 403 401",store.state.alert)
         router.push('/login');
     }
     if(store.state.auth.permission == "Administrator" && err.response.status == 500){

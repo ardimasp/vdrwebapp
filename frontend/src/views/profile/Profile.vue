@@ -1,126 +1,144 @@
 <template>
     <v-container>
-        <v-alert
-            border="left"
-            color="secondary"
-            dark
-            v-if="passwordUpdated"
-        >
-            Password is updated successfully!
-        </v-alert>
-        <v-row no-gutters>
-            <v-col
-                cols="12"
-                sm="4"
-                md="4"
-                class="text-center"
+        <profile-skeleton
+            v-if="load"
+        ></profile-skeleton>
+        <div v-else>
+            <v-snackbar
+                color="secondary"
+                v-model="passwordUpdated"
+                timeout=3000
+                rounded="pill"
             >
-                <v-avatar size=200>
-                    <v-img aspect-ratio="1" 
-                        :src="profPic">
-                    </v-img>
-                </v-avatar>
-                <div>
-                    <v-file-input
-                        accept="image/*"
-                        label="Choose new image"
-                        v-model="imageProfile"
-                        @change="setNewProfile"
-                        messages="Image upload limit is 4MB"
-                    >
-                    </v-file-input>
-                    <v-avatar size=100 v-if="newImage" class="mt-5 mb-5">
+                Password is updated successfully!
+            </v-snackbar>
+            <v-breadcrumbs
+                :items="breadcrumb"
+            ></v-breadcrumbs>
+            <v-row no-gutters>
+                <v-col
+                    cols="12"
+                    sm="4"
+                    md="4"
+                    class="text-center"
+                >
+                    <v-avatar size=200>
                         <v-img aspect-ratio="1" 
-                            :src="newImage">
+                            :src="profPic">
                         </v-img>
                     </v-avatar>
-                    <div v-if="newImage">
-                        <p  class="text-caption" style="color:red" v-if="!checkImg">
-                            Your file input exceeds the 4MB limit!
-                        </p>
-                        <v-btn color="error" class="mr-3" @click="clearImage">
-                            Cancel
-                        </v-btn>
-                        <v-btn color="secondary" @click="submitImage" :disabled="!checkImg">
-                            Save
-                        </v-btn>
-                    </div>
-                </div>
-            </v-col>
-            <v-col
-                cols="12"
-                sm="8"
-                md="8"
-            >
-                <v-container>
-                    <v-form>
-                        <v-text-field
-                            v-model="username"
-                            label="Username"
-                            required
-                            :prepend-icon="mdiAccount"
-                            readonly
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="type"
-                            label="User Type"
-                            required
-                            :prepend-icon="mdiCardAccountDetails"
-                            readonly
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="name"
-                            label="Name"
-                            required
-                            :prepend-icon="mdiAccountOutline"
-                            readonly
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="expiryDate"
-                            label="Expiry Date"
-                            required
-                            :prepend-icon="mdiCalendarRange"
-                            readonly
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="affiliation"
-                            label="Affiliation"
-                            required
-                            :prepend-icon="mdiDomain"
-                            readonly
-                        ></v-text-field>
-                        <v-btn color="secondary" v-if="!editPassword" @click="changeEditStat">
-                            Edit Password
-                        </v-btn>
-                        <div v-else>
-                            <v-text-field
-                                v-model="password"
-                                label="Password"
-                                :prepend-icon="mdiKey"
-                                type="password"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="confirmPassword"
-                                label="Confirm Password"
-                                :prepend-icon="mdiKey"
-                                type="password"
-                            ></v-text-field>
-                            <p  class="text-caption" style="color:red" v-if="!checkPassword">
-                                Your confirm password is not the same!
-                            </p>
-                            <div class="d-flex">
-                                <v-btn color="error" class="mr-3" @click="changeEditStat">
-                                    Cancel
-                                </v-btn>
-                                <v-btn color="secondary" @click="submitPassword" :disabled="!checkPassword">
-                                    Submit
-                                </v-btn>
-                            </div>
+                    <div>
+                        <v-file-input
+                            accept="image/*"
+                            label="Choose new image"
+                            v-model="imageProfile"
+                            @change="setNewProfile"
+                            messages="Image upload limit is 4MB"
+                        >
+                        </v-file-input>
+                        <v-avatar size=100 v-if="newImage" class="mt-5 mb-5">
+                            <v-img aspect-ratio="1" 
+                                :src="newImage">
+                            </v-img>
+                        </v-avatar>
+                        <div class="pr-9 pl-9">
+                            <v-progress-linear
+                                v-if="loadUpload"
+                                height="6"
+                                class="mb-3"
+                                indeterminate
+                                rounded
+                                color="secondary"
+                            ></v-progress-linear>
                         </div>
-                    </v-form>
-                </v-container>
-            </v-col>
-        </v-row>
+                        <div v-if="newImage">
+                            <p  class="caption" style="color:red" v-if="!checkImg">
+                                Your file input exceeds the 4MB limit!
+                            </p>
+                            <v-btn color="error" class="mr-3" @click="clearImage" :disabled="loadUpload">
+                                Cancel
+                            </v-btn>
+                            <v-btn color="secondary" @click="submitImage" :disabled="!checkImg || loadUpload">
+                                Save
+                            </v-btn>
+                        </div>
+                    </div>
+                </v-col>
+                <v-col
+                    cols="12"
+                    sm="8"
+                    md="8"
+                >
+                    <v-container>
+                        <v-form>
+                            <v-text-field
+                                v-model="username"
+                                label="Username"
+                                required
+                                :prepend-icon="mdiAccount"
+                                readonly
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="type"
+                                label="User Type"
+                                required
+                                :prepend-icon="mdiCardAccountDetails"
+                                readonly
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="name"
+                                label="Name"
+                                required
+                                :prepend-icon="mdiAccountOutline"
+                                readonly
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="expiryDate"
+                                label="Expiry Date"
+                                required
+                                :prepend-icon="mdiCalendarRange"
+                                readonly
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="affiliation"
+                                label="Affiliation"
+                                required
+                                :prepend-icon="mdiDomain"
+                                readonly
+                            ></v-text-field>
+                            <v-btn color="secondary" v-if="!editPassword" @click="changeEditStat">
+                                Edit Password
+                            </v-btn>
+                            <div v-else>
+                                <v-text-field
+                                    v-model="password"
+                                    label="Password"
+                                    :prepend-icon="mdiKey"
+                                    type="password"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="confirmPassword"
+                                    label="Confirm Password"
+                                    :prepend-icon="mdiKey"
+                                    type="password"
+                                ></v-text-field>
+                                <p  class="caption" style="color:red" v-if="!checkPassword">
+                                    Your confirm password is not the same!
+                                </p>
+                                <div class="d-flex">
+                                    <v-btn color="error" class="mr-3" @click="changeEditStat">
+                                        Cancel
+                                    </v-btn>
+                                    <v-btn color="secondary" @click="submitPassword" :disabled="!checkPassword">
+                                        Submit
+                                    </v-btn>
+                                </div>
+                            </div>
+                        </v-form>
+                    </v-container>
+                </v-col>
+            </v-row>
+        </div>
     </v-container>
 </template>
 
@@ -132,8 +150,12 @@ import store from '../../store';
 import router from '../../router';
 import adminService from '../../services/admin.service';
 import {detectMimeType} from './../../function'
+import ProfileSkeleton from './ProfileSkeleton.vue'
 
 export default defineComponent({
+    components: {
+        ProfileSkeleton
+    },
     setup() {
         const username = store.state.auth.username;
         const type = ref("");
@@ -144,7 +166,16 @@ export default defineComponent({
         const imageProfile = ref() //change profile pic file choose
         const newImage = ref("");
 
+        const breadcrumb = [
+            {
+                text: '< Back',
+                href: '/',
+                disable: false,
+            }
+        ]
+
         // IMAGE
+        const loadUpload = ref(false);
         const checkImg = computed(() => {
             if(imageProfile.value == null || imageProfile.value == "") return false;
             else {
@@ -171,6 +202,7 @@ export default defineComponent({
         }
 
         const submitImage = async () => {
+            loadUpload.value = true;
             var submitData = {
                 "userid": username,
                 "profile_pict": newImage.value
@@ -179,13 +211,18 @@ export default defineComponent({
             if(check == 200){
                 profPic.value = newImage.value;
                 clearImage();
-                store.dispatch("setProfile", profPic.value);
                 localStorage.setItem("profile", profPic.value)
             }
+            loadUpload.value = false
         }
         // END IMAGEEE
 
+        const load = ref(false)
         onMounted(async () => {
+            load.value = true;
+            // if(router.params.userid)
+            // console.log("at profile", router.app["_route"].params.userid)
+            // console.log(router.app["_route"])
             if(router.app["_route"].params.userid !== username){
                 router.push({
                     name: 'profile',
@@ -208,6 +245,7 @@ export default defineComponent({
                     else profPic.value = "data:" + mime + ";base64," + pic
                 }
             }
+            load.value = false;
         })
 
         // password
@@ -244,7 +282,8 @@ export default defineComponent({
             mdiCardAccountDetails, imageProfile, checkImg, clearImage,
             setNewProfile, submitImage, newImage, editPassword,
             changeEditStat, password, confirmPassword, submitPassword,
-            checkPassword, mdiKey, passwordUpdated
+            checkPassword, mdiKey, passwordUpdated, load, breadcrumb,
+            loadUpload
         }
     },
 })

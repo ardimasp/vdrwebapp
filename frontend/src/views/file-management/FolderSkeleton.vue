@@ -1,5 +1,9 @@
 <template>
-    <div></div>
+    <div>
+        <v-skeleton-loader
+            type="action, image"
+        ></v-skeleton-loader>
+    </div>
 </template>
 
 <script>

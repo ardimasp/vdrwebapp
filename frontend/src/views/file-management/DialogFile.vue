@@ -24,9 +24,14 @@
                     dense
                     v-model="categoryChoosen"
                 ></v-select>
+                <v-progress-linear
+                    v-if="loading"
+                    indeterminate
+                    color="secondary"
+                ></v-progress-linear>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" text @click="closeDialog" > Close </v-btn>
+                <v-btn color="primary" text @click="closeDialog" :disabled="loading"> Close </v-btn>
                 <v-btn color="primary" text @click="save" :disabled="!checkFile"> Save </v-btn>
             </v-card-actions>
         </v-card>
@@ -44,14 +49,15 @@ export default{
         active: {type: String},
     },
     setup(props, {emit}){
+        const loading = ref(false);
         const iconPaperClip = mdiPaperclip;
         const dialog = ref(true);
         const selectedFile = ref([]);
-        const selectItems = ["chart", "showcase"];
+        const selectItems = ["*","chart", "showcase", "sreeya"];
         const categoryChoosen = ref("");
 
         const checkFile = computed(() => {
-            if(selectedFile.value.length && !categoryChoosen.value == "") return true;
+            if(selectedFile.value.length && !categoryChoosen.value == "" && !loading.value) return true;
             return false;
         });
 
@@ -61,6 +67,8 @@ export default{
         }
 
         const save = async () => {
+            loading.value = true;
+            console.log(selectedFile.value);
             let submitData = new FormData();
             for(let i = 0; i < selectedFile.value.length; i++){
                 submitData.append('files', selectedFile.value[i]);
@@ -73,13 +81,15 @@ export default{
             // call API
             await fileService.addFile(submitData);
             await store.dispatch("fetchTreeList");
+            if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList");
 
+            loading.value = false;
             closeDialog();
         }
 
         return {
             iconPaperClip, dialog, selectedFile, checkFile, selectItems, categoryChoosen,
-            closeDialog, save
+            closeDialog, save, loading
         }
     },
 }
