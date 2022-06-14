@@ -12,7 +12,7 @@
         >
             <!-- 3d subplot plot T_T <a href="https://plotly.com/javascript/3d-subplots/" target="_blank">link here</a> -->
             <div id="plot3d"></div>
-            <div id="plot3d2" style="width:50%"></div>
+            <div id="plot3d2" style="width:80vw"></div>
             <div v-if="showErr">
                 <p class="headline font-weight-bold">{{errMsg}}!</p>
                 <p class="overline">Press the 'New Prediction' button below to reselect the file and make a new prediction</p>
@@ -145,7 +145,6 @@ export default defineComponent({
                         },
                     }
                     const layout2 = {
-                        width: 500,
                         xaxis: {
                             title: {
                             text: "x-"+hoursOnline.label,

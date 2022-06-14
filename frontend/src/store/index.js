@@ -16,7 +16,6 @@ export default new Vuex.Store({
     auth: authModule,
   },
   state: {
-    url: "https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common",
     initialLoad: false,
     alert: false,
   },

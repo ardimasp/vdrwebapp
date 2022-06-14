@@ -39,10 +39,10 @@
         <v-card-text>
           <v-form>
             <v-text-field
-              v-model="email"
+              v-model="username"
               outlined
-              label="Email"
-              placeholder="john@example.com"
+              label="Username"
+              placeholder="john"
               hide-details
               class="mb-3"
             ></v-text-field>
@@ -144,7 +144,7 @@ export default {
   setup() {
     const loading = ref(false)
     const isPasswordVisible = ref(false)
-    const email = ref('')
+    const username = ref('')
     const password = ref('')
     const socialLink = [
       {
@@ -172,7 +172,7 @@ export default {
     const setAlert = computed(() => {return store.state.alert})
 
     const checkValid = computed(() => {
-      if(email.value !== "" && password.value !== "" && loading.value ==false) return true;
+      if(username.value !== "" && password.value !== "" && loading.value ==false) return true;
       return false;
     })
 
@@ -185,16 +185,16 @@ export default {
       loading.value = true;
 
       let submitData = new FormData();
-      submitData.append("username", email.value);
+      submitData.append("username", username.value);
       submitData.append("password", password.value);
 
       const result = await store.dispatch('login', submitData);
 
       if(result == 200) {
         errorMsg.value = false;
-        await store.dispatch("setUsername", email.value)
+        await store.dispatch("setUsername", username.value)
         
-        var res = await adminService.getUserDetail(email.value);
+        var res = await adminService.getUserDetail(username.value);
         if(res.status == 200) {
             let pic = res.data.data.profile_pict;
             let mime = detectMimeType(pic);
@@ -225,7 +225,7 @@ export default {
 
     return {
       isPasswordVisible,
-      email,
+      username,
       password,
       socialLink,
       submitForm,
