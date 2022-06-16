@@ -9,6 +9,8 @@
     :x="x"
     :y="y"
     @resizing="onResize"
+
+    :draggable="false"
     >
     <v-system-bar
       class="drag-handle"

@@ -177,7 +177,7 @@ export default {
     })
 
     onMounted(() => {
-      // store.dispatch("logout");
+      store.dispatch("logout");
     })
 
     const errorMsg = ref(false);
@@ -208,15 +208,18 @@ export default {
         if(store.state.auth.permission == "Administrator") {
           await store.dispatch("fetchUserList")
           await router.push('/admin')
+          await store.dispatch("setLoad", false)
         }
         else if(store.state.auth.permission == "Premium User") {
           await store.dispatch("fetchTreeList")
           await store.dispatch("fetchSreeyaList")
           await router.push('/');
+          await store.dispatch("setLoad", false)
         }
         else {
           await store.dispatch("fetchTreeList");
           await router.push('/');
+          await store.dispatch("setLoad", false)
         }
       }
       else errorMsg.value = true;

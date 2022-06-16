@@ -170,6 +170,27 @@ class FileService{
                 }
             )
     }
+
+    getFileRaw(path){
+        return axios.get(`${url}/file?path=`+encodeURIComponent(path), 
+            {
+                headers: {
+                    Authorization: "Bearer " + store.state.auth.user
+                },
+                responseType: 'blob'
+            }
+        )
+            .then(
+                (res) => {
+                    return res
+                },
+                (err) => {
+                    console.log(err)
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
+    }
 }
 
 export default new FileService();
