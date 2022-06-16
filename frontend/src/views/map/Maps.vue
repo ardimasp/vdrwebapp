@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="container try">
        <!-- <vtk-card 
       :x="600"
       :y="0"
@@ -80,10 +80,10 @@ export default {
       previousSelection: [],
       sortby: null,
       heatmap: [],
-      opacity: 1,
+      opacity: 0.8,
       lessopacity: 0.4,
       deffillcolor: '#6200EE',
-      defcolor: '#00796B',
+      defcolor: '#018786',
 
       filldefcolor: '#004E40',
       dataDB: [],
@@ -205,34 +205,7 @@ export default {
 
         }
       }
-      
-      // let arrayGas = []
-      // alert(sortp);
-      // var size;
-      // if(sortp == "Gas Volume"){
-      //   for (let i in this.dataMaps){
-      //     size = this.dataMaps[i].size;
-      //     arrayGas.push([this.dataMaps[i].data.coordinates.pos[0], this.dataMaps[i].data.coordinates.pos[1], this.dataMaps[i].size])
-      //     // alert(arrayGas)
-
-      //   }
-      // }
-      // let sortedarrayGas = arrayGas.sort(function(a,b) {
-      //     return a[2]-b[2]
-      // });
-
-      // let x = sortedarrayGas.map(function(val) {
-      //   return val.slice(0, -1);
-      // });
-      // console.log(sortedarrayGas)
-      // var intensity = 50
-      // for(let i in x){
-      //   x[i].push(intensity)
-      //   intensity = intensity * 2;
-      // }
-      // this.heatmap = x
-      // console.log(x)
-
+     
     }
   },
   async mounted(){
@@ -259,10 +232,15 @@ export default {
 .container{
     z-index: 999;
     position: relative;
-    margin-top: -50px;
+    margin-top: -40px;
     left: 50%;
     transform: translate(-50%, 0);
   }
+
+// .try{
+//   width: 100%;
+//   height: 1000px;
+// }  
 
 /* // .fixedcontainer {
 //   position: absolute;

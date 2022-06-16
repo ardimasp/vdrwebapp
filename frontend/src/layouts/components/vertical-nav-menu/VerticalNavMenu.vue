@@ -50,15 +50,23 @@
       ></nav-menu-link>
       
       <nav-menu-link
+        title="Data Showcase"
+        :to="{ name: 'mapShowcase' }"
+        :icon="icons.mdiCardSearchOutline"
+      ></nav-menu-link>
+
+      <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
         :icon="icons.mdiHomeOutline"
       ></nav-menu-link>
+
       <nav-menu-link
         title="File Management"
         :to="{ name: 'file-management' }"
         :icon="icons.mdiTable"
       ></nav-menu-link>
+      
       <nav-menu-link
         title="Sreeya AI"
         :to="{ name: 'production' }"

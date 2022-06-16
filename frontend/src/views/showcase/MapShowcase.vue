@@ -33,25 +33,22 @@
           <MapSort v-on:input="sortSelected" />
      </template>
     </regular-card>
-<regular-card 
-      :x="700"
-      :y="50"
-      title="Data"
-
-      :w="110"
-      :h="70"
-    >
-      <v-btn
+<!-- <regular-card  -->
+  <draggable-button style="z-index: 999; left: 800px; top: 80px" :isClick.sync="btnIsClick">
+            <v-btn
               elevation="2"
-              text
               large
-              plain
               color="primary"
               @click="addData"
             >
-              Add
-            </v-btn>        
-            </regular-card>
+              Add Wells
+              <v-icon style="z-index: 999;" class="ml-4" right dark>
+                {{ mdiMapMarkerPlus }}
+              </v-icon>
+            </v-btn>   
+
+    </draggable-button>
+            <!-- </regular-card> -->
 
     </div>
 
@@ -73,7 +70,8 @@ import MapSort from '../map/MapSort.vue'
 import MapFilter from '../map/MapFilter.vue'
 
 import RegularCard from '../viewer/RegularCard.vue'
-
+import draggableButton from 'vue-draggable-button';
+import { mdiMapMarkerPlus } from '@mdi/js';
 // import axios from 'axios';
 import {getDatafromDB, getDB, restructureData} from './MapEndPoint.js'
 // import oilgas from '../../assets/images/oil&gas.svg'
@@ -86,6 +84,7 @@ export default {
     MapSort,
     MapFilter,
     RegularCard,
+    draggableButton,
   },
     data: function() {
     return {
@@ -99,48 +98,30 @@ export default {
       previousSelection: [],
       sortby: null,
       heatmap: [],
-      opacity: 1,
+      opacity: 0.8,
       lessopacity: 0.4,
       deffillcolor: '#6200EE',
       defcolor: '#00796B',
 
       filldefcolor: '#004E40',
       dataDB: [],
-      token:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaXJiYWd1cyIsImV4cCI6MTY1MzU3MzIwNH0.it5-5UVWULRRNlGsF8kXbnacjXiHzrHKlG6Wz1Z1Zno',
+      // token:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaXJiYWd1cyIsImV4cCI6MTY1MzU3MzIwNH0.it5-5UVWULRRNlGsF8kXbnacjXiHzrHKlG6Wz1Z1Zno',
       allData:[],
       tempD: [],
       transparent: 0,
-      correctData:[]
+      correctData:[],
+            btnIsClick: false,
+
     }
   },
-  
+  setup() {
+    return {
+        mdiMapMarkerPlus
+    }
+  },
 
   methods: {
 
-    // getFieldWell(){
-    //   return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:
-    //   {
-    //     accept: 'application/json',
-    //     Authorization: "Bearer " + this.token,
-    //   }
-    //   })
-    //         .then((res) => {
-    //             //Perform Success Action
-                
-    //       this.dataDB = res.data.data;
-    //       return this.dataDB
-    //       // console.log(dataDB)
-
-    //         })
-    //         .catch((error) => {
-    //             console.log(error.response.data);
-
-    //             // error.response.status Check status code
-    //         }).finally(() => {
-    //           //  console.log(data)
-    //             //Perform action in always
-    //         });
-    // },
     placeSelected(point){
       this.selectedP = point
       // console.log(this.selectedP)
@@ -249,38 +230,13 @@ export default {
 
         }
       }
-      
-      // let arrayGas = []
-      // alert(sortp);
-      // var size;
-      // if(sortp == "Gas Volume"){
-      //   for (let i in this.dataMaps){
-      //     size = this.dataMaps[i].size;
-      //     arrayGas.push([this.dataMaps[i].data.coordinates.pos[0], this.dataMaps[i].data.coordinates.pos[1], this.dataMaps[i].size])
-      //     // alert(arrayGas)
-
-      //   }
-      // }
-      // let sortedarrayGas = arrayGas.sort(function(a,b) {
-      //     return a[2]-b[2]
-      // });
-
-      // let x = sortedarrayGas.map(function(val) {
-      //   return val.slice(0, -1);
-      // });
-      // console.log(sortedarrayGas)
-      // var intensity = 50
-      // for(let i in x){
-      //   x[i].push(intensity)
-      //   intensity = intensity * 2;
-      // }
-      // this.heatmap = x
-      // console.log(x)
-
+     
     },
 
     addData(){
-      this.$router.push('/showcase')
+            if (this.btnIsClick) {
+
+      this.$router.push('/showcase')}
     }
   },
   async mounted(){
@@ -307,14 +263,9 @@ export default {
 .container{
     z-index: 999;
     position: relative;
-    margin-top: -50px;
+    margin-top: -40px;
     left: 50%;
     transform: translate(-50%, 0);
   }
 
-/* // .fixedcontainer {
-//   position: absolute;
-//   left: 0px;
-//   top: 0px;
-// } */
 </style>

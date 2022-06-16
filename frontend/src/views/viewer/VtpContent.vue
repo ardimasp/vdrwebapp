@@ -36,7 +36,7 @@ export default {
   props:{
     divWidthProp: {
         type: Number,
-        default: 600
+        default: 500
     },
     divHeightProp: {
         type: Number,
@@ -108,8 +108,8 @@ export default {
       // this.mapper.setInputConnection(coneSource.getOutputPort());
 
       this.mapper.setInputData(dataVtp);
-      this.actor.rotateX(90);
-      this.actor.rotateZ(55);
+      // this.actor.rotateX(90);
+      // this.actor.rotateZ(55);
 
       //get new data range
       const range = dataVtp.getPointData().getArrayByName("amplitude").getRange();

@@ -1,6 +1,6 @@
 <template>
-<div>
-  <v-form ref="form" v-model="valid" lazy-validation class="multi-col-validation">
+<div id="formContainer">
+  <v-form ref="form" v-model="formValid" lazy-validation>
     <v-row>
       <v-col cols="8"
        >
@@ -13,11 +13,12 @@
           dense
           placeholder="Field Name"
           required
-></v-combobox>
+          :menu-props="{ maxHeight: '150' }"
+          :rules="[v => !!v || 'Choose the field of the well']"
+        ></v-combobox>
         </v-col>
 
         <v-col cols="4"
-        
       >
         <v-btn
         color="primary"
@@ -27,11 +28,22 @@
           Add Wells
         </v-btn>
       </v-col>
+      <v-col >
+        <v-snackbar
+                  v-model="snackbar"
+                  :timeout="timeout"
+                  right
+                  :color="status"
+                  elevation="24"
+                >
+            {{resultPost}}
+        </v-snackbar>
+      </v-col>
+
 
     </v-row>
   <div v-for="(children, index) in this.childrens" :key="index">
     <v-card-title class="mt-5">Well</v-card-title>
-<p>{{children.name}}</p>
     <v-row class="mx-2">
       <v-col
         cols="12"
@@ -68,53 +80,53 @@
         ></v-text-field>
       </v-col>
      
-      <div v-if="location.position">
-<v-row class="mt-2 ml-3">
-      <v-col
-        cols="6"
-      >
-            <v-text-field
-            required
-              v-model="location.position.lat"
-              label="Latitude"
-              outlined
-              dense
-              placeholder="Latitude (Ex: -0.847199)"
-              hide-details
-              :rules="generalRules"
-            ></v-text-field>
-        
-      </v-col>
+      <div v-if="children.location.position">
+      <v-row class="mt-2 ml-3">
+            <v-col
+              cols="6"
+            >
+                  <v-text-field
+                  required
+                    v-model="children.location.position.lat"
+                    label="Latitude"
+                    outlined
+                    dense
+                    placeholder="Latitude (Ex: -0.847199)"
+                    hide-details
+                    :rules="generalRules"
+                  ></v-text-field>
+              
+            </v-col>
 
-      <v-col
-        cols="6"
-      >
+            <v-col
+              cols="6"
+            >
 
-            <v-text-field
-            required
-              v-model="location.position.lng"
-              label="Longitude"
-              outlined
-              dense
-              placeholder="Longitude (Ex: 117.015818)"
-              hide-details
-              :rules="generalRules"
+                  <v-text-field
+                  required
+                    v-model="children.location.position.lng"
+                    label="Longitude"
+                    outlined
+                    dense
+                    placeholder="Longitude (Ex: 117.015818)"
+                    hide-details
+                    :rules="generalRules"
 
-            ></v-text-field>
-      </v-col>
-</v-row>
+                  ></v-text-field>
+            </v-col>
+      </v-row>
       </div>
       <div v-else>
         <br>
         <h4 class="ml-3">Please choose the location of the Well by double tapping on a location on the map, drag and place the marker or use the search tool on the top left</h4>
       </div>
 
- <v-col
+      <v-col
               cols="12"
               md="12"
             >
         <div style="width:100%;height: 500px">
-          <SearchLocation v-model="location" :key="key" :ind="index" v-on:input="storeloc" />
+          <SearchLocation v-model="children.location" :key="key" :ind="index" v-on:input="storeloc" />
         </div>
       </v-col>
       <v-col
@@ -131,6 +143,8 @@
           hide-details
           type="number"
           min="0"
+          :rules="[v => !!v || 'Input the oil volume']"
+
         ></v-text-field>
       </v-col>
 
@@ -148,6 +162,7 @@
           hide-details
           type="number"
           min="0"
+          :rules="[v => !!v || 'Input the gas volume']"
         ></v-text-field>
       </v-col>
 
@@ -188,14 +203,7 @@
         cols="12"
         md="6"
       >
-        <!-- <v-text-field
-          v-model="children.waterDepth"
-          label="Water Depth"
-          outlined
-          dense
-          placeholder="Water Depth"
-          hide-details
-        ></v-text-field> -->
+      
         <v-autocomplete
         required
         dense
@@ -203,6 +211,8 @@
             v-model="children.waterDepth"
             :items="waterDepthchoose"
             label="Water Depth"
+            :rules="[v => !!v || 'Choose the water depth']"
+
             >
          
           </v-autocomplete>
@@ -212,14 +222,7 @@
         cols="12"
         md="6"
       >
-        <!-- <v-text-field
-          v-model="children.reservoir"
-          label="Reservoir"
-          outlined
-          dense
-          placeholder="Reservoir"
-          hide-details
-        ></v-text-field> -->
+       
         <v-autocomplete
         required
         dense
@@ -227,6 +230,7 @@
             v-model="children.reservoir"
             :items="reserviorchoose"
             label="Reservoir"
+            :rules="[v => !!v || 'Choose the reservior']"
             >
          
           </v-autocomplete>
@@ -239,7 +243,7 @@
         required
         dense
           accept="image/*"
-          v-model="imgFiles"
+          v-model="children.imgFiles"
           color="primary"
           counter
           label="File input"
@@ -248,7 +252,6 @@
           outlined  
           :show-size="1000"
           type="file"
-          @change="selectFiles(index)"
           :rules="fileRules"
         >
           <template v-slot:selection="{ index, text }">
@@ -269,7 +272,8 @@
             </span>
           </template>
         </v-file-input>
-        <!-- <input type="file" @change="readmultifiles" multiple/> -->
+          <!-- @change="selectFiles(index)" -->
+
       </v-col>
 
       <v-col  cols="12"
@@ -299,46 +303,29 @@
           BACK
         </v-btn>
       </v-col>
+      <!-- <v-alert type="success" :value="successAlert">
+        Successfully save data
+      </v-alert> -->
+      
   </v-form>
-</div>
+</div>        
+
 </template>
 
 <script>
-// import { ref } from '@vue/composition-api'
-// import { mdiPaperclip  } from '@mdi/js'
 import {postDatatoDB, getDatafromDB, getDB, getListFieldWell, uploadImages} from './MapEndPoint.js';
 import SearchLocation from "./SearchLocation.vue";
 
 export default {
-  // setup() {
-  //   fieldName = ref('')
-  //   wellName = ref('')
-  //   const city = ref('')
-  //   const country = ref('')
-  //   const company = ref('')
-  //   const email = ref('')
-
-  //   return {
-  //     firstName,
-  //     lastName,
-  //     city,
-  //     country,
-  //     company,
-  //     email,
-  //     checkbox,
-  //     // mdiPaperclip
-  //   }
-  // },
   components:{
     SearchLocation
   },
   data: function(){
     return{
       valid: true,
-
+      formValid:false,
       fieldName: '',
       dialog: false,
-      location: {},
       key: 1,
       childrens: [
           {
@@ -352,10 +339,13 @@ export default {
             reservoir:'',
             sourceRock:'',
             play:'',
+            location: {},
+        imgFiles: undefined,
 
             // files: undefined,
           }
         ],
+        successAlert: false,
         imageDatas: [],
         tempImg: [],
         waterDepthchoose: ['Onshore (darat)', 'Offshore shallow (laut <= 200 m)', 'Offshore deep (laut > 200m)'],
@@ -367,11 +357,13 @@ export default {
         selectedFiles: undefined,
         selectedImages: undefined,
         fileDisabled: true,
+        snackbar:false,
+        timeout:5000,
+        status:"info",
+        resultPost:"",
+        // imgFiles: undefined,
 
-//         fileRules:[
-//    v => !!v || 'File is required',
-//    v => (v && v.size > 0) || 'File is required',
-// ], 
+        // Rules:[v => !!v || 'Image is required'], 
         wellRules:[v => !!v || 'Well Name is required'],
         generalRules:[v => !!v || 'Field is required']
     }
@@ -390,23 +382,28 @@ export default {
           reservoir:'',
           sourceRock:'',
           play:'',
-          // files: undefined,
+          location: {},
+        imgFiles: undefined,
 
         })
 
-        // this.imageData.push({
-        //   wellName: '',
-        //   imgFiles: undefined,
-
-        // })
         console.log(this.childrens)
+
+        if(Object.keys(this.childrens).length > 0){
+        var usedWells = this.childrens.map(a => a.name);
+
+      const wellRule = 
+       v => (usedWells.includes(v) === false) || 'Well name exist!'
+        this.wellRules.push(wellRule)
+      }
     },
 
     deleteWell(id) {
-        // this.childrens[id].pull({
-        //     item: ''
-        // })
-
+      console.log(id)
+      this.wellRules.splice(id)
+        // this.wellRules.pop();
+              console.log(this.wellRules)
+        console.log(this.imageDatas)
         this.childrens.splice(id, 1);
 
         console.log(this.childrens)
@@ -418,107 +415,81 @@ export default {
       this.childrens[choseLoc.index].latitude = choseLoc.position.lat
       this.childrens[choseLoc.index].longitude = choseLoc.position.lng
     },
-    submitData(){
-      // for (let i=0; i<this.imageDatas.length;i++){
-      //   for (var value of this.imageDatas[i].values()) {
-      //     console.log(value);
-      //   }      
-      // }
-      this.$refs.form.validate()
+    
+    async submitData(){
+      for (let i = 0; i < Object.keys(this.childrens).length; i++){
+        this.selectFiles(this.childrens[i])
+      }
+
+      delete this.childrens.location;
+      delete this.childrens.imgFiles;
+
+
+      console.log(this.$refs.form.validate())
       if(this.$refs.form.validate() === true){
         const data = {
         fieldName: this.fieldName,
         wells: this.childrens
         }
         console.log(data)
-        postDatatoDB(data);
-
+        var returnedStatus = await postDatatoDB(data);
+        
         for (let i=0; i<this.imageDatas.length;i++){
           uploadImages(this.imageDatas[i])
+      }
+
+      if(returnedStatus === 200){
+        this.$refs.form.reset()
+        this.status = "success"
+        this.resultPost = "Successfully save data"
+        this.snackbar = true
       }
       }
         
     },
-    
-    readmultifiles(e) {
-      // console.log(Fileindex)
-      console.log(e.target.files[0])
-    //    var files = e.currentTarget.files;
-    // console.log(Object.keys(files))
-      // Object.keys(files).forEach(i => {
-      //   const file = files[i];
-      //   const reader = new FileReader();
-      //   reader.onload = function() {
-      //               console.log('RESULT', reader.result)
 
-      //     //server call for uploading or reading the files one-by-one
-      //     //by using 'reader.result' or 'file'
-      //   }
-      //   reader.readAsDataURL(file);
-      // })
-    },
-
-    selectFiles (index){
+    selectFiles (imgArr){
       let categoryChoosen = 'showcase'
-      // console.log(this.imgFiles[0])
+      console.log(imgArr.imgFiles)
       let submitData = new FormData();
-      for(let i = 0; i < this.imgFiles.length; i++){
-        console.log(this.imgFiles[i])
-          submitData.append('files', this.imgFiles[i]);
+      for(let i = 0; i < imgArr.imgFiles.length; i++){
+        console.log(imgArr.imgFiles[i])
+          submitData.append('files', imgArr.imgFiles[i]);
       }
-
-      submitData.append('foldername', this.childrens[index].name);
+      submitData.append('foldername', imgArr.name);
       submitData.append('pointer', categoryChoosen);
+      console.log(submitData)
       this.imageDatas.push(submitData)
-      for (var pair of submitData.entries()) {
-          console.log(pair[0]+ ', ' + pair[1]); 
-      }
-      // console.log(this.imageDatas[0])
-//       for (let i=0; i<this.imageDatas.length;i++){
-// for (var value of this.imageDatas[i].values()) {
-//         console.log(value);
-//       }      
-//       }
+      
       },
 
+    // selectFiles (index){
+    //   let categoryChoosen = 'showcase'
+    //   console.log(this.childrens[index].imgFiles.length)
+    //   let submitData = new FormData();
+    //   for(let i = 0; i < this.childrens[index].imgFiles.length; i++){
+    //     console.log(this.childrens[index].imgFiles[i])
+    //       submitData.append('files', this.childrens[index].imgFiles[i]);
+    //   }
+    //   submitData.append('foldername', this.childrens[index].name);
+    //   submitData.append('pointer', categoryChoosen);
+    //   console.log(submitData)
+    //   this.imageDatas.push(submitData)
+    //   // for (let i = 0; i < this.imageDatas.length; i++){
+    //   //  for (const value of this.imageDatas[i].values()) {
+    //   //    if(value === "t"){
+           
+    //   //    }
+    //   //     console.log(value);
+    //   //   }
+    //     // for (var pair of this.imageDatas[i].entries()) {
+    //     //   console.log(pair[0]+ ', ' + pair[1]); 
+    //   // }
       
-      // console.log(index)
-      // for (let i = 0; i<this.imgFiles.length;i++){
-      //   let file = this.imgFiles[i];
-      //   console.log(file)
-      //   var reader = new FileReader();
-
-      //   reader.onloadend = (function(f) {
-      //     return function(e) {
-      //       console.log('RESULT', e.target.result)
-      //       // this.tempImg.push(e.target.result)
-      //       console.log(f)
-      //       };
-      //   })(file);
-      //   //   console.log('RESULT', reader.result)
-      //   // }
-      //                   reader.readAsDataURL(file);
-
-      // }
-      //             console.log(this.tempImg)
-
-      // console.log(this.childrens[index].name)
-      // this.imageData.push({
-      //   wellName: this.childrens[index].name,
-      //   imageFiles: this.tempImg,
-
-      // })
-      // console.log(this.imageData)
-     
-    
+    //   },
 
     backPage(){
       this.$router.push('/map-showcase')
-    },
-
-    reset() {
-      this.key += 1;
-      this.location = {};
     },
 
     enableFileInput(index){
@@ -548,41 +519,52 @@ export default {
 
          if(this.existingWells){
         const rule =
-        v => (this.existingWells.includes(v) === false) || 'Well name exist!'
+        v => (this.existingWells.includes(v) === false) || "Well name exist!"
         this.wellRules.push(rule)
 
       }
 
   },
   computed:{
+    // wellRule(){
+    //   if(Object.keys(this.childrens).length > 0){
+    //     var usedWells = this.childrens.map(a => a.wellName);
+
+    //   const wellRule = 
+    //    v => (usedWells.includes(v) === false) || 'Well name exist!'
+    //     this.wellRules.push(wellRule)
+    //   }
+    // },
     fileRules(){
       console.log(this.childrens)
-      const fileRules = []
-      if(this.childrens.length > 0){
+      const imguploadRules = []
+      const Grule = v => !!v || 'Upload image required'
+      imguploadRules.push(Grule)
+      if(Object.keys(this.childrens).length > 0){
         const rule =
-        v => (this.existingWells.includes(v) === false) || 'Well name exist!'
-        fileRules.push(rule)
+        v => this.existingWells.includes(v) === false || 'Input well name first!'
+        imguploadRules.push(rule)
       }
-
-      // if(this.childrens.name)
-      return fileRules
+      return imguploadRules
 
     }
-    // wellRules(){
-    //   console.log(this.existingWells)
-    //   const wellRules = []
-
-    //   if(this.existingWells){
-    //     const rule =
-    //     v => (this.existingWells.includes(v) === false) || 'Well name exist!'
-    //     wellRules.push(rule)
-
-    //   }
-
-    //   // if(this.childrens.name)
-    //   return wellRules
-
-    // }
   },
   }
 </script>
+
+<style lang="css" scoped>
+.formContainer {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+}
+
+.match-height[data-v-4722cb3d] {
+    margin-top: 0px;
+}
+
+h4 {
+  color: green;
+}
+</style>

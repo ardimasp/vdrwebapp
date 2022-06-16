@@ -23,7 +23,7 @@
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon>
+               <v-btn icon @click="wH()">
                   <v-icon  v-bind="attrs"
                 v-on="on">{{icons.mdiDownload}}</v-icon>
 
@@ -56,6 +56,7 @@
             :divWidthProp="800"
             :divHeightProp="500"
         /> -->
+        <div ref="content">
       <v-carousel height="400">
         <v-carousel-item min-width="500"
           v-for="(item, i) in this.images"
@@ -80,6 +81,7 @@
         </tbody>
         </template>
     </v-simple-table>
+        </div>
     </v-card>
 <!-- style="color: #2D1F54;" -->
 </template>
@@ -89,8 +91,12 @@
 // import VtkCard from '../viewer/VtkCard.vue'
 // import VtkContent from '../viewer/VtkContent.vue'
 import {displayImages} from '../showcase/MapEndPoint.js';
-
 import {mdiDownload, mdiCloseThick} from "@mdi/js"
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable';
+
+
+// import html2canvas from "html2canvas"
 
 
 export default {
@@ -120,43 +126,101 @@ export default {
         mdiCloseThick
       },
       dataKeys: [],
-      dataValues: []
+      dataValues: [],
+      size: [],
+      stateS: [],
+      widthHeight :[]
+    }
+  },
+
+  watch: {
+    stateS(nstateS) {
+      // alert(nstateS)
+      this.widthHeight.push(nstateS)
+      if(nstateS.length == this.images.length){
+        this.downloadData(this.widthHeight)
+      }
     }
   },
   methods: {
 
      closeOverlay:function(){
       var over = false
-      // this.images = []
       this.images.length = 0
       this.$emit('click', over)
     },
 
-    async imagesTake(imgInfo){
-      let ims = []
-      for (let i in imgInfo){
-
-      ims.push(await displayImages(imgInfo[i]))
-      }
-      return ims
+    wH(){
       
+      for(let x in this.images){
+        let that = this
+
+        const img = new Image()
+        img.src = this.images[x]
+        img.onload = function(r) {
+          that.stateS.push([r.path[0].width, r.path[0].height])  
+        }   
+      }
+    },
+
+    downloadData(widHei){
+
+      var doc = new jsPDF();
+      var width = doc.internal.pageSize.getWidth();
+      var height = doc.internal.pageSize.getHeight();
+      console.log(width, height)
+      doc.text(15, 10, this.dataTitle);
+      autoTable(doc,{
+        theme: 'grid',
+        header: this.dataTitle,
+        head: [this.dataKeys],
+        body: [
+          this.dataValues
+        ],
+      })
+      doc.addPage()
+
+      let init = [0, 0, 90, 90]
+      let initialX = init[0]
+      let initialY = init[1]
+
+      for(let x in this.images){
+        var hratio =  widHei[widHei.length - 1][x][1]/widHei[widHei.length - 1][x][0]
+
+        console.log(widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1])
+        if(widHei[widHei.length - 1][x][0] > doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] > doc.internal.pageSize.getHeight() ){
+          doc.addImage(this.images[x], 'JPEG', initialX, initialY, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getWidth()*hratio);
+        }
+        else if(widHei[widHei.length - 1][x][0] > doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] < doc.internal.pageSize.getHeight()){
+          // doc.addImage(this.images[x], 'JPEG', initialX, initialY, doc.internal.pageSize.getWidth(),widHei[widHei.length - 1][x][1]);
+          doc.addImage(this.images[x], 'JPEG', initialX, initialY, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getWidth()*hratio);
+
+        }
+        else if(widHei[widHei.length - 1][x][0] < doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] > doc.internal.pageSize.getHeight()){
+          doc.addImage(this.images[x], 'JPEG', initialX, initialY, widHei[widHei.length - 1][x][0],doc.internal.pageSize.getHeight());
+        }
+        else if(widHei[widHei.length - 1][x][0] < doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] < doc.internal.pageSize.getHeight()){
+          doc.addImage(this.images[x], 'JPEG', initialX, initialY, widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1]);
+        }
+        if(this.images.length > (x+1)){
+          doc.addPage()
+        }
+        else {
+          continue        
+        }
+      }
+      doc.save(`${this.dataTitle}.pdf`);
+
     }
+    
   },
   async mounted() {
-    // this.images = this.datacard
-    var d = []
     for (let i in this.datacard){
 
       var valI = await displayImages(this.datacard[i])
       console.log(valI)
-      d.push(valI)
+      this.images.push(valI)
     }
-
-    this.images = d
-
-    // this.images = this.imagesTake(this.datacard)
-    //   console.log(valI)
-    // this.images = valI
     console.log(this.images)
     this.showcaseDetails = this.sD
     console.log(this.showcaseDetails)
