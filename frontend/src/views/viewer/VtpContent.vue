@@ -163,14 +163,11 @@ export default {
 
       //get new data range
       const range = dataVtp.getPointData().getArrayByName("amplitude").getRange();
-      let newDataRange = this.dataRange;
-      newDataRange[0] = Math.min(range[0], this.dataRange[0]);
-      newDataRange[1] = Math.max(range[1], this.dataRange[1]);
       
       //---------- vv&eliz ----------//
       // this.lookupTable.setMappingRange(...[newDataRange[0],newDataRange[1]]);
       // this.lookupTable.updateRange();
-      asset.lookupTable.setMappingRange(...[newDataRange[0],newDataRange[1]]);
+      asset.lookupTable.setMappingRange(...[Math.min(range[0], this.dataRange[0]),Math.max(range[1], this.dataRange[1])]);
       asset.lookupTable.updateRange();
       //-----------------------------//
 
@@ -201,8 +198,6 @@ export default {
   },
   setup(props) {
     const context = ref(null);
-    const coneResolution = ref(6);
-    const representation = ref(2);
 
     const divWidth = ref(props.divWidthProp);
     const divHeight = ref(props.divHeightProp);
@@ -212,14 +207,6 @@ export default {
     const renderer     = vtkRenderer.newInstance();
     renderer.setBackground([255,255,255])
 
-    
-    function setConeResolution(res) {
-      coneResolution.value = Number(res);
-    }
-
-    function setRepresentation(rep) {
-      representation.value = Number(rep);
-    }
 
     function onClick(){
       const { renderWindow } = context.value;
@@ -286,10 +273,6 @@ export default {
 
 
     return {
-      setRepresentation,
-      setConeResolution,
-      coneResolution,
-      representation,
       onClick,
       divWidth,
       divHeight,
