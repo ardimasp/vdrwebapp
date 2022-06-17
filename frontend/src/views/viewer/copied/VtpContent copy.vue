@@ -46,10 +46,6 @@ export default {
         type: Object,
         default: null
         },
-    vtpIndex: {
-      type: Number,
-      default: 0
-    }
   },
   data(){
       return {
@@ -71,10 +67,10 @@ export default {
       // this.lookupTable.updateRange();
       
       
-      this.assets[this.vtpIndex].lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
+      this.assets[this.assets.length-1].lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
 
-      this.assets[this.vtpIndex].lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
-      this.assets[this.vtpIndex].lookupTable.updateRange();
+      this.assets[this.assets.length-1].lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
+      this.assets[this.assets.length-1].lookupTable.updateRange();
       //-----------------------------//
 
       this.renderWindow.render();
@@ -88,22 +84,19 @@ export default {
       // this.lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
       // this.lookupTable.updateRange();
 
-      this.assets[this.vtpIndex].lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
-      this.assets[this.vtpIndex].lookupTable.updateRange();
+      this.assets[this.assets.length-1].lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
+      this.assets[this.assets.length-1].lookupTable.updateRange();
       //-----------------------------//
       
       this.renderWindow.render();
 
     },
-    removeActor(index) {
+    removeActor() {
 
       //---------- vv&eliz ----------//
       // this.actor.delete();
       // this.mapper.delete();
-      // const asset = this.assets.pop()
-      const asset = this.assets[index]
-      this.assets.splice(index, 1)
-      // console.log(index)
+      const asset = this.assets.pop()
       asset.actor.delete();
       asset.mapper.delete();
       //-----------------------------//

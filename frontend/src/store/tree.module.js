@@ -3,15 +3,11 @@ import fileService from '../services/file.service';
 export default {
     state: {
         list: [],
-        length: 20,
         sreeya: [],
     },
     mutations: {
         UPDATE_TREE(state, payload){
             state.list = payload;
-        },
-        UPDATE_LENGTH(state, payload){
-            state.length = payload;
         },
         UPDATE_SREEYA(state, payload){
             state.sreeya = payload;

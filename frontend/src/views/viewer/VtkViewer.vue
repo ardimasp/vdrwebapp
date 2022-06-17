@@ -8,12 +8,13 @@
       :w="600"
       :h="600"
       :dataVtp="dataVtp"
+      :vtpIndex="selectedIndex"
       ref="vtpcard"
     >
     </vtp-card>
     <regular-card 
         :x="0"
-        :y="200"
+        :y="300"
         title="Files"
         :w="400"
         :h="350"
@@ -27,33 +28,50 @@
       </regular-card>
 
     <div>
-      <v-btn
-        depressed
-        color="primary"
-        @click="onUploadFile"
-      >
-        Upload VTP
-      </v-btn>
-
-      <input
-        id="seismic"
-        multiple="true"
-        style="display:none"
-        type="file"
-        accept=".vtp" 
-        ref="uploader" 
-        @change="onFileChanged"
-        >
-
-      <v-btn
-        depressed
-        color="error"
-        @click="onDelete"
-      >
-        Delete
-      </v-btn>
-
       <v-container>
+        <div class="mb-5">
+          <v-btn
+            depressed
+            color="primary"
+            @click="onUploadFile"
+          >
+            Upload VTP
+          </v-btn>
+
+          <input
+            id="seismic"
+            multiple="true"
+            style="display:none"
+            type="file"
+            accept=".vtp" 
+            ref="uploader" 
+            @change="onFileChanged"
+            >
+
+          <v-btn
+            depressed
+            color="error"
+            @click="onDelete"
+          >
+            Delete
+          </v-btn>
+        </div>
+
+        
+        <v-row>
+          <v-col
+            cols="12"
+            sm="6"
+            md="4"
+          >
+            <v-autocomplete
+              dense
+              v-model="selectedValue"
+              :items="returnSelectedTree"
+              label="Selected"
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col
             cols="12"
@@ -65,7 +83,6 @@
               label="Gain"
               v-model="gain"
               type="number"
-              @keydown.enter.prevent="onPressEnter"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -76,12 +93,14 @@
             md="4"
           >
             <v-autocomplete
+              dense
               v-model="value"
               :items="items"
               label="Standard"
             ></v-autocomplete>
           </v-col>
         </v-row>
+        <v-btn color="primary" @click="applyChanges">Apply</v-btn>
       </v-container>
       
     </div>
@@ -112,45 +131,73 @@ export default{
           items: [],
           value: '2hot',
 
-          dataVtpTest: null,
+          selectedTree: null, //selected array in treeview
+          selectedValue: null, //value selected based on the array
+          selectedIndex: null, //the index of the selected value
       }
   },
   props:{
   },
   watch: { 
-    value: function(newVal) { // watch it
-      this.$refs.vtpcard.changeColorMapName(newVal,this.gain)
+    // value: function(newVal) { // watch it
+    //   this.$refs.vtpcard.changeColorMapName(newVal,this.gain)
+    // }
+    selectedValue: function(newVal) {
+      if(this.selectedTree == null || this.selectedTree.length == 0) return
+
+      this.selectedIndex = this.selectedTree.indexOf(newVal)
     }
   },
+  computed:{
+    returnSelectedTree() {return this.selectedTree}
+  },
   methods: {
+    applyChanges(){
+      this.changeGain();
+      this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
+
+      // other things considered
+    },
     async selectedContent(selected) {
-      console.log("at selected", selected[0])
-      const file = await fileService.getFileRaw(selected[0])
-      console.log(file.data);
+      console.log("at selected", selected)
+      this.selectedTree = selected;
+      if(this.selectedValue == null || this.selectedValue == "") {
+        this.selectedValue = this.selectedTree[0]
+        this.selectedIndex = 0
+      }
+      const file = await fileService.getFileRaw(selected.slice(-1)) //take the last one in the array
+      // console.log(file.data);
 
       const fileReader = new FileReader();
 
         let that = this;
         fileReader.onload = function onLoad() {
           //read data 
-          // console.log("at file reader", fileReader.result)
           const readerVtp = vtkXMLPolyDataReader.newInstance();
           readerVtp.parseAsArrayBuffer(fileReader.result);
           const data = readerVtp.getOutputData(0);
-          // console.log("AAAAAAAAAAA", data)
           that.dataVtp = data
         };
         fileReader.readAsArrayBuffer(file.data);
     },
-    removeContent(){
-      this.onDelete()
+    removeContent(newArray, removedIndex){
+      this.selectedTree = newArray;
+      if(this.selectedTree.length > 0) {
+        this.selectedValue = this.selectedTree[0]
+        this.selectedIndex = 0
+      }
+      else {
+        this.selectedValue = this.selectedIndex = null
+      }
+      console.log("at removed", removedIndex)
+      this.onDelete(removedIndex)
     },
 
-    onPressEnter(){
+    changeGain(){
       this.$refs.vtpcard.setGain(this.gain)
     },
-    onDelete(){
-      this.$refs.vtpcard.removeActor()
+    onDelete(removedIndex){
+      this.$refs.vtpcard.removeActor(removedIndex)
     },
     onUploadFile(){
       this.$refs.uploader.click();

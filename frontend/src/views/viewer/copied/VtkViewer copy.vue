@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import VtpCard from './VtpCard.vue'
+import VtpCard from '../VtpCard.vue'
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 

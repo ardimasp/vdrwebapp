@@ -42,7 +42,7 @@ export default {
       if(prevSelected.length > newSelected.length){
         for (let i = 0; i < prevSelected.length; i++){
           if(!newSelected.includes(prevSelected[i])) {
-            if(checkFileChoosen(prevSelected[i])) emit("removedata")
+            if(checkFileChoosen(prevSelected[i])) emit("removedata", newSelected, i)
           }
         }
       }
@@ -50,7 +50,7 @@ export default {
       let newSelect;
       if(newSelected.length > prevSelected.length){
         newSelect = newSelected.slice(-1)
-        if(checkFileChoosen(newSelect)) emit("changeselected", newSelect)
+        if(checkFileChoosen(newSelect)) emit("changeselected", newSelected)
       }
 
       // console.log(newSelected, prevSelected)

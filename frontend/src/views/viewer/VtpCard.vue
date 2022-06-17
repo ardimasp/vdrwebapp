@@ -39,6 +39,7 @@
             :divWidthProp="divWidth"
             :divHeightProp="divHeight"
             :dataVtp="dataVtp"
+            :vtpIndex="vtpIndex"
             ref="vtpcontent"
         ></vtp-content>
     </div>
@@ -98,6 +99,10 @@ export default {
       type: Object,
       default: null,
     },
+    vtpIndex: {
+      type: Number,
+      default: 0
+    }
   },
   watch: { 
     // dataVtp: function(newVal, oldVal) { // watch it
@@ -115,8 +120,8 @@ export default {
     setGain(gain) {
       this.$refs.vtpcontent.setGain(gain)
     },
-    removeActor() {
-      this.$refs.vtpcontent.removeActor()
+    removeActor(index) {
+      this.$refs.vtpcontent.removeActor(index)
     },
     onResize: function (_x, _y, width, height) {
         this.width = width
