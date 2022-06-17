@@ -63,6 +63,7 @@ export default {
     
     const checkSelect = computed(() => {
       if (selected.value.length) return true;
+      console.log(selected.value)
       return false;
     });
 
@@ -134,4 +135,6 @@ export default {
             addFileDialog, addFile, openAddFileDialog}
   }
 }
+
+//treecontent2 vtkviewer 
 </script>

@@ -28,19 +28,6 @@
           Add Wells
         </v-btn>
       </v-col>
-      <v-col >
-        <v-snackbar
-                  v-model="snackbar"
-                  :timeout="timeout"
-                  right
-                  :color="status"
-                  elevation="24"
-                >
-            {{resultPost}}
-        </v-snackbar>
-      </v-col>
-
-
     </v-row>
   <div v-for="(children, index) in this.childrens" :key="index">
     <v-card-title class="mt-5">Well</v-card-title>
@@ -306,7 +293,51 @@
       <!-- <v-alert type="success" :value="successAlert">
         Successfully save data
       </v-alert> -->
-      
+      <v-snackbar
+        v-model="snackbar"
+        :timeout="timeout"
+        right
+        :color="status"
+        elevation="24"
+      >
+        {{resultPost}}
+      </v-snackbar>
+      <v-dialog
+      v-model="successDialog"
+      max-width="350"
+    >
+      <v-card>
+          <v-card-title>  Do you want to add more data?</v-card-title>
+          
+          <v-card-text>
+          No to go back to data showcase page.
+          <br/> Yes to continue adding more data.          
+          </v-card-text>
+          
+          <v-card-actions class="dense">
+            <v-spacer></v-spacer>
+
+            <v-btn
+              text
+              color="primary"
+              large
+              @click="backPage"
+
+            >
+              No
+            </v-btn>
+            <v-btn
+              text
+              color="primary"
+              large
+              @click="closeDialog"
+
+            >
+              Yes
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+    </v-dialog>
   </v-form>
 </div>        
 
@@ -361,6 +392,7 @@ export default {
         timeout:5000,
         status:"info",
         resultPost:"",
+        successDialog:false,
         // imgFiles: undefined,
 
         // Rules:[v => !!v || 'Image is required'], 
@@ -437,13 +469,33 @@ export default {
         for (let i=0; i<this.imageDatas.length;i++){
           uploadImages(this.imageDatas[i])
       }
-
-      if(returnedStatus === 200){
-        this.$refs.form.reset()
-        this.status = "success"
-        this.resultPost = "Successfully save data"
-        this.snackbar = true
-      }
+        if(Number.isInteger(returnedStatus)){
+          var successstatusStr = String(returnedStatus)[0]
+          if(successstatusStr === '2'){
+            this.$refs.form.reset()
+            this.status = "success"
+            this.resultPost = "Successfully save data"
+            this.snackbar = true
+            this.successDialog = true
+          }
+        }else if(Array.isArray(returnedStatus)){
+          var failstatusStr = String(returnedStatus[0])[0]
+          if(failstatusStr === '4'){
+            this.$refs.form.reset()
+            this.status = "error"
+            this.resultPost = returnedStatus[1]
+            this.snackbar = true
+            // this.successDialog = true
+          }
+          else{
+            this.$refs.form.reset()
+            this.status = "error"
+            this.resultPost = "Please reload & try again"
+            this.snackbar = true
+            // this.successDialog = true
+          }
+        }
+        
       }
         
     },
@@ -490,6 +542,10 @@ export default {
 
     backPage(){
       this.$router.push('/map-showcase')
+    },
+
+    closeDialog(){
+      this.successDialog = false
     },
 
     enableFileInput(index){

@@ -1,21 +1,22 @@
 import axios from 'axios';
 import {checkExpire} from '../../services/api';
-import tokenService from "../../services/token.service";
+// import tokenService from "../../services/token.service";
+import store from "../../store";
 
 
 // var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiJzaXJiYWd1cyIsInR5cGUiOiJQcmVtaXVtIFVzZXIiLCJuYW1lIjoiU2lyIEJhZ3VzIiwiZXhwaXJ5X2RhdGUiOiIyMDIzLTEyLTMwIiwiYWZmaWxpYXRpb24iOiJCaW51cyBVbml2ZXJzaXR5IiwiZXhwIjoxNjU0Nzg0NDIyfQ.DDeQIti9VfAthsFJQ2josALH8OTn6TWkvNO3ioPCul0"
-const headers = {
-  headers: {
-    accept: 'application/json',
-    Authorization: "Bearer " + tokenService.getLocalAccessToken()
-  }
-}
+// const headers = {
+//   headers: {
+//     accept: 'application/json',
+//     Authorization: "Bearer " + store.state.auth.user
+//   }
+// }
 // localStorage.getItem("user")
 function postDatatoDB(data){
     return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+      Authorization: "Bearer " + store.state.auth.user,
       'Content-Type': 'application/json'
     }
     })
@@ -28,7 +29,7 @@ function postDatatoDB(data){
            .catch((error) => {
               console.log(error.response.data);
               checkExpire(error);
-
+              return [error.response.status,error.response.data]
                // error.response.status Check status code
            }).finally(() => {
              console.log(data)
@@ -38,7 +39,10 @@ function postDatatoDB(data){
 
 let list =[];
 async function getListFieldWell(){
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', headers)
+  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
+    accept: 'application/json',
+    Authorization: "Bearer " + store.state.auth.user}
+  })
          .then((res) => {
              //Perform Success Action
              
@@ -64,7 +68,10 @@ let allData = [];
 let da = [];
 function getDatafromDB(){
 
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', headers)
+  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
+    accept: 'application/json',
+    Authorization: "Bearer " + store.state.auth.user}
+  })
          .then((res) => {
              //Perform Success Action
              
@@ -99,13 +106,13 @@ function getDB(dat){
   return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', data, {headers:
   {
     accept: 'application/json',
-    Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+    Authorization: "Bearer " + store.state.auth.user,
     'Content-Type': 'application/json'
   }
   })
          .then((res) => {
              //Perform Success Action
-             console.log(res.data.data);
+            //  console.log(res.data.data);
              var tempD = res.data.data
              tempD.forEach((o, i) => o.id = i + 1);
              
@@ -131,7 +138,7 @@ function getDB(dat){
    
   var fieldIdcheck = []
   var structuredData = []
-console.log(teest)
+// console.log(teest)
   for(let x=0;x< teest.length; x++){
     // console.log(teest[x].fieldName)
     if(fieldIdcheck.includes(teest[x].fieldName)){
@@ -175,7 +182,7 @@ console.log(teest)
     return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files', data, {headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+      Authorization: "Bearer " + store.state.auth.user,
       'Content-Type': 'multipart/form-data'
     }
     })
@@ -194,11 +201,11 @@ console.log(teest)
               });
   }
 
-  function getImages(){
-    return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/showcase',{headers:
+  function getImages(pointer){
+    return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/${pointer}`,{headers:
     {
       accept: 'application/json',
-      Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+      Authorization: "Bearer " + store.state.auth.user,
     }
     })
            .then((res) => {
@@ -228,10 +235,10 @@ console.log(teest)
     // for (let i in imagePath){
 
     return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=${encodeURIComponent(imagePath)}`, {
-    responseType: 'blob',headers:
+    responseType: 'blob', headers:
       {
         accept: 'application/json',
-        Authorization: "Bearer " + tokenService.getLocalAccessToken(),
+        Authorization: "Bearer " + store.state.auth.user,
       }
       })
     .then((res) => {

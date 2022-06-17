@@ -8,31 +8,41 @@
             :key="index"
             v-for="(dataMap,index) in dataMaps"
             :lat-lng="[dataMap.wellLatitude, dataMap.wellLongitude]"
-            :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)*10"
+            :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)*5"
             :color='dataMap.iconColor'
             :fillColor='dataMap.fillIcon'
             :fillOpacity="dataMap.iconfillColor"
             :opacity="dataMap.iconborderColor"
             @click="cardshown(dataMap.wellName)"
             @mouseover="recenterMap(dataMap.id)"
-          />
+          >
+          <l-tooltip
+            :options="options"
+            :content="iconTooltip()"/>
+          </l-circle>
         </l-map>
       <!-- </v-card> -->
     </div>
-    <v-overlay style="z-index: 9999;" :absolute="true" :value="overlay">
+    <v-overlay v-if="this.dataType === 'showcase'" style="z-index: 9999;" :absolute="true" :value="overlay">
       <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
-    <v-overlay :absolute="true" :value="overlaymap">
-      <MaponFilter  :dataFilter="this.dataFilter"/>
+    <v-overlay v-if="this.dataType === 'visual'" style="z-index: 9999;" :absolute="true" :value="overlay">
+      <ChoiceVisual  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
     </v-overlay>
+    <!-- <v-overlay :absolute="true" :value="overlaymap">
+      <MaponFilter  :dataFilter="this.dataFilter"/>
+    </v-overlay> -->
   </div>
 </template>
 
 <script>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { LMap, LTileLayer, LCircle } from 'vue2-leaflet'
+import { LMap, LTileLayer,LCircle,LTooltip } from 'vue2-leaflet'
 import ChoiceCard from './ChoiceCard.vue'
+import ChoiceVisual from './ChoiceVisual.vue'
+
+// import oilgas from '../../assets/images/oil&gas.svg'
 
 // import Vue from "vue";
 import ClickOutside from 'vue-click-outside'
@@ -43,11 +53,15 @@ export default {
     LMap,
     LTileLayer,
     ChoiceCard,
-    LCircle
+    ChoiceVisual,
+    LCircle,
+    // LCircleMarker,
+    LTooltip
   },
   props:{
     dataMaps: Array,
-    heatmap: Array
+    heatmap: Array,
+    dataType: String
   },
 
   data: function() {
@@ -65,7 +79,9 @@ export default {
       overlay: false,
       overlaymap: false,
 
-      prevColor: []
+      prevColor: [],
+      options: { permanent: true, direction:'top' },
+
     }
   },
   methods: {
@@ -100,7 +116,9 @@ export default {
       tooltipAnchor: [ -10, 20 ]
       });
     },
-
+    iconTooltip(){
+      return "<div><img src='https://static.thenounproject.com/png/2946698-200.png' width='30' /></div>"
+    },
     recenterMap(key) {
       var filteredResult = this.dataMaps.find((e) => e.id == key);
 
@@ -112,6 +130,17 @@ export default {
       this.dataFilter = filteredResult
       this.overlaymap = true
     },
+
+    metersPerPixel(latitude, zoomLevel) {
+      var earthCircumference = 40075017;
+      var latitudeRadians = latitude * (Math.PI/180);
+      return earthCircumference * Math.cos(latitudeRadians) / Math.pow(2, zoomLevel + 8);
+    },
+
+    pixelValue(latitude, meters, zoomLevel) {
+      console.log(meters / this.metersPerPixel(latitude, zoomLevel))
+      return meters / this.metersPerPixel(latitude, zoomLevel);
+    }
   },
 
   mounted() {
@@ -172,5 +201,6 @@ export default {
 #maptryit { height: 800px; }
 
       /* :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)" */
+            /* :radius="pixelValue(dataMap.wellLatitude, dataMap.wellArea, zoom)*200" */
 
 </style>

@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="chart-container">
         <canvas :id="chartId"></canvas>
     </div>
 </template>
 
 <script>
 import Chart from 'chart.js/auto'
-import store from '../../store';
+// import store from '../../store';
 
 export default({
     props: {
@@ -21,9 +21,9 @@ export default({
         }
     },
     mounted() {
-        const list_id = store.state.viewer.list.findIndex(x => x.id == this.id);
-        this.x_data = store.state.viewer.list[list_id].x_data;
-        this.y_data = store.state.viewer.list[list_id].y_data;
+        // const list_id = store.state.viewer.list.findIndex(x => x.id == this.id);
+        this.x_data = [1,3,5,7,0,3,4,6,8,1];
+        this.y_data = [0,6,5,3,1,9,7,4,2,3];
 
         const ctx = document.getElementById(this.chartId).getContext('2d');
         this.chart = new Chart(ctx, {
@@ -41,3 +41,12 @@ export default({
     }
 })
 </script>
+
+<style scoped>
+.chart-container {
+    /* margin-left: 20px; */
+    width: 900px;
+    height:600px;
+    background-color: white;
+}
+</style>

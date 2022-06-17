@@ -152,12 +152,7 @@ export default{
     returnSelectedTree() {return this.selectedTree}
   },
   methods: {
-    applyChanges(){
-      this.changeGain();
-      this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
-
-      // other things considered
-    },
+    //important
     async selectedContent(selected) {
       console.log("at selected", selected)
       this.selectedTree = selected;

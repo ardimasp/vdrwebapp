@@ -1,5 +1,7 @@
 <template>
   <l-map
+    style="z-index: 10;"
+
     ref="map"
     @dblclick="onMapClick"
     :zoom="zoom"

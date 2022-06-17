@@ -11,7 +11,7 @@
     </vtk-card> -->
 
     <regular-card 
-      :x="10"
+      :x="400"
       :y="50"
       title="Select Wells"
       :w="300"
@@ -23,23 +23,24 @@
     </regular-card>
 
      <regular-card 
-      :x="400"
+      :x="10"
       :y="50"
       title="Sort By"
-      :w="250"
-      :h="150"
+      :w="300"
+      :h="140"
     >
      <template>
           <MapSort v-on:input="sortSelected" />
      </template>
     </regular-card>
 <!-- <regular-card  -->
-  <draggable-button style="z-index: 999; left: 800px; top: 80px" :isClick.sync="btnIsClick">
+  <draggable-button style="z-index: 999; left: 22px; top: 215px;" :isClick.sync="btnIsClick">
             <v-btn
               elevation="2"
-              large
+              x-large
               color="primary"
               @click="addData"
+              width="300px"
             >
               Add Wells
               <v-icon style="z-index: 999;" class="ml-4" right dark>
@@ -52,7 +53,7 @@
 
     </div>
 
-    <MapNavigation :dataMaps="datas" :heatmap="heatmap"></MapNavigation>
+    <MapNavigation :dataMaps="datas" :heatmap="heatmap" :dataType="dT"></MapNavigation>
     <!-- <br>
     <br> -->
   </div>
@@ -110,8 +111,8 @@ export default {
       tempD: [],
       transparent: 0,
       correctData:[],
-            btnIsClick: false,
-
+      btnIsClick: false,
+      dT: 'showcase'
     }
   },
   setup() {

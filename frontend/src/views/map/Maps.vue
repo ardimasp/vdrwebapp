@@ -35,15 +35,15 @@
     </regular-card>
 
     </div>
-
-    <MapNavigation :dataMaps="datas" :heatmap="heatmap"></MapNavigation>
+    <MapVisualization :dataMaps="datas" :heatmap="heatmap" :dataType="visualData"> </MapVisualization>
+    <!-- <MapNavigation :dataMaps="datas" :heatmap="heatmap" :dataType="visualData"></MapNavigation> -->
     <!-- <br>
     <br> -->
   </div>
 </template>
 
 <script>
-import MapNavigation from './MapNavigation.vue'
+// import MapNavigation from './MapNavigation.vue'
 import 'leaflet/dist/leaflet.css'
 // import L from 'leaflet'
 import { cardData } from './Dummy.js'
@@ -57,16 +57,18 @@ import RegularCard from '../viewer/RegularCard.vue'
 
 // import axios from 'axios';
 import {getDatafromDB, getDB, restructureData} from '../showcase/MapEndPoint.js'
+import MapVisualization from './MapVisualization.vue'
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgas from '../../assets/images/map-marker.svg'
 
 export default {
   components: {
-    MapNavigation,
+    // MapNavigation,
     // MapList,
     MapSort,
     MapFilter,
     RegularCard,
+    MapVisualization,
   },
     data: function() {
     return {
@@ -91,7 +93,8 @@ export default {
       allData:[],
       tempD: [],
       transparent: 0,
-      correctData:[]
+      correctData:[],
+      visualData: 'visual'
     }
   },
   

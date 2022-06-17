@@ -10,7 +10,7 @@
     :y="y"
     @resizing="onResize"
 
-    :draggable="false"
+    :draggable="true"
     >
     <v-system-bar
       class="drag-handle"
@@ -105,9 +105,9 @@ export default {
     }
   },
   watch: { 
-    // dataVtp: function(newVal, oldVal) { // watch it
-    //   console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-    // }
+    dataVtp: function(newVal, oldVal) { // watch it
+      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+    }
   },
   components: {
     VueDraggableResizable,
@@ -150,6 +150,9 @@ export default {
         mdiWindowMaximize,
       }
     }
+  },
+  mounted(){
+    console.log(this.dataVtp)
   }
 }
 </script>

@@ -28,7 +28,6 @@
                     <v-icon>{{icons.mdiCloseThick}}</v-icon>
 
                 </v-btn> -->
-
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
 
@@ -198,7 +197,8 @@ export default {
     delete copy.id;
 
     this.info = copy
-    this.imgShowcase = await getImages();
+    var pointer = "showcase"
+    this.imgShowcase = await getImages(pointer);
     // console.log(this.imgShowcase)
     let result = this.imgShowcase.filter(obj => {
       return obj.name === this.datacard.wellName

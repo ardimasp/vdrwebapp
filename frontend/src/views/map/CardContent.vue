@@ -1,6 +1,6 @@
 <template>
      <v-card
-      style="background-color: #00796B;"
+     style="background-color:rgb(145, 85, 253);"
       class="mx-auto my-12"
       max-width="900"
       max-height="900"
@@ -10,20 +10,23 @@
      <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
-      <v-row class="mb-2">
-        <v-col class="ml-5 mt-5">
-                <v-card-title class="ml-2">{{ this.dataTitle }}</v-card-title>
-        </v-col>
-        <v-col md="auto" class="mt-7">
+      <v-row>
+        <!-- <v-col class="ml-5 mt-5"> -->
+                <v-card-title style="color: white!important;" class="ml-4">{{ this.dataTitle }}</v-card-title>
+        <!-- </v-col> -->
+                  <!-- <v-spacer></v-spacer> -->
+          <v-spacer></v-spacer>
+
+        <!-- <v-col md="auto" class="mt-7"> -->
           <!-- <v-btn icon>
               <v-icon>{{icons.mdiDownload}}</v-icon>
 
           </v-btn> -->
-
+          <div class="mt-10 mr-10">
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="wH()">
+               <v-btn icon @click="wH()"  class="mr-4" style="color: white!important;">
                   <v-icon  v-bind="attrs"
                 v-on="on">{{icons.mdiDownload}}</v-icon>
 
@@ -32,12 +35,12 @@
             <span>Download Data</span>
           </v-tooltip>
 
-        </v-col>
-        <v-col lg="2" class="mt-7">
+        <!-- </v-col> -->
+        <!-- <v-col lg="2" class="mt-7"> -->
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="closeOverlay()">
+               <v-btn icon @click="closeOverlay()" style="color: white!important;">
                   <v-icon  v-bind="attrs"
                 v-on="on">{{icons.mdiCloseThick}}</v-icon>
 
@@ -45,12 +48,12 @@
             </template>
             <span>Close Overlay</span>
           </v-tooltip>
-
+          </div>
           <!-- <v-btn icon @click="closeOverlay()">
               <v-icon>{{icons.mdiCloseThick}}</v-icon>
 
           </v-btn> -->
-        </v-col>
+        <!-- </v-col> -->
       </v-row>
         <!-- <VtkContent
             :divWidthProp="800"
@@ -66,7 +69,7 @@
           transition="fade-transition"
         ></v-carousel-item>
       </v-carousel>
-      <v-simple-table class="ml-4" style="background-color: #00796B;" height="300px">
+      <v-simple-table class="pl-4" style="background-color: #EDE7F6;" height="300px">
         <template v-slot:default>
         <tbody>
           
@@ -75,8 +78,8 @@
                 :key="i"
             >
 
-                <td>{{ item }}</td>
-                <td> {{ dataValues[i] }} </td>
+                <td style="color:black!important">{{ item }}</td>
+                <td style="color:black!important"> {{ dataValues[i] }} </td>
             </tr>
         </tbody>
         </template>
@@ -169,7 +172,13 @@ export default {
       var width = doc.internal.pageSize.getWidth();
       var height = doc.internal.pageSize.getHeight();
       console.log(width, height)
-      doc.text(15, 10, this.dataTitle);
+      doc.text(10, 10, this.dataTitle);
+      // let space = 20
+      // for(let i=0; i < this.dataKeys.length;i++){
+      //   doc.text(15, space, this.dataKeys[i])
+      //   doc.text(15, space, this.dataValues[i])
+      //   space = space + 10
+      // }
       autoTable(doc,{
         theme: 'grid',
         header: this.dataTitle,
@@ -177,6 +186,9 @@ export default {
         body: [
           this.dataValues
         ],
+        margin: {horizontal: 7},
+        styles: {overflow: 'linebreak', cellWidth: 'auto'},
+        columnStyles: {5:{cellWidth: 20}, 6: {cellWidth: 20}, 7: {cellWidth: 30}, 8: {cellWidth: 30}}
       })
       doc.addPage()
 
@@ -231,6 +243,11 @@ export default {
 
   }
 }
+
+// https://stackoverflow.com/questions/62245699/html2canvas-and-jspdf-add-1-image-per-page
+// https://stackoverflow.com/questions/36472094/how-to-set-image-to-fit-width-of-the-page-using-jspdf
+// https://stackoverflow.com/questions/60953089/how-to-fit-an-image-in-the-center-of-a-page-using-jspdf
+// https://github.com/simonbengtsson/jsPDF-AutoTable/issues/273
 </script>
 
 <style lang="scss" scoped>
