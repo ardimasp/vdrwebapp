@@ -21,7 +21,7 @@ import vtkInteractorStyleTrackballCamera from '@kitware/vtk.js/Interaction/Style
 
 import vtkActor           from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper          from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkConeSource      from '@kitware/vtk.js/Filters/Sources/ConeSource';
+// import vtkConeSource      from '@kitware/vtk.js/Filters/Sources/ConeSource';
 
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
@@ -49,11 +49,8 @@ export default {
   },
   data(){
       return {
-          mapper: null,
-          actor: null,
-          colorMap: null,
-          lookupTable: null,
-          dataRange: null,
+          dataRange: [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER],
+          assets:[],
       }
   },
   watch: { 
@@ -63,70 +60,131 @@ export default {
   },
   methods: {
     changeColorMapName(colormapname,gain){
-      this.lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
+      //---------- vv&eliz ----------//
+      // this.lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
 
-      this.lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
-      this.lookupTable.updateRange();
+      // this.lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
+      // this.lookupTable.updateRange();
+      
+      
+      this.assets[this.assets.length-1].lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
+
+      this.assets[this.assets.length-1].lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
+      this.assets[this.assets.length-1].lookupTable.updateRange();
+      //-----------------------------//
+
       this.renderWindow.render();
     },
     setGain(gain){
       let newGain = parseFloat(gain);
 
       if(newGain < 0.0001) newGain = 0.0001;
-      this.lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
-      this.lookupTable.updateRange();
+
+      //---------- vv&eliz ----------//
+      // this.lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
+      // this.lookupTable.updateRange();
+
+      this.assets[this.assets.length-1].lookupTable.setMappingRange(...[this.dataRange[0]*newGain,this.dataRange[1]*newGain]);
+      this.assets[this.assets.length-1].lookupTable.updateRange();
+      //-----------------------------//
+      
       this.renderWindow.render();
 
     },
     removeActor() {
-      this.actor.delete();
-      this.mapper.delete();
+
+      //---------- vv&eliz ----------//
+      // this.actor.delete();
+      // this.mapper.delete();
+      const asset = this.assets.pop()
+      asset.actor.delete();
+      asset.mapper.delete();
+      //-----------------------------//
+      
       this.renderer.resetCamera();
       this.renderWindow.render();
     },
     onUpdateVtp(dataVtp) {
+
+      //---------- vv&eliz ----------//    
+      const asset = {
+        colorMap: null,
+        lookupTable: null,
+        mapper: null,
+        actor: null
+      }
+
+      // this.lookupTable = vtkColorTransferFunction.newInstance();
+      // this.lookupTable.applyColorMap(vtkColorMaps.getPresetByName(vtkColorMaps.rgbPresetNames[0]));
+      asset.lookupTable = vtkColorTransferFunction.newInstance();
+      asset.lookupTable.applyColorMap(vtkColorMaps.getPresetByName(vtkColorMaps.rgbPresetNames[0]));
+      //-----------------------------//
       
-      this.lookupTable = vtkColorTransferFunction.newInstance();
-      this.lookupTable.applyColorMap(vtkColorMaps.getPresetByName(vtkColorMaps.rgbPresetNames[0]));
-      this.dataRange = [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
-    
-      this.mapper = vtkMapper.newInstance(
+      //---------- vv&eliz ----------//
+      // this.mapper = vtkMapper.newInstance(
+      //   {
+      //   interpolateScalarsBeforeMapping: true,
+      //   useLookupTableScalarRange: true,
+      //   lookupTable: this.lookupTable,
+      //   scalarVisibility: true,
+      // }
+      // );
+      // this.actor = vtkActor.newInstance();
+
+      asset.mapper = vtkMapper.newInstance(
         {
         interpolateScalarsBeforeMapping: true,
         useLookupTableScalarRange: true,
-        lookupTable: this.lookupTable,
+        lookupTable: asset.lookupTable,
         scalarVisibility: true,
       }
       );
-      this.actor = vtkActor.newInstance();
+      asset.actor = vtkActor.newInstance();
 
-      this.actor.setMapper(this.mapper);
-      this.renderer.addActor(this.actor);
+      // this.actor.setMapper(this.mapper);
+      asset.actor.setMapper(asset.mapper);
 
-      vtkConeSource.newInstance({ height: 1.0 });
-      // const coneSource = vtkConeSource.newInstance({ height: 1.0 });
-      // this.mapper.setInputConnection(coneSource.getOutputPort());
 
-      this.mapper.setInputData(dataVtp);
-      // this.actor.rotateX(90);
-      // this.actor.rotateZ(55);
+      // this.renderer.addActor(this.actor);
+      this.renderer.addActor(asset.actor);
+      //-----------------------------//
+
+      //---------- vv&eliz ----------//
+      // this.mapper.setInputData(dataVtp);
+      asset.mapper.setInputData(dataVtp);
+      //-----------------------------//
 
       //get new data range
       const range = dataVtp.getPointData().getArrayByName("amplitude").getRange();
       let newDataRange = this.dataRange;
       newDataRange[0] = Math.min(range[0], this.dataRange[0]);
       newDataRange[1] = Math.max(range[1], this.dataRange[1]);
-      this.lookupTable.setMappingRange(...[newDataRange[0],newDataRange[1]]);
-      this.lookupTable.updateRange();
+      
+      //---------- vv&eliz ----------//
+      // this.lookupTable.setMappingRange(...[newDataRange[0],newDataRange[1]]);
+      // this.lookupTable.updateRange();
+      asset.lookupTable.setMappingRange(...[newDataRange[0],newDataRange[1]]);
+      asset.lookupTable.updateRange();
+      //-----------------------------//
 
       const colorByArrayName = "amplitude";
       const colorMode = ColorMode.MAP_SCALARS;
       const scalarMode = ScalarMode.USE_POINT_FIELD_DATA;
-      this.mapper.set({
+      
+      //---------- vv&eliz ----------//
+      // this.mapper.set({
+      //   colorByArrayName,
+      //   colorMode,
+      //   scalarMode,
+      // })
+      asset.mapper.set({
         colorByArrayName,
         colorMode,
         scalarMode,
       })
+
+      this.assets.push(asset);
+      //-----------------------------//
 
 
       this.renderer.resetCamera();
