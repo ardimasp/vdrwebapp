@@ -109,7 +109,7 @@ export default{
   },
   methods: {
     applyChanges(){
-      this.changeGain();
+      // this.changeGain();
       this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
 
       // other things considered
