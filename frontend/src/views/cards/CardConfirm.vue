@@ -11,13 +11,12 @@
         </v-card-title>
         <v-card-text> {{ text }} </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-btn
             color="error"
             text
             @click="confirmDialog(false)"
           >
-            Discard
+            Cancel
           </v-btn>
           <v-btn
             color="success"

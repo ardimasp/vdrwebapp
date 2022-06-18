@@ -70,10 +70,15 @@ export default {
       // this.lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
       // this.lookupTable.updateRange();
       
+      let newGain = parseFloat(gain);
+
+      if(newGain < 0.0001) newGain = 0.0001;
+
+      const range = this.assets[this.vtpIndex].mapper.getInputData().getPointData().getArrayByName("amplitude").getRange();
       
       this.assets[this.vtpIndex].lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
 
-      this.assets[this.vtpIndex].lookupTable.setMappingRange(...[this.dataRange[0]*gain,this.dataRange[1]*gain]);
+      this.assets[this.vtpIndex].lookupTable.setMappingRange(...[range[0]*newGain,range[1]*newGain]);
       this.assets[this.vtpIndex].lookupTable.updateRange();
       //-----------------------------//
 

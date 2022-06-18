@@ -11,7 +11,7 @@
       ></v-text-field>
     </div>
     <v-treeview
-      selectable
+      :selectable="!selectable"
       selection-type="independent"
       v-model="selected"
       item-key="id"
@@ -29,6 +29,9 @@ import { ref, computed, watch } from '@vue/composition-api';
 import store from '../../store'
 
 export default {
+  props: {
+    selectable: {type: Boolean}
+  },
   setup(props, {emit}) {
     const items = computed(() => {return store.state.tree.list;})
     const selected = ref([]);

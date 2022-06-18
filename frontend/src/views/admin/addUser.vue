@@ -71,15 +71,15 @@
                     required
                     :prepend-icon="mdiDomain"
                 ></v-text-field>
+                <div class="d-flex">
+                    <v-btn color="error" class="mr-3" @click="clearForm">
+                        Cancel
+                    </v-btn>
+                    <v-btn color="secondary" @click="submitForm" :disabled="!checkForm">
+                        Submit
+                    </v-btn>
+                </div>
             </v-container>
-            <div class="d-flex">
-                <v-btn color="error" class="mr-3" @click="clearForm">
-                    Cancel
-                </v-btn>
-                <v-btn color="secondary" @click="submitForm" :disabled="!checkForm">
-                    Submit
-                </v-btn>
-            </div>
         </v-form>
     </div>
 </template>

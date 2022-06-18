@@ -1,9 +1,8 @@
 <template>
   <div id="vtkviewer-container" class="vtkviewer-container">
-
     <vtp-card 
       :x="500"
-      :y="0"
+      :y="13"
       title="VTP Viewer"
       :w="600"
       :h="600"
@@ -11,98 +10,56 @@
       :vtpIndex="selectedIndex"
       ref="vtpcard"
     >
+      <template>
+        <v-progress-linear
+          v-if="load"
+          indeterminate
+          color="secondary"
+        ></v-progress-linear>
+      </template>
     </vtp-card>
-    <regular-card 
-        :x="0"
-        :y="300"
-        title="Files"
-        :w="400"
-        :h="350"
-      >
-        <template>
-          <tree-content-2
-            @changeselected = selectedContent
-            @removedata = removeContent
-          ></tree-content-2>
-        </template>
-      </regular-card>
 
     <div>
-      <v-container>
-        <div class="mb-5">
-          <v-btn
-            depressed
-            color="primary"
-            @click="onUploadFile"
-          >
-            Upload VTP
-          </v-btn>
-
-          <input
-            id="seismic"
-            multiple="true"
-            style="display:none"
-            type="file"
-            accept=".vtp" 
-            ref="uploader" 
-            @change="onFileChanged"
-            >
-
-          <v-btn
-            depressed
-            color="error"
-            @click="onDelete"
-          >
-            Delete
-          </v-btn>
-        </div>
-
-        
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-autocomplete
-              dense
-              v-model="selectedValue"
-              :items="returnSelectedTree"
-              label="Selected"
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-text-field
-              dense
-              label="Gain"
-              v-model="gain"
-              type="number"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-autocomplete
-              dense
-              v-model="value"
-              :items="items"
-              label="Standard"
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-        <v-btn color="primary" @click="applyChanges">Apply</v-btn>
-      </v-container>
-      
+      <v-row>
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <v-card>
+            <v-container>
+              <p class="font-weight-bold">Choose VTP file(s)</p>
+              <tree-content-2
+                :selectable="load"
+                @changeselected = selectedContent
+                @removedata = removeContent
+              ></tree-content-2>
+            </v-container>
+            <v-divider></v-divider>
+            <v-card-text class="font-weight-bold">Configurations:</v-card-text>
+            <v-container class="pl-5 pr-5 pb-5">
+              <v-autocomplete
+                v-model="selectedValue"
+                :items="returnSelectedTree"
+                label="Select VTP"
+              ></v-autocomplete>
+              <v-text-field
+                label="Gain"
+                v-model="gain"
+                type="number"
+              ></v-text-field>
+              <v-autocomplete
+                v-model="value"
+                :items="items"
+                label="Standard"
+              ></v-autocomplete>
+              <v-btn color="primary" @click="applyChanges">
+                Apply
+              </v-btn>
+            </v-container>
+          </v-card>
+        </v-col>
+      </v-row>
     </div>
 
     
@@ -113,14 +70,12 @@
 import VtpCard from './VtpCard.vue'
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
-import RegularCard from './RegularCard.vue'
 import TreeContent2 from './TreeContent2.vue'
 import fileService from '../../services/file.service';
 
 export default{
   components: {
     VtpCard,
-    RegularCard,
     TreeContent2,
   },
   data(){
@@ -134,6 +89,7 @@ export default{
           selectedTree: null, //selected array in treeview
           selectedValue: null, //value selected based on the array
           selectedIndex: null, //the index of the selected value
+          load: false,
       }
   },
   props:{
@@ -152,9 +108,15 @@ export default{
     returnSelectedTree() {return this.selectedTree}
   },
   methods: {
-    //important
+    applyChanges(){
+      // this.changeGain();
+      this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
+
+      // other things considered
+    },
     async selectedContent(selected) {
       console.log("at selected", selected)
+      this.load = true;
       this.selectedTree = selected;
       if(this.selectedValue == null || this.selectedValue == "") {
         this.selectedValue = this.selectedTree[0]
@@ -172,6 +134,7 @@ export default{
           readerVtp.parseAsArrayBuffer(fileReader.result);
           const data = readerVtp.getOutputData(0);
           that.dataVtp = data
+          that.load = false
         };
         fileReader.readAsArrayBuffer(file.data);
     },
@@ -184,7 +147,7 @@ export default{
       else {
         this.selectedValue = this.selectedIndex = null
       }
-      console.log("at removed", removedIndex)
+      // console.log("at removed", removedIndex)
       this.onDelete(removedIndex)
     },
 
@@ -194,28 +157,8 @@ export default{
     onDelete(removedIndex){
       this.$refs.vtpcard.removeActor(removedIndex)
     },
-    onUploadFile(){
-      this.$refs.uploader.click();
-    },
-    onFileChanged(e) {
-        this.selectedFile = e.target.files[0];
-
-        const fileReader = new FileReader();
-
-        let that = this;
-        fileReader.onload = function onLoad() {
-          //read data 
-          console.log("at file reader", fileReader.result)
-          const readerVtp = vtkXMLPolyDataReader.newInstance();
-          readerVtp.parseAsArrayBuffer(fileReader.result);
-          const data = readerVtp.getOutputData(0);
-          that.dataVtp = data
-        };
-        fileReader.readAsArrayBuffer(this.selectedFile);
-    },
   },
   mounted() {
-
       this.items = vtkColorMaps.rgbPresetNames
     },
   setup(){

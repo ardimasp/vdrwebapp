@@ -30,6 +30,9 @@
       </v-icon>
 
     </v-system-bar>
+    
+    <!-- for progresss bar -->
+    <slot></slot>
     <div 
         v-show="isShown" 
         :style="styleContainer"
