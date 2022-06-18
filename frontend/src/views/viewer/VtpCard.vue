@@ -11,6 +11,7 @@
     @resizing="onResize"
 
     :draggable="true"
+    style="z-index: 9999;"
     >
     <v-system-bar
       class="drag-handle"

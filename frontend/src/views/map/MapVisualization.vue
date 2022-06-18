@@ -1,5 +1,32 @@
 <template>
   <div>
+     <div class="container">
+      <regular-card 
+       :x="10"
+      :y="50"
+      title="Select Visual"
+      :w="300"
+      :h="200"
+      >
+        <template>
+          <div class="pa-4 text-no-wrap rounded-xl borderfilter">
+           <v-autocomplete style="z-index: 9999;"
+              dense
+              v-model="selectedValue"
+              :items="chosenValue"
+              label="Selected"
+            ></v-autocomplete>
+            <br>
+            <v-autocomplete
+              dense
+              v-model="value"
+              :items="items"
+              label="Standard"
+            ></v-autocomplete>
+          </div>
+        </template>
+      </regular-card>
+    </div>
     <div id="mapContainer">
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
@@ -16,15 +43,15 @@
             :lat-lngs="[[(dataMap.wellLatitude+0.028236-0.1), (dataMap.wellLongitude+(-0.077651))], 
             [(dataMap.wellLatitude-0.009319+0.015), (dataMap.wellLongitude+0.075669+(-0.06))]]" 
             :color='polylineColor'
-            @click="shapeClick(dataMap.wellName, visual[2])"
+            @click="chosenClick(dataMap.wellName, visual[2])"
             ></l-polyline>
 
             <l-polyline :key="'p2'+index"
             v-for="(dataMap,index) in dataMaps" 
-            :color='polylineColor'
+            :color='polylineColor2'
             :lat-lngs="[[(dataMap.wellLatitude+0.028236-0.1), (dataMap.wellLongitude+(-0.077651)+0.16)], 
             [(dataMap.wellLatitude-0.009319+0.015), (dataMap.wellLongitude+0.075669+(-0.09))]]" 
-            @click="shapeClick(dataMap.wellName, visual[3])"
+            @click="chosenClick(dataMap.wellName, visual[3])"
 
             ></l-polyline>
 
@@ -34,16 +61,16 @@
             :lat-lng="[dataMap.wellLatitude+0.05, dataMap.wellLongitude]"
             :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)/2"
             :color='dataMap.iconColor'
-            :fillColor='dataMap.fillIcon'
+            :fillColor='circleColor'
             :fillOpacity="dataMap.iconfillColor"
             :opacity="dataMap.iconborderColor"
-            @click="shapeClick(dataMap.wellName, visual[1])"
+            @click="chosenClick(dataMap.wellName, visual[1])"
           >
           
           </l-circle>
         </l-map>
       <!-- </v-card> -->
-       <vtp-card v-if="dataVtp != null" style="z-index: 9999;"
+       <vtp-card v-if="chosenValue.length != 0" style="z-index: 9999;"
       :x="500"
       :y="0"
       title="VTP Viewer"
@@ -54,7 +81,6 @@
     >
     </vtp-card>
     </div>
-   
   </div>
 </template>
 
@@ -72,9 +98,11 @@ import ClickOutside from 'vue-click-outside'
 import {getImages} from '../showcase/MapEndPoint.js';
 import fileService from '../../services/file.service';
 
+import RegularCard from '../viewer/RegularCard.vue'
+
 
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
-// import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
+import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
 import VtpCard from '../viewer/VtpCard.vue';
 
@@ -91,7 +119,8 @@ export default {
     // LCircleMarker,
     // LTooltip,
     LPolyline,
-    VtpCard
+    VtpCard,
+    RegularCard
   },
   props:{
     dataMaps: Array,
@@ -120,10 +149,16 @@ export default {
       figVisualize:[],
       rectangleColor: 'red',
       polylineColor: 'blue',
+      polylineColor2: 'violet',
 
+      circleColor: 'purple',
       dataVtp: null,
+      chosenValue: [],
       visual:["surface", "well", "seismic_C06", "seismic_C08"],
-      click:0
+      click:0,
+
+      items: [],
+      value: '2hot',
     }
   },
   methods: {
@@ -141,24 +176,41 @@ export default {
     },
 
     async chosenClick(chosenWell, visualizeType){
-      if(this.rectangleColor=="red"){
-        this.shapeClick(chosenWell, visualizeType)
-      }else if(this.rectangleColor=="green"){
-        this.removeContent()
-      }
+      if(visualizeType == this.visual[0]){
+        if(this.rectangleColor=="red"){
+          this.shapeClick(chosenWell, visualizeType)
+        }else if(this.rectangleColor=="green"){
+          this.removeContent(visualizeType)
+        }
+      }else if(visualizeType == this.visual[1]){
+        if(this.circleColor == "purple"){
+          this.shapeClick(chosenWell, visualizeType)
+        }else if(this.circleColor== "yellow"){
+          this.removeContent(visualizeType)
+
+        }
+      }else if(visualizeType == this.visual[2]){
+        if(this.polylineColor == "blue"){
+          this.shapeClick(chosenWell, visualizeType)
+        }else if(this.polylineColor== "orange"){
+          this.removeContent(visualizeType)
+        }
+      }else if (visualizeType == this.visual[3]){
+        if(this.polylineColor2 == "violet"){
+          this.shapeClick(chosenWell, visualizeType)
+        }else if(this.polylineColor2== "red"){
+          this.removeContent(visualizeType)
+        }}
     },
     async shapeClick(chosenWell, visualizeType){
       this.click += 1
-      if(this.click > 2){
-        this.rectangleColor = "green";
-      }
 
       var cW = this.figVisualize.find((e) => e.name == chosenWell)
       console.log(cW)
       var t= cW.children.find((e) => e.name.includes(visualizeType))
-      console.log('/'+t.name)
+      console.log('/'+chosenWell+'/'+t.name)
 
-      const file = await fileService.getFileRaw('/'+t.name)
+      const file = await fileService.getFileRaw('/'+chosenWell+'/'+t.name)
       console.log(file.data);
 
       const fileReader = new FileReader();
@@ -175,19 +227,54 @@ export default {
         };
         fileReader.readAsArrayBuffer(file.data);
         // console.log(this.dataVtp)
+        this.chosenValue.push('/'+t.name)
+      console.log('arr:', this.chosenValue)
 
+  // if(this.click > 1){
+        if(visualizeType == this.visual[0]){
+        this.rectangleColor = "green";
+
+        }else if(visualizeType == this.visual[1]){
+          this.circleColor= "yellow";
+        }
+        else if(visualizeType == this.visual[2]){
+          this.polylineColor= "orange";
+        }else if( visualizeType == this.visual[3]){
+          this.polylineColor2= "red";
+        }
+      // }
     },
 
-     removeContent(){
-      this.onDelete()
-      this.rectangleColor = "red";
+     removeContent(visualizeType){
+      for(let i=0; i<this.chosenValue.length;i++){
+        if (this.chosenValue[i].includes(visualizeType)){
+          var unclickedIndex = i
+        }
+      }
+      console.log(unclickedIndex)
+      this.onDelete(unclickedIndex)
+      if (unclickedIndex > -1) {
+        this.chosenValue.splice(unclickedIndex, 1); // 2nd parameter means remove one item only
+      }
+      console.log('arr after delete:', this.chosenValue)
+
+      if(visualizeType == this.visual[0]){
+        this.rectangleColor = "red";
+
+        }else if(visualizeType == this.visual[1]){
+          this.circleColor= "purple";
+        }else if(visualizeType == this.visual[2]){
+          this.polylineColor= "blue";
+        }else if( visualizeType == this.visual[3]){
+          this.polylineColor2= "violet";
+        }
     },
 
     onPressEnter(){
       this.$refs.vtpcard.setGain(this.gain)
     },
-    onDelete(){
-      this.$refs.vtpcard.removeActor()
+    onDelete(unclickedIndex){
+      this.$refs.vtpcard.removeActor(unclickedIndex)
     },
     
     onClickOutside(val) {
@@ -214,6 +301,8 @@ export default {
 
   },
   async mounted() {
+    this.items = vtkColorMaps.rgbPresetNames
+
     this.figVisualize = await getImages("visualization");
     console.log(this.figVisualize)
   },
@@ -273,4 +362,11 @@ export default {
       /* :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)" */
             /* :radius="pixelValue(dataMap.wellLatitude, dataMap.wellArea, zoom)*200" */
 
+.container{
+    z-index: 999;
+    position: relative;
+    margin-top: -40px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
 </style>

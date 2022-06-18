@@ -122,6 +122,7 @@ export default{
         this.selectedValue = this.selectedTree[0]
         this.selectedIndex = 0
       }
+      console.log(this.selectedTree)
       const file = await fileService.getFileRaw(selected.slice(-1)) //take the last one in the array
       // console.log(file.data);
 
@@ -133,6 +134,7 @@ export default{
           const readerVtp = vtkXMLPolyDataReader.newInstance();
           readerVtp.parseAsArrayBuffer(fileReader.result);
           const data = readerVtp.getOutputData(0);
+          console.log("AAAAAAAAAAA", data)
           that.dataVtp = data
           that.load = false
         };
@@ -140,6 +142,7 @@ export default{
     },
     removeContent(newArray, removedIndex){
       this.selectedTree = newArray;
+      console.log(newArray)
       if(this.selectedTree.length > 0) {
         this.selectedValue = this.selectedTree[0]
         this.selectedIndex = 0
@@ -156,6 +159,26 @@ export default{
     },
     onDelete(removedIndex){
       this.$refs.vtpcard.removeActor(removedIndex)
+    },
+    onUploadFile(){
+      this.$refs.uploader.click();
+    },
+    onFileChanged(e) {
+        this.selectedFile = e.target.files[0];
+
+        const fileReader = new FileReader();
+
+        let that = this;
+        fileReader.onload = function onLoad() {
+          //read data 
+          console.log("at file reader", fileReader.result)
+          const readerVtp = vtkXMLPolyDataReader.newInstance();
+          readerVtp.parseAsArrayBuffer(fileReader.result);
+          const data = readerVtp.getOutputData(0);
+
+          that.dataVtp = data
+        };
+        fileReader.readAsArrayBuffer(this.selectedFile);
     },
   },
   mounted() {
