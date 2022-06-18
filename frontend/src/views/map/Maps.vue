@@ -10,7 +10,7 @@
     >
     </vtk-card> -->
 
-    <regular-card 
+    <regular-card v-if="v==false"
       :x="10"
       :y="50"
       title="Select Wells"
@@ -22,7 +22,7 @@
      </template>
     </regular-card>
 
-     <regular-card 
+     <regular-card v-if="v==false"
       :x="400"
       :y="50"
       title="Sort By"
@@ -35,7 +35,7 @@
     </regular-card>
 
     </div>
-    <MapVisualization :dataMaps="datas" :heatmap="heatmap" :dataType="visualData"> </MapVisualization>
+    <MapVisualization :dataMaps="datas" :heatmap="heatmap" :dataType="visualData" v-on:click="visualSelected"> </MapVisualization>
     <!-- <MapNavigation :dataMaps="datas" :heatmap="heatmap" :dataType="visualData"></MapNavigation> -->
     <!-- <br>
     <br> -->
@@ -94,7 +94,8 @@ export default {
       tempD: [],
       transparent: 0,
       correctData:[],
-      visualData: 'visual'
+      visualData: 'visual',
+      v: false
     }
   },
   
@@ -130,6 +131,9 @@ export default {
 
       }
     },
+     visualSelected(vis){
+        this.v = vis
+      },
 
     funcVol(arrayGas){
           let sortedarrayGas = arrayGas.sort(function(a,b) {

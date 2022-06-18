@@ -1,31 +1,77 @@
 <template>
   <div>
      <div class="container">
-      <regular-card 
-       :x="10"
+      <regular-card  v-if="chosenValue.length != 0"
+       :x="0"
       :y="50"
       title="Select Visual"
-      :w="300"
-      :h="200"
+      :w="800"
+      :h="100"
       >
         <template>
-          <div class="pa-4 text-no-wrap rounded-xl borderfilter">
-           <v-autocomplete style="z-index: 9999;"
+        <div class="pa-4 text-no-wrap ">
+
+          <v-row
+        :align="align"
+        no-gutters
+        style="height: 150px;"
+      >
+      <v-col>
+           <v-autocomplete 
               dense
               v-model="selectedValue"
-              :items="chosenValue"
+              :items="this.chosenValue"
               label="Selected"
             ></v-autocomplete>
-            <br>
+      </v-col>
+      <v-col class="ml-4">
+            <!-- <v-text-field
+                label="Gain"
+                v-model="gain"
+                type="number"
+              ></v-text-field> -->
+            <!-- <v-subheader class="pl-0 pt-0">
+              Gain
+            </v-subheader> -->
+            <v-slider class="pl-0 mt-1"
+            label="Gain"
+              :disabled="selectedValue == null"
+              dense
+              :max="max"
+              :min="min"
+              v-model="gain"
+              :thumb-size="24"
+              thumb-label="always"
+              @change="applyChanges"
+            ></v-slider>
+      </v-col>
+      <v-col class="ml-4">
             <v-autocomplete
+              :disabled="selectedValue == null"
               dense
               v-model="value"
               :items="items"
               label="Standard"
+              @change="applyChanges"
+
             ></v-autocomplete>
-          </div>
+      </v-col>
+          </v-row>
+        </div>
+
         </template>
       </regular-card>
+      <VtpCard v-if="chosenValue.length != 0"
+        :x="0"
+        :y="200"
+        title="VTP Viewer"
+        :w="800"
+        :h="800"
+        :dataVtp="dataVtp"
+        :vtpIndex="selectedIndex"
+        ref="vtpcard"
+      />
+      <!-- </vtp-card> -->
     </div>
     <div id="mapContainer">
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
@@ -70,16 +116,6 @@
           </l-circle>
         </l-map>
       <!-- </v-card> -->
-       <vtp-card v-if="chosenValue.length != 0" style="z-index: 9999;"
-      :x="500"
-      :y="0"
-      title="VTP Viewer"
-      :w="600"
-      :h="600"
-      :dataVtp="dataVtp"
-      ref="vtpcard"
-    >
-    </vtp-card>
     </div>
   </div>
 </template>
@@ -156,9 +192,24 @@ export default {
       chosenValue: [],
       visual:["surface", "well", "seismic_C06", "seismic_C08"],
       click:0,
-
+      gain: 1,
       items: [],
       value: '2hot',
+      max:100,
+      min:1,
+      selectedValue: null, //value selected based on the array
+      selectedIndex: null, //the index of the selected value
+
+    }
+  },
+  watch: { 
+    // value: function(newVal) { // watch it
+    //   this.$refs.vtpcard.changeColorMapName(newVal,this.gain)
+    // }
+    selectedValue: function(newVal) {
+      if(this.chosenValue == null || this.chosenValue.length == 0) return
+
+      this.selectedIndex = this.chosenValue.indexOf(newVal)
     }
   },
   methods: {
@@ -201,6 +252,7 @@ export default {
         }else if(this.polylineColor2== "red"){
           this.removeContent(visualizeType)
         }}
+ 
     },
     async shapeClick(chosenWell, visualizeType){
       this.click += 1
@@ -209,7 +261,10 @@ export default {
       console.log(cW)
       var t= cW.children.find((e) => e.name.includes(visualizeType))
       console.log('/'+chosenWell+'/'+t.name)
-
+      if(this.selectedValue == null || this.selectedValue == "") {
+        this.selectedValue = this.chosenValue[0]
+        this.selectedIndex = 0
+      }
       const file = await fileService.getFileRaw('/'+chosenWell+'/'+t.name)
       console.log(file.data);
 
@@ -242,6 +297,8 @@ export default {
         }else if( visualizeType == this.visual[3]){
           this.polylineColor2= "red";
         }
+        var visual = true
+        this.$emit('click', visual)
       // }
     },
 
@@ -257,7 +314,16 @@ export default {
         this.chosenValue.splice(unclickedIndex, 1); // 2nd parameter means remove one item only
       }
       console.log('arr after delete:', this.chosenValue)
+      if(this.chosenValue.length > 0) {
+        this.selectedValue = this.chosenValue[0]
+        this.selectedIndex = 0
+      }
+      else {
+        this.selectedValue = this.selectedIndex = null
 
+        var visual = false
+        this.$emit('click', visual)
+      }
       if(visualizeType == this.visual[0]){
         this.rectangleColor = "red";
 
@@ -268,6 +334,15 @@ export default {
         }else if( visualizeType == this.visual[3]){
           this.polylineColor2= "violet";
         }
+    },
+
+    applyChanges(){
+      // this.changeGain();
+            console.log("penting:",this.value, this.gain, this.selectedIndex)
+
+      this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
+
+      // other things considered
     },
 
     onPressEnter(){

@@ -75,7 +75,7 @@ export default {
       if(newGain < 0.0001) newGain = 0.0001;
 
       const range = this.assets[this.vtpIndex].mapper.getInputData().getPointData().getArrayByName("amplitude").getRange();
-      
+      console.log('chosen', this.vtpIndex)
       this.assets[this.vtpIndex].lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colormapname));
 
       this.assets[this.vtpIndex].lookupTable.setMappingRange(...[range[0]*newGain,range[1]*newGain]);
