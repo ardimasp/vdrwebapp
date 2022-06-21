@@ -183,11 +183,12 @@ export default {
       options: { permanent: true, direction:'top' },
 
       figVisualize:[],
-      rectangleColor: 'red',
+      rectangleColor: 'blue',
       polylineColor: 'blue',
-      polylineColor2: 'violet',
+      polylineColor2: 'blue',
 
-      circleColor: 'purple',
+      circleColor: 'blue',
+      unchosenColor: 'blue',
       dataVtp: null,
       chosenValue: [],
       visual:["surface", "well", "seismic_C06", "seismic_C08"],
@@ -228,31 +229,36 @@ export default {
 
     async chosenClick(chosenWell, visualizeType){
       if(visualizeType == this.visual[0]){
-        if(this.rectangleColor=="red"){
+        if(this.rectangleColor=="blue"){
           this.shapeClick(chosenWell, visualizeType)
-        }else if(this.rectangleColor=="green"){
+        }else if(this.rectangleColor=="red"){
           this.removeContent(visualizeType)
         }
       }else if(visualizeType == this.visual[1]){
-        if(this.circleColor == "purple"){
+        if(this.circleColor == "blue"){
           this.shapeClick(chosenWell, visualizeType)
-        }else if(this.circleColor== "yellow"){
+        }else if(this.circleColor== "red"){
           this.removeContent(visualizeType)
 
         }
       }else if(visualizeType == this.visual[2]){
         if(this.polylineColor == "blue"){
           this.shapeClick(chosenWell, visualizeType)
-        }else if(this.polylineColor== "orange"){
+        }else if(this.polylineColor== "red"){
           this.removeContent(visualizeType)
         }
       }else if (visualizeType == this.visual[3]){
-        if(this.polylineColor2 == "violet"){
+        if(this.polylineColor2 == "blue"){
           this.shapeClick(chosenWell, visualizeType)
         }else if(this.polylineColor2== "red"){
           this.removeContent(visualizeType)
         }}
- 
+       
+        // if((this.rectangleColor||this.circleColor||this.polylineColor||this.polylineColor2)=="blue"){
+        //   this.shapeClick(chosenWell, visualizeType)
+        // }else if((this.rectangleColor||this.circleColor||this.polylineColor||this.polylineColor2)=="blue"){
+        //   this.removeContent(visualizeType)
+        // }
     },
     async shapeClick(chosenWell, visualizeType){
       this.click += 1
@@ -287,16 +293,17 @@ export default {
 
   // if(this.click > 1){
         if(visualizeType == this.visual[0]){
-        this.rectangleColor = "green";
+        this.rectangleColor = "red";
 
         }else if(visualizeType == this.visual[1]){
-          this.circleColor= "yellow";
+          this.circleColor= "red";
         }
         else if(visualizeType == this.visual[2]){
-          this.polylineColor= "orange";
+          this.polylineColor= "red";
         }else if( visualizeType == this.visual[3]){
           this.polylineColor2= "red";
         }
+        // this.unchosenColor = "blue"
         var visual = true
         this.$emit('click', visual)
       // }
@@ -324,15 +331,16 @@ export default {
         var visual = false
         this.$emit('click', visual)
       }
+      // this.unchosenColor = "blue"
       if(visualizeType == this.visual[0]){
-        this.rectangleColor = "red";
+        this.rectangleColor = "blue";
 
         }else if(visualizeType == this.visual[1]){
-          this.circleColor= "purple";
+          this.circleColor= "blue";
         }else if(visualizeType == this.visual[2]){
           this.polylineColor= "blue";
         }else if( visualizeType == this.visual[3]){
-          this.polylineColor2= "violet";
+          this.polylineColor2= "blue";
         }
     },
 
