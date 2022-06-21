@@ -134,7 +134,8 @@ async def oil_production(oil_data: Production,
             return {
             'prediction': 0
             }
-        ## add working range.....
+            
+        #range validation
         if data["hours_online"] < 0:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
@@ -192,6 +193,8 @@ async def gas_production(gas_data: Production,
     ):
     if current_user.type == 'Premium User':
         data = gas_data.dict()
+
+        #range validation
 
         if data["hours_online"] < 0:
             raise HTTPException(
@@ -266,36 +269,6 @@ async def oil_production_excel(path:str,
             data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
             data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
 
-            if data["Hours_Online"] < 0:
-                raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Hours Online range should be 0 or above!"
-                )
-
-            if data["Downhole_press"] < 0 and data["Downhole_press"] > 308:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
-                )
-            
-            if data["Downhole_temp"] < 0 and data["Downhole_temp"] > 172:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
-                )
-
-            if data["Press_diff"] < 0 and data["Press_diff"] > 325:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
-                )
-            
-            if data["Temp_diff"] < 0 and data["Temp_diff"] > 190:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
-                )
-
         except:
             raise HTTPException(
                 status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
@@ -308,6 +281,59 @@ async def oil_production_excel(path:str,
                 status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="There should be exactly 5 columns filled in!"
             )
+        
+        #range validation
+        
+        if (data["Hours_Online"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Hours Online range should be 0 or above!"
+                )
+        
+        if (data["Downhole_press"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+
+        if (data["Downhole_temp"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+        if (data["Press_diff"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+        if (data["Temp_diff"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
+        
+        if (data["Downhole_press"] > 300).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+
+        if (data["Downhole_temp"] > 172).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppAverage Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+                
+        if (data["Press_diff"] > 325).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppPressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+        if (data["Temp_diff"] > 190).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppTemperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
 
         #checking empty values
         missing = data.isnull().sum().sum()
@@ -399,6 +425,58 @@ async def gas_production_excel(path:str,
                 status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="There should be exactly 5 columns filled in!"
             )
+        #range validation
+        if (data["Hours_Online"] < 0).any():
+            raise HTTPException(
+        status_code=HTTP_400_BAD_REQUEST,
+        detail="Hours Online range should be 0 or above!"
+        )
+        
+        if (data["Downhole_press"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+
+        if (data["Downhole_temp"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+        if (data["Press_diff"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+
+        if (data["Temp_diff"] < 0).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
+
+        if (data["Downhole_press"] > 300).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+
+        if (data["Downhole_temp"] > 172).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppAverage Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+                
+        if (data["Press_diff"] > 325).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppPressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+        if (data["Temp_diff"] > 190).any():
+                raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="ppTemperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
 
         #checking for missing data
         missing = data.isnull().sum().sum()
