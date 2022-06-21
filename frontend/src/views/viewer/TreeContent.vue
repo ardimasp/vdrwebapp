@@ -69,7 +69,6 @@ export default {
     const addToList = () => {
       checkFile();
       selected.value = []
-      console.log("check viewer list", store.state.viewer.list)
     };
 
     let searchCounter = 0;

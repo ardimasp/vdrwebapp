@@ -111,7 +111,6 @@ export default {
     details: Object
   },
   data: function(){
-    // console.log(this.details)
     return{
       loading: false,
       selection: 1,

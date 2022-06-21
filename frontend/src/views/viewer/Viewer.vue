@@ -78,7 +78,6 @@ export default{
   },
   setup(){
     const items = store.state.viewer.list;
-    console.log(items)
     const load = computed(() => {return store.state.initialLoad})
     // const load = store.state.initialLoad;
 

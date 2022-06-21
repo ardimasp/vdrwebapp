@@ -13,7 +13,6 @@ export default {
             state.user = data.access_token;
             state.username = data.name;
             state.permission = data.type;
-            console.log("at login",state.user, state.username)
         },
         LOGIN_FAIL(state){
             state.logged = false;
@@ -45,7 +44,6 @@ export default {
             return authService.login(data).then(
                 data => {
                     commit('LOGIN_SUCCESS', data.data);
-                    // console.log("logged in", data.status)
                     return data.status;
                 },
                 error => {

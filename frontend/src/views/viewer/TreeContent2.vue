@@ -33,7 +33,7 @@ export default {
     selectable: {type: Boolean}
   },
   setup(props, {emit}) {
-    const items = computed(() => {return store.state.tree.list;})
+    const items = computed(() => {return store.state.tree.vtp;})
     const selected = ref([]);
     const search = ref("");
 
@@ -55,8 +55,6 @@ export default {
         newSelect = newSelected.slice(-1)
         if(checkFileChoosen(newSelect)) emit("changeselected", newSelected)
       }
-
-      // console.log(newSelected, prevSelected)
     })
 
     const checkFileChoosen = (url) => {
@@ -66,7 +64,6 @@ export default {
     const addToList = () => {
       checkFile();
       selected.value = []
-      console.log("check viewer list", store.state.viewer.list)
     };
 
     let searchCounter = 0;

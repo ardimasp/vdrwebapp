@@ -172,6 +172,8 @@ export default{
                     "image/jpeg": mdiFileImage,
                     txt: mdiFileDocumentOutline,
                     xls: mdiFileExcel,
+                    "text/xml": mdiFileDocumentOutline,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": mdiFileExcel
                   };
 
     const open= ["public"];
@@ -232,7 +234,6 @@ export default{
         if(store.state.auth.permission == "Premium User" && tree.value.includes("/template.xlsx")){
           let idx = tree.value.indexOf("/template.xlsx")
           tree.value.splice(idx, 1)
-          console.log("template exist")
         }
         await fileService.deleteFile(tree.value);
         await store.dispatch("fetchTreeList");

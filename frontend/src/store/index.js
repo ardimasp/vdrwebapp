@@ -22,7 +22,6 @@ export default new Vuex.Store({
   mutations: {
     SET_LOAD(state, data){
       state.initialLoad = data;
-      console.log("at set load commit", state.initialLoad)
     },
     SET_ALERT(state, data){
         state.alert = data;
