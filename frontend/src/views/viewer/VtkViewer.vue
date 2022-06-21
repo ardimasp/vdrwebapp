@@ -15,7 +15,15 @@
                   :selectable="load"
                   @changeselected = selectedContent
                   @removedata = removeContent
-                ></tree-content-2>
+                >
+                  <template>
+                    <v-progress-linear
+                      v-if="initialLoad"
+                      color="secondary"
+                      indeterminate
+                    ></v-progress-linear>
+                  </template>
+                </tree-content-2>
               </div>
             </v-container>
             <v-divider></v-divider>
@@ -82,6 +90,8 @@ import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import TreeContent2 from './TreeContent2.vue'
 import fileService from '../../services/file.service';
+import { computed } from '@vue/composition-api';
+import store from '../../store';
 
 export default{
   components: {
@@ -188,8 +198,10 @@ export default{
       else this.width = window.innerHeight - 10
     },
   setup(){
+    const initialLoad = computed(() => {return store.state.initialLoad})
 
     return {
+      initialLoad
     };
   }
 }

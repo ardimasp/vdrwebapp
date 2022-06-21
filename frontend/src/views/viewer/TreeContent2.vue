@@ -9,6 +9,8 @@
         clearable
         clear-icon="mdi-close-circle-outline"
       ></v-text-field>
+      <!-- for progress bar -->
+      <slot></slot>
     </div>
     <v-treeview
       :selectable="!selectable"
