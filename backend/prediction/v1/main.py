@@ -142,25 +142,25 @@ async def oil_production(oil_data: Production,
                 detail="Hours Online range should be 0 or above!"
             )
 
-        if data["downhole_press"] < 0 and data["downhole_press"] > 308:
+        if data["downhole_press"] < 0 or data["downhole_press"] > 308:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
             )
         
-        if data["downhole_temp"] < 0 and data["downhole_temp"] > 172:
+        if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
             )
 
-        if data["press_diff"] < 0 and data["press_diff"] > 325:
+        if data["press_diff"] < 0 or data["press_diff"] > 325:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
             )
         
-        if data["temp_diff"] < 0 and data["temp_diff"] > 190:
+        if data["temp_diff"] < 0 or data["temp_diff"] > 190:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
@@ -202,25 +202,25 @@ async def gas_production(gas_data: Production,
                 detail="Hours Online range should be 0 or above!"
             )
 
-        if data["downhole_press"] < 0 and data["downhole_press"] > 308:
+        if data["downhole_press"] < 0 or data["downhole_press"] > 308:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
             )
         
-        if data["downhole_temp"] < 0 and data["downhole_temp"] > 172:
+        if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
             )
 
-        if data["press_diff"] < 0 and data["press_diff"] > 325:
+        if data["press_diff"] < 0 or data["press_diff"] > 325:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
             )
         
-        if data["temp_diff"] < 0 and data["temp_diff"] > 190:
+        if data["temp_diff"] < 0 or data["temp_diff"] > 190:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
@@ -281,6 +281,44 @@ async def oil_production_excel(path:str,
                 status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="There should be exactly 5 columns filled in!"
             )
+
+        #checking empty values
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+
+        #checking column name
+        checking = data.columns.values.tolist()
+        for i in range(len(checking)):
+            if checking[0] != "Hours_Online":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[1] != "Downhole_temp":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[2] != "Downhole_press":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[3] != "Temp_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[4] != "Press_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
         
         #range validation
         
@@ -336,43 +374,6 @@ async def oil_production_excel(path:str,
             detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
             )
 
-        #checking empty values
-        missing = data.isnull().sum().sum()
-        print(missing)
-        if missing != 0:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Your file contains missing values, please fill it in!"
-            )
-
-        #checking column name
-        checking = data.columns.values.tolist()
-        for i in range(len(checking)):
-            if checking[0] != "Hours_Online":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[1] != "Downhole_temp":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[2] != "Downhole_press":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[3] != "Temp_diff":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[4] != "Press_diff":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
         #predicting
         y_pred = oil_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
         inputs = [
@@ -426,6 +427,45 @@ async def gas_production_excel(path:str,
                 status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="There should be exactly 5 columns filled in!"
             )
+        
+        #checking for missing data
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+
+        # Make sure column names are the same
+        checking = data.columns.values.tolist()
+        for i in range(len(checking)):
+            if checking[0] != "Hours_Online":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[1] != "Downhole_temp":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[2] != "Downhole_press":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[3] != "Temp_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+            if checking[4] != "Press_diff":
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="File does not follow the template"
+                )
+        
         #range validation
         if (data["Hours_Online"] < 0).any():
             raise HTTPException(
@@ -478,45 +518,7 @@ async def gas_production_excel(path:str,
             status_code=HTTP_400_BAD_REQUEST,
             detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
             )
-
-        #checking for missing data
-        missing = data.isnull().sum().sum()
-        print(missing)
-        if missing != 0:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Your file contains missing values, please fill it in!"
-            )
-
-        # Make sure column names are the same
-        checking = data.columns.values.tolist()
-        for i in range(len(checking)):
-            if checking[0] != "Hours_Online":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[1] != "Downhole_temp":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[2] != "Downhole_press":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[3] != "Temp_diff":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-            if checking[4] != "Press_diff":
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="File does not follow the template"
-                )
-
+            
         #predicting
         y_pred = gas_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
 
