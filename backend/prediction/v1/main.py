@@ -375,14 +375,27 @@ async def oil_production_excel(path:str,
             )
 
         #predicting
+
         y_pred = oil_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
+        new = data.copy()
+        insert_index = 5
+        insert_colname = 'Oil Prediction Value / m3'
+        insert_values = y_pred 
+        new.insert(loc=insert_index, column=insert_colname, value=insert_values)
+
+        for i in range(len(data)):
+            if new["Downhole_press"][i] == 0 and new["Downhole_temp"][i] == 0 and new["Hours_Online"][i] == 0 and new["Press_diff"][i] == 0 and new["Temp_diff"][i] == 0:
+                new["Oil Prediction Value / m3"][i] = 0
+            else:
+                continue
+
         inputs = [
             {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
             {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
             {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
             {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
             {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Oil Prediction Value / m3", "data": y_pred.tolist()}
+            {"label": "Oil Prediction Value / m3", "data": new['Oil Prediction Value / m3'].to_numpy().tolist()}
         ]
 
         return {"data": inputs}
@@ -522,13 +535,25 @@ async def gas_production_excel(path:str,
         #predicting
         y_pred = gas_loaded_model.predict(data.to_numpy().reshape(-1, n_features))
 
+        new = data.copy()
+        insert_index = 5
+        insert_colname = 'Gas Prediction Value / m3'
+        insert_values = y_pred 
+        new.insert(loc=insert_index, column=insert_colname, value=insert_values)
+
+        for i in range(len(data)):
+            if new["Downhole_press"][i] == 0 and new["Downhole_temp"][i] == 0 and new["Hours_Online"][i] == 0 and new["Press_diff"][i] == 0 and new["Temp_diff"][i] == 0:
+                new["Gas Prediction Value / m3"][i] = 0
+            else:
+                continue
+
         inputs = [
             {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
             {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
             {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
             {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
             {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Gas Prediction Value / m3", "data": y_pred.tolist()}
+            {"label": "Gas Prediction Value / m3", "data": new['Gas Prediction Value / m3'].to_numpy().tolist()}
         ]
 
         return {"data": inputs}
