@@ -112,7 +112,7 @@ async def get_info_vtp_files(
         vtpinfo_coll = user_db["vtpinfo"]
 
         query_result = vtpinfo_coll.find(
-                {'filename':vtpname},
+                {'filename':urllib.parse.quote(vtpname)},
                 {
                     '_id':False,
                 }
