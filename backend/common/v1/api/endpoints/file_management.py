@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, status, HTTPException, File, UploadFile, Form, Depends
+from fastapi import APIRouter, status, HTTPException, File, UploadFile, Form, Depends, Query
 from fastapi.responses import FileResponse, StreamingResponse
 
 from app.api.models.file_management import CreatedFolders, DownloadedFiles, DeletedFiles, DeletedFolders
@@ -215,6 +215,7 @@ def get_list_folders_and_files(current_user: User = Depends(get_current_active_u
             # detail=str(e),
         )
 
+# not sure why I passed pointer as argument here TO DO LIST
 def get_tree_filtered(path,userid,pointer,list_paths,pathname=False):
     tmp = [
        {
@@ -247,6 +248,60 @@ def get_list_folders_and_files_based_on_pointer(
             pointer,
             list_paths,
             pathname=pathname)
+        return {
+            "status":"success",
+            "data": result
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR ,
+            # detail=str(e),
+        )
+
+def get_tree_filtered_pointers(path,userid,list_paths,pathname=False):
+    tmp = [
+       {
+           'id': os.path.join(path,k).replace("files/"+(f"{userid}"),'') if pathname else genuid()[-1],
+        #    'name':os.path.join(path,k).replace("files/"+(f"{userid}"),''),
+           'name':os.path.join(path,k).split('/')[-1],
+           'type': 'file' if os.path.isfile(os.path.join(path,k)) else 'folder',
+           'uploaddate': time.ctime(os.path.getctime(os.path.join(path, k))) if os.path.isfile(os.path.join(path,k)) else None,
+           'filetype' :mime.from_file(os.path.join(path, k)) if os.path.isfile(os.path.join(path,k)) else None,
+           'children' : get_tree_filtered_pointers(os.path.join(path,k),userid,list_paths,pathname=pathname) if os.path.isdir(os.path.join(path,k)) else None
+       } for k in os.listdir(path) if any([k in xx for xx  in list_paths])
+    ]
+    result = [cleanNullTerms(t) for t in tmp]
+    return result
+
+@router.get("/files/lists/")
+def get_list_folders_and_files_based_on_pointers(
+    pointers: List[str] = Query(None),
+    pathname: Optional[bool] = False,
+    current_user: User = Depends(get_current_active_user),
+    ):
+    try:
+        userid = current_user.username
+        user_db = mongo_client[(f"{userid}")]
+        
+        
+        list_paths = []
+        if len(pointers) >= 1:
+            for pointer in pointers:
+                list_pointers = user_db[(f"{pointer}")]
+                for object in list_pointers.find():
+                    list_paths.append(object["path"])
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND ,
+                # detail=str(e),
+            )
+
+        result = get_tree_filtered_pointers(
+            "files/"+(f"{userid}"),
+            userid,
+            list_paths,
+            pathname=pathname)
+
         return {
             "status":"success",
             "data": result

@@ -24,6 +24,10 @@ tags_metadata = [
             "name":"Showcase",
             "description": "endpoint for showcase application"
             },
+        {
+            "name":"VTP Viewer",
+            "description": "endpoint for vtp viewer application"
+            },
         ]
 
 
