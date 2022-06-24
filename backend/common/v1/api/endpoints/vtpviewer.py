@@ -100,7 +100,7 @@ async def upload_vtp_files(
 
 
 
-@router.post("/vtpviewer/getInfo")
+@router.get("/vtpviewer/getInfo/{vtpname}")
 async def get_info_vtp_files(
     vtpname: str,
     current_user: User = Depends(get_current_active_user),
