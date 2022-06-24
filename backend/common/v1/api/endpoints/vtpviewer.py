@@ -4,7 +4,7 @@ from app.utils.db import mongo_client
 
 from app.utils.authentication import get_current_active_user
 from app.api.models.login import User
-from app.api.models.vtpviewer import VtpType, VtpData, vtpdata_example
+from app.api.models.vtpviewer import VtpType, VtpData, vtpdata_example, VtpName
 
 import os
 import aiofiles
@@ -100,9 +100,9 @@ async def upload_vtp_files(
 
 
 
-@router.get("/vtpviewer/getInfo/{vtpname}")
+@router.post("/vtpviewer/getInfo")
 async def get_info_vtp_files(
-    vtpname: str,
+    vtpname: VtpName,
     current_user: User = Depends(get_current_active_user),
 ):
     try:
@@ -112,7 +112,7 @@ async def get_info_vtp_files(
         vtpinfo_coll = user_db["vtpinfo"]
 
         query_result = vtpinfo_coll.find(
-                {'filename':urllib.parse.quote(vtpname)},
+                {'filename':urllib.parse.quote(vtpname.path)},
                 {
                     '_id':False,
                 }

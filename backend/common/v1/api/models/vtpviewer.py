@@ -54,3 +54,5 @@ class VtpData(BaseModel):
         }
 
 
+class VtpName(BaseModel):
+    path: str
