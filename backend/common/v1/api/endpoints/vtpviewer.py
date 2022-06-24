@@ -152,12 +152,14 @@ async def add_info_vtp_files(
     if vtpdata.type == 'well-vtp':
         to_db = {
             "filename": urllib.parse.quote(f"{filename.split(f'files/{userid}/')[-1]}"),
+            "type": vtpdata.type,
             "center": vtpdata.center,
             "radius": vtpdata.radius,
         }
     elif vtpdata.type == 'line-vtp':
         to_db = {
             "filename": urllib.parse.quote(f"{filename.split(f'files/{userid}/')[-1]}"),
+            "type": vtpdata.type,
             "center": vtpdata.center,
             "geodata": vtpdata.geodata,
             "tilt": vtpdata.tilt
@@ -165,6 +167,7 @@ async def add_info_vtp_files(
     elif vtpdata.type == 'surface-vtp':
         to_db = {
             "filename": urllib.parse.quote(f"{filename.split(f'files/{userid}/')[-1]}"),
+            "type": vtpdata.type,
             "center": vtpdata.center,
             "geodata": vtpdata.geodata,
             "tilt": vtpdata.tilt
