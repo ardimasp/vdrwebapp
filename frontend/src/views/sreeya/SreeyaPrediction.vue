@@ -8,9 +8,11 @@
                 </v-col>
                 <v-col cols="12" sm="9">
                     <v-text-field
-                        label="Hours"
                         v-model="hoursOnline"
                         type="number"
+                        hint="value ≥ 0"
+                        persistent-hint
+                        suffix="hours"
                         dense
                     ></v-text-field>
                 </v-col>
@@ -21,9 +23,11 @@
                 </v-col>
                 <v-col cols="12" sm="9">
                     <v-text-field
-                        label="Deg C"
                         v-model="downholeTemp"
                         type="number"
+                        hint="0 ≤ value ≤ 172"
+                        persistent-hint
+                        suffix="°C"
                         dense
                     ></v-text-field>
                 </v-col>
@@ -34,9 +38,11 @@
                 </v-col>
                 <v-col cols="12" sm="9">
                     <v-text-field
-                        label="Bar"
-                        v-model="downlholePress"
+                        v-model="downholePress"
                         type="number"
+                        hint="0 ≤ value ≤ 308"
+                        persistent-hint
+                        suffix="bar"
                         dense
                     ></v-text-field>
                 </v-col>
@@ -47,9 +53,11 @@
                 </v-col>
                 <v-col cols="12" sm="9">
                     <v-text-field
-                        label="Bar"
                         v-model="pressDiff"
                         type="number"
+                        hint="0 ≤ value ≤ 325"
+                        persistent-hint
+                        suffix="bar"
                         dense
                     ></v-text-field>
                 </v-col>
@@ -60,9 +68,11 @@
                 </v-col>
                 <v-col cols="12" sm="9">
                     <v-text-field
-                        label="Deg C"
                         v-model="tempDiff"
                         type="number"
+                        hint="0 ≤ value ≤ 190"
+                        persistent-hint
+                        suffix="°C"
                         dense
                     ></v-text-field>
                 </v-col>
@@ -80,6 +90,7 @@
                         type="number"
                         dense
                         readonly
+                        suffix="m³"
                     >
                         <template v-slot:progress>
                             <v-progress-linear
@@ -94,7 +105,7 @@
                 </v-col>
             </v-row>
             <div class="d-flex flex-row-reverse">
-                <v-btn color="secondary" @click="predict">
+                <v-btn color="secondary" @click="predict" :disabled="!checkPredict">
                     Predict
                 </v-btn>
             </div>
@@ -103,7 +114,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, computed } from '@vue/composition-api'
 import sreeyaService from './../../services/sreeya.service'
 
 export default defineComponent({
@@ -113,16 +124,30 @@ export default defineComponent({
     setup(props) {
         const hoursOnline = ref(0);
         const downholeTemp = ref(0);
-        const downlholePress = ref(0);
+        const downholePress = ref(0);
         const pressDiff = ref(0);
         const tempDiff = ref(0);
         const result = ref();
+
+        const checkPredict = computed(() => {
+            if (hoursOnline.value < 0) return false
+
+            if (downholePress.value < 0 || downholePress.value > 308) return false
+            
+            if (downholeTemp.value < 0 || downholeTemp.value > 172) return false
+
+            if (pressDiff.value < 0 || pressDiff.value > 325) return false
+            
+            if (tempDiff.value < 0 || tempDiff.value > 190) return false
+
+            return true
+        })
         
         const predict = async () => {
             var submitData = {
                 "hours_online": hoursOnline.value,
                 "downhole_temp": downholeTemp.value,
-                "downhole_press": downlholePress.value,
+                "downhole_press": downholePress.value,
                 "press_diff": pressDiff.value,
                 "temp_diff": tempDiff.value,
             }
@@ -135,8 +160,8 @@ export default defineComponent({
         }
 
         return {
-            hoursOnline, downholeTemp, downlholePress, pressDiff, tempDiff,
-            result, predict, 
+            hoursOnline, downholeTemp, downholePress, pressDiff, tempDiff,
+            result, predict, checkPredict
         }
     },
 })

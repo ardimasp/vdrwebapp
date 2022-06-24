@@ -140,7 +140,6 @@ export default defineComponent({
                 "affiliation": affiliation.value,
                 "profile_pict": profile
             }
-            console.log("submit add profile",submitData)
 
             let status = await adminService.addUser(submitData);
             if (status == 200) {

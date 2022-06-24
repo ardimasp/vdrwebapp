@@ -53,7 +53,7 @@ export default{
         const iconPaperClip = mdiPaperclip;
         const dialog = ref(true);
         const selectedFile = ref([]);
-        const selectItems = ["*","chart", "showcase", "sreeya"];
+        const selectItems = ["*","vtp-well","vtp-line","vtp-surface", "showcase", "sreeya"];
         const categoryChoosen = ref("");
 
         const checkFile = computed(() => {
@@ -68,7 +68,6 @@ export default{
 
         const save = async () => {
             loading.value = true;
-            console.log(selectedFile.value);
             let submitData = new FormData();
             for(let i = 0; i < selectedFile.value.length; i++){
                 submitData.append('files', selectedFile.value[i]);
@@ -81,6 +80,7 @@ export default{
             // call API
             await fileService.addFile(submitData);
             await store.dispatch("fetchTreeList");
+            await store.dispatch("fetchVtpList")
             if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList");
 
             loading.value = false;

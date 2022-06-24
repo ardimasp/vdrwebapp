@@ -108,7 +108,6 @@ export default {
       // const asset = this.assets.pop()
       const asset = this.assets[index]
       this.assets.splice(index, 1)
-      // console.log(index)
       asset.actor.delete();
       asset.mapper.delete();
       //-----------------------------//

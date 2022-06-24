@@ -191,14 +191,11 @@ export default defineComponent({
         const setNewProfile = () => {
             passwordUpdated.value = false;
             let file = imageProfile.value;
-            console.log("check size", file);
             let reader = new FileReader();
             reader.onloadend = function() {
-                // console.log('RESULT: ', reader.result);
                 newImage.value = reader.result;
             }
             reader.readAsDataURL(file);
-            // console.log(b64);
         }
 
         const submitImage = async () => {

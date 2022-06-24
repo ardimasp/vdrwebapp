@@ -11,7 +11,6 @@ export default {
     },
     actions: {
         fetchUserList(context){
-            console.log("admin get user");
             return adminService.fetchUsers().then(
                 data => {
                     context.commit('UPDATE_USERLIST', data.data.splice(1))

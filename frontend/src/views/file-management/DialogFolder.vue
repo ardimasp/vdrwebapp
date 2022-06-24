@@ -73,6 +73,8 @@ export default defineComponent({
             // call APi
             await fileService.addFolder(submitData);
             await store.dispatch("fetchTreeList");
+            await store.dispatch("fetchVtpList")
+            if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList")
             closeDialog();
         }
 

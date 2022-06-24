@@ -18,11 +18,9 @@ class AdminService{
         })
             .then(
                 (res) => {
-                    console.log("success fetch users", res.data)
                     return res.data;
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err.response;
                 }
@@ -36,11 +34,9 @@ class AdminService{
         })
             .then(
                 (res) => {
-                    console.log(res)
                     return res.status
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err.response.status
                 }
@@ -54,11 +50,9 @@ class AdminService{
         })
         .then(
             (res)=> {
-                console.log(res);
                 return res.status;
             },
             (err) => {
-                console.log(err);
                 checkExpire(err);
                 return err.response.status
             }
@@ -72,11 +66,9 @@ class AdminService{
         })
             .then(
                 (res) => {
-                    console.log(res);
                     return res.status
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err.status;
                 }
@@ -90,11 +82,9 @@ class AdminService{
         })
             .then(
                 (res) => {
-                    console.log(res);
                     return res;
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err;
                 }

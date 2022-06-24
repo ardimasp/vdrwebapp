@@ -213,11 +213,13 @@ export default {
         else if(store.state.auth.permission == "Premium User") {
           await store.dispatch("fetchTreeList")
           await store.dispatch("fetchSreeyaList")
+          await store.dispatch("fetchVtpList")
           await router.push('/');
           await store.dispatch("setLoad", false)
         }
         else {
           await store.dispatch("fetchTreeList");
+          await store.dispatch("fetchVtpList");
           await router.push('/');
           await store.dispatch("setLoad", false)
         }
