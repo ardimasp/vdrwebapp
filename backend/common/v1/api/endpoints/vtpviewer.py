@@ -122,7 +122,7 @@ async def get_info_vtp_files(
 
         return {
             'status': 'success',
-            'result': result[0]
+            'result': result[-1]
         }
     except:
         raise HTTPException(
