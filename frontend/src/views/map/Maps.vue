@@ -22,7 +22,7 @@
      </template>
     </regular-card>
 
-     <regular-card v-if="v==false"
+     <!-- <regular-card v-if="v==false"
       :x="400"
       :y="50"
       title="Sort By"
@@ -32,10 +32,11 @@
      <template>
           <MapSort v-on:input="sortSelected" />
      </template>
-    </regular-card>
+    </regular-card> -->
 
     </div>
-    <MapVisualization :dataMaps="datas" :heatmap="heatmap" :dataType="visualData" v-on:click="visualSelected"> </MapVisualization>
+    <MapVisualization :dataMaps="datas" :vtpMaps="vtpInfo" :heatmap="heatmap" :dataType="visualData" v-on:click="visualSelected"> </MapVisualization>
+    <!-- :wellVtp="wellVtp" :lineVtp="lineVtp" :surfaceVtp="surfaceVtp" -->
     <!-- <MapNavigation :dataMaps="datas" :heatmap="heatmap" :dataType="visualData"></MapNavigation> -->
     <!-- <br>
     <br> -->
@@ -49,23 +50,24 @@ import 'leaflet/dist/leaflet.css'
 import { cardData } from './Dummy.js'
 import { colorRange } from './Color.js'
 // import MapList from './MapList.vue'
-import MapSort from './MapSort.vue'
+// import MapSort from './MapSort.vue'
 
 import MapFilter from './MapFilter.vue'
 
 import RegularCard from '../viewer/RegularCard.vue'
 
 // import axios from 'axios';
-import {getDatafromDB, getDB, restructureData} from '../showcase/MapEndPoint.js'
+import {getDatafromDB, getDB, getVTPdata, getVTPinfo} from '../showcase/MapEndPoint.js'
 import MapVisualization from './MapVisualization.vue'
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgas from '../../assets/images/map-marker.svg'
+// import store from "../../store";
 
 export default {
   components: {
     // MapNavigation,
     // MapList,
-    MapSort,
+    // MapSort,
     MapFilter,
     RegularCard,
     MapVisualization,
@@ -94,8 +96,13 @@ export default {
       tempD: [],
       transparent: 0,
       correctData:[],
+      vtpInfo:[],
+      tmpVTP: [],
       visualData: 'visual',
-      v: false
+      v: false,
+      wellVtp:[],
+      lineVtp:[],
+      surfaceVtp:[]
     }
   },
   
@@ -111,8 +118,8 @@ export default {
         // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
         // console.log(this.datas)
         this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconfillColor = this.opacity
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].fillIcon = this.defcolor
-        // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconborderColor = this.opacity
+        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconColor = this.deffillcolor
+        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconborderColor = 1
 
 
       }
@@ -126,7 +133,9 @@ export default {
       for (var ns in myArrayFiltered){
         
         this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconfillColor = this.lessopacity
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].fillIcon = this.deffillcolor
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconColor = this.deffillcolor
+        this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconborderColor = this.transparent
+
         // this.datas[nsid].iconborderColor = this.transparent
 
       }
@@ -216,21 +225,34 @@ export default {
     }
   },
   async mounted(){
+    this.correctData = await getVTPdata();
+    var children
+    for(let i =0; i <this.correctData.length; i++){
+      children = this.correctData[i].children
+      // console.log("c", children)
+      for (var j = 0; j < children.length; j++) {
+          // console.log("child", children[j])
+      // console.log('path', children[j].id)
+      let infochildVTP = await getVTPinfo(children[j].id)
+      if(infochildVTP != undefined){
+        this.tmpVTP.push(infochildVTP)
+      }else{
+        continue
+      }
+    }
+    }
+    this.vtpInfo = this.tmpVTP.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
+
+
     this.tempD = await getDatafromDB();
     // console.log(this.tempD)
     // console.log(this.token)
     this.allData = await getDB(this.tempD)
-    // console.log(this.allData)
-    this.correctData = await restructureData(this.allData)
-    // console.log(this.correctData)
-
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
-    // console.log(this.datas)
-  
-  
-
-    // this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon, opac: this.lessopacity, iconImg: this.defaulticon}))
-    // console.log(datas)
+    console.log(this.datas)
+    // console.log(this.allData)
+    // this.correctData = await restructureData(this.allData)
+    
   },
 }
 </script>

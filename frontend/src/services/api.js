@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from './../store'
 import router from './../router'
 
-export const URL = "https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1";
+export const URL = "https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com//api/v1";
 
 export const checkExpire = (err) => {
     if(err.response && err.response.status == 403 || err.response.status == 401){

@@ -4,63 +4,65 @@
       <regular-card  v-if="chosenValue.length != 0"
        :x="0"
       :y="50"
-      title="Select VTP"
+      title="Select Visual"
       :w="800"
       :h="100"
       >
         <template>
-          <div class="pa-4 text-no-wrap ">
+        <div class="pa-4 text-no-wrap ">
 
-            <v-row
-              no-gutters
-            >
-            <v-col>
-                <v-autocomplete 
-                    dense
-                    v-model="selectedValue"
-                    :items="this.chosenValue"
-                    label="Selected"
-                  ></v-autocomplete>
-            </v-col>
-            <v-col class="ml-4">
-                  <!-- <v-text-field
-                      label="Gain"
-                      v-model="gain"
-                      type="number"
-                    ></v-text-field> -->
-                  <!-- <v-subheader class="pl-0 pt-0">
-                    Gain
-                  </v-subheader> -->
-                  <v-slider class="pl-0 mt-1"
-                  label="Gain"
-                    :disabled="selectedValue == null"
-                    dense
-                    :max="max"
-                    :min="min"
-                    v-model="gainValue[selectedIndex]"
-                    :thumb-size="24"
-                    thumb-label="always"
-                    @change="applyChanges"
-                  ></v-slider>
-            </v-col>
-            <v-col class="ml-4">
-                  <v-autocomplete
-                    :disabled="selectedValue == null"
-                    dense
-                    v-model="colourValue[selectedIndex]"
-                    :items="items"
-                    label="Colour Map"
-                    @change="applyChanges"
+          <v-row
+        :align="align"
+        no-gutters
+        style="height: 150px;"
+      >
+      <v-col>
+           <v-autocomplete 
+              dense
+              v-model="selectedValue"
+              :items="this.chosenValue"
+              label="Selected"
+            ></v-autocomplete>
+      </v-col>
+      <v-col class="ml-4">
+            <!-- <v-text-field
+                label="Gain"
+                v-model="gain"
+                type="number"
+              ></v-text-field> -->
+            <!-- <v-subheader class="pl-0 pt-0">
+              Gain
+            </v-subheader> -->
+            <v-slider class="pl-0 mt-1"
+            label="Gain"
+              :disabled="selectedValue == null"
+              dense
+              :max="max"
+              :min="min"
+              v-model="gain"
+              :thumb-size="24"
+              thumb-label="always"
+              @change="applyChanges"
+            ></v-slider>
+      </v-col>
+      <v-col class="ml-4">
+            <v-autocomplete
+              :disabled="selectedValue == null"
+              dense
+              v-model="value"
+              :items="items"
+              label="Standard"
+              @change="applyChanges"
 
-                  ></v-autocomplete>
-            </v-col>
-            </v-row>
-          </div>
+            ></v-autocomplete>
+      </v-col>
+          </v-row>
+        </div>
 
         </template>
       </regular-card>
       
-      <vtp-card-2
+      <vtp-card
       v-if="chosenValue.length != 0"
         :x="0"
         :y="200"
@@ -77,11 +79,10 @@
             color="secondary"
           ></v-progress-linear>
         </template>
-      </vtp-card-2>
+      </vtp-card>
       <!-- </vtp-card> -->
     </div>
     <div id="mapContainer">
-      <!-- <p>hel {{wellV[0].center}} </p> -->
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
           <l-rectangle :key="'r'+index"
@@ -109,27 +110,27 @@
 
             ></l-polyline>
 
+          <l-polyline
+            :color='polylineColor2'
+            :lat-lngs="[[3.840750719486705,124.98385034079186],
+            [1.269600280740548,128.04802811326778],
+            [3.840750719486705,124.98385034079186],
+            [-1.0285330486163864,126.11966528420817]]" 
+
+            ></l-polyline>
           <l-circle
             :key="'c'+index"
-            v-for="(wel,index) in wellV"
-            :lat-lng="wel.center"
-            :radius="wel.radius*10000"
-            :color='wel.iconColor'
+            v-for="(dataMap,index) in dataMaps"
+            :lat-lng="[dataMap.wellLatitude+0.05, dataMap.wellLongitude]"
+            :radius="Math.sqrt((dataMap.wellArea * 1000000)/Math.PI)/2"
+            :color='dataMap.iconColor'
             :fillColor='circleColor'
-            :fillOpacity="wel.iconfillColor"
-            :opacity="wel.iconborderColor"
+            :fillOpacity="dataMap.iconfillColor"
+            :opacity="dataMap.iconborderColor"
             @click="chosenClick(dataMap.wellName, visual[1])"
           >
+          
           </l-circle>
-            <!-- <l-circle           
-            :lat-lng="wellV[0].center"
-            :radius="wellV[0].radius * 10000"
-            :color='wellV[0].iconColor'
-            :fillColor='circleColor'
-            :fillOpacity="wellV[0].iconfillColor"
-            :opacity="wellV[0].iconborderColor"
-          >
-          </l-circle> -->
         </l-map>
       <!-- </v-card> -->
     </div>
@@ -149,7 +150,6 @@ import { LMap, LTileLayer,LCircle, LRectangle,LPolyline } from 'vue2-leaflet'
 import ClickOutside from 'vue-click-outside'
 import {getImages} from '../showcase/MapEndPoint.js';
 import fileService from '../../services/file.service';
-import VtpCard2 from '../viewer/VtpCard.vue';
 
 import RegularCard from '../viewer/RegularCard.vue'
 
@@ -157,7 +157,7 @@ import RegularCard from '../viewer/RegularCard.vue'
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
-// import VtpCard from '../viewer/VtpCard.vue';
+import VtpCard from '../viewer/VtpCard.vue';
 
 
 export default {
@@ -172,19 +172,13 @@ export default {
     // LCircleMarker,
     // LTooltip,
     LPolyline,
-    // VtpCard,
-    VtpCard2,
+    VtpCard,
     RegularCard
   },
   props:{
     dataMaps: Array,
-    vtpMaps: Array,
     heatmap: Array,
-    dataType: String,
-
-      // wellVtp: Array,
-      // lineVtp: Array,
-      // surfaceVtp: Array
+    dataType: String
   },
 
   data: function() {
@@ -224,11 +218,6 @@ export default {
       selectedValue: null, //value selected based on the array
       selectedIndex: null, //the index of the selected value
       load: false,
-      gainValue: [],
-      colourValue: [],
-      height: null,
-      width: null,
-
       // windowContaine
     }
   },
@@ -293,17 +282,11 @@ export default {
     },
     async shapeClick(chosenWell, visualizeType){
       this.click += 1
-      console.log('test', this.figVisualize)
-            console.log('chosenWell', chosenWell)
 
       var cW = this.figVisualize.find((e) => e.name == chosenWell)
-      console.log(cW.children)
+      console.log(cW)
       var t= cW.children.find((e) => e.name.includes(visualizeType))
-      console.log(t)
-
       console.log('/'+chosenWell+'/'+t.name)
-      this.gainValue.push(1);
-      this.colourValue.push(this.value);
       if(this.selectedValue == null || this.selectedValue == "") {
         this.selectedValue = this.chosenValue[0]
         this.selectedIndex = 0
@@ -355,8 +338,6 @@ export default {
         }
       }
       console.log(unclickedIndex)
-      this.gainValue.splice(unclickedIndex, 1)
-      this.colourValue.splice(unclickedIndex, 1)
       this.onDelete(unclickedIndex)
       if (unclickedIndex > -1) {
         this.chosenValue.splice(unclickedIndex, 1); // 2nd parameter means remove one item only
@@ -387,9 +368,9 @@ export default {
 
     applyChanges(){
       // this.changeGain();
-            console.log("penting:",this.value, this.gain, this.selectedIndex, this.colourValue[this.selectedIndex],this.gainValue[this.selectedIndex])
-      this.$refs.vtpcard.changeColorMapName(this.colourValue[this.selectedIndex],this.gainValue[this.selectedIndex])
-      // this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
+            console.log("penting:",this.value, this.gain, this.selectedIndex)
+
+      this.$refs.vtpcard.changeColorMapName(this.value,this.gain)
 
       // other things considered
     },
@@ -426,46 +407,11 @@ export default {
   },
   async mounted() {
     this.items = vtkColorMaps.rgbPresetNames
-    // console.log(this.dataMaps)
 
     this.figVisualize = await getImages("visualization");
     console.log(this.figVisualize)
-        // console.log(document.getElementsByClassName('container').clientWidths)
-    // this.height = this.$refs.myMap.$el.clientWidth
-    // console.log(this.height)
-    // console.log(window.innerWidth)
-    // if(window.innerWidth > 1200) this.width = window.innerWidth - this.$refs.myMap.$el.clientWidth - 260 - 100
-    //   else if (window.innerWidth > 600) this.width = window.innerWidth - this.$refs.myMap.$el.clientWidth - 100
-    //   else this.width = window.innerHeight - 10
-    // console.log('vtp', this.vtpMaps)
-    // this.wellVtp = this.vtpMaps.find(e => e.type === 'well-vtp');
-    // console.log('well', this.wellVtp)
+        console.log(document.getElementsByClassName('container').clientWidths)
 
- 
-    // console.log(this.lineVtp)
-    // console.log(this.surfaceVtp)
-
-  },
-   computed:{
-    // wellRule(){
-    //   if(Object.keys(this.childrens).length > 0){
-    //     var usedWells = this.childrens.map(a => a.wellName);
-
-    //   const wellRule = 
-    //    v => (usedWells.includes(v) === false) || 'Well name exist!'
-    //     this.wellRules.push(wellRule)
-    //   }
-    // },
-    wellV(){
-      var imguploadRules = []
-      if(Object.keys(this.vtpMaps).length > 0){
-        var w = this.vtpMaps.find(e => e.type === 'well-vtp');
-        console.log(w)
-        imguploadRules.push(w)
-      }
-      return imguploadRules
-
-    }
   },
    // do not forget this section
   directives: {

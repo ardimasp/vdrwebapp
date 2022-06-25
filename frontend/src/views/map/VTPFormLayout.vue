@@ -4,9 +4,9 @@
     <!-- Multiple Column -->
     <v-col cols="12">
       <v-card>
-        <v-card-title>Add Map Data</v-card-title>
+        <v-card-title>Add VTP Data</v-card-title>
         <v-card-text>
-          <FormToBeFill/>
+          <VTPForm/>
         </v-card-text>
         <div id="app">
         <!-- <input type="text" v-model="query" /> -->
@@ -20,10 +20,10 @@
 
 <script>
 
-import FormToBeFill from './FormToBeFill.vue'
+import VTPForm from './VTPForm.vue'
 export default {
   components: {
-    FormToBeFill,
+    VTPForm,
   },
   setup() {
     return {}
