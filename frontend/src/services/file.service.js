@@ -157,6 +157,22 @@ class FileService{
                 }
             )
     }
+    fetchFilesMultiPointer(data, bool) {
+        return axios.get(`${url}/files/lists/?${data}&pathname=${bool}`, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
+            .then(
+                (res) => {
+                    return res.data;
+                },
+                (err) => {
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
+    }
 
     getFileRaw(path){
         return axios.get(`${url}/file?path=`+encodeURIComponent(path), 

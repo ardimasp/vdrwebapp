@@ -44,32 +44,10 @@ export default {
             )
         },
         fetchVtpList(context){
-            var list;
-            return fileService.fetchFilesPointer("vtp-well", true).then(
+            return fileService.fetchFilesMultiPointer("pointers=vtp-well&pointers=vtp-line&pointers=vtp-surface", true).then(
                 data => {
-                    list = data.data
-
-                    return fileService.fetchFilesPointer("vtp-line", true).then(
-                        data1 => {
-                            for(let i = 0; i<data1.data.length;i++) list.push(data1.data[i])
-
-                            return fileService.fetchFilesPointer("vtp-surface", true).then(
-                                data2 => {
-                                    for(let j = 0; j<data2.data.length;j++) list.push(data2.data[j])
-                                    context.commit('UPDATE_VTP', list)
-                                },
-                                error2 => {
-                                    return Promise.reject(error2)
-                                }
-                            )
-                        },
-                        error1 => {
-                            return Promise.reject(error1)
-                        }
-                    )
-
-                    
-                    // return data.data;
+                    context.commit('UPDATE_VTP', data.data)
+                    return data.data;
                 },
                 error => {
                     return Promise.reject(error)
