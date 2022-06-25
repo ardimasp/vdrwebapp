@@ -27,7 +27,7 @@ export default {
     // fetchAPI
     const state = store.state.auth.logged;
     // const aaa = require('process.env')
-    // console.log(process.env.VUE_APP_ENDPOINT)
+    console.log(process.env.VUE_APP_ENDPOINT)
 
     if(state) {
       await store.dispatch("setLoad", true)

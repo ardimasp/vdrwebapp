@@ -143,6 +143,7 @@ export default defineComponent({
 
             let status = await adminService.addUser(submitData);
             if (status == 200) {
+                console.log(submitData);
                 await store.dispatch("fetchUserList");
                 alertMsgShow.value = true;
                 alertColour.value = "#4DB6AC";

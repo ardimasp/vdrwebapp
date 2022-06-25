@@ -54,7 +54,7 @@ class SreeyaService{
                 },
                 (err) => {
                     checkExpire(err);
-                    return err.response.status
+                    return err
                 }
             )
     }
