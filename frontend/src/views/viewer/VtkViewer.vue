@@ -9,7 +9,10 @@
         >
           <v-card id="widget-container" ref="widget">
             <v-container>
-              <p class="font-weight-bold">Choose VTP file(s)</p>
+              <div class="d-flex justify-space-between">
+                <p class="font-weight-bold">Choose VTP file(s)</p>
+                <v-btn color="secondary" small @click="addVtp">Add VTP File</v-btn>
+              </div>
               <div class="treeview-container">
                 <tree-content-2
                   :selectable="load"
@@ -92,6 +95,7 @@ import TreeContent2 from './TreeContent2.vue'
 import fileService from '../../services/file.service';
 import { computed } from '@vue/composition-api';
 import store from '../../store';
+import router from '../../router';
 
 export default{
   components: {
@@ -139,6 +143,9 @@ export default{
     }
   },
   methods: {
+    addVtp(){
+      router.push('/vtp-form')
+    },
     applyChanges(){
       // this.changeGain();
       this.$refs.vtpcard.changeColorMapName(this.colourValue[this.selectedIndex],this.gainValue[this.selectedIndex])

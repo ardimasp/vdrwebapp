@@ -44,7 +44,7 @@ export default {
             )
         },
         fetchVtpList(context){
-            return fileService.fetchFilesMultiPointer("pointers=vtp-well&pointers=vtp-line&pointers=vtp-surface", true).then(
+            return fileService.fetchFilesMultiPointer("pointers=well-vtp&pointers=surface-vtp&pointers=line-vtp", true).then(
                 data => {
                     context.commit('UPDATE_VTP', data.data)
                     return data.data;
