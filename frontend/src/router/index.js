@@ -49,6 +49,11 @@ const routes = [
     component: () => import('@/views/showcase/FormLayouts.vue'),
   },
   {
+    path: '/vtp-form',
+    name: 'vtpForm',
+    component: () => import('@/views/map/VTPFormLayout.vue'),
+  },
+  {
     path: '/production',
     name: 'production',
     component: () => import('@/views/sreeya/Sreeya.vue'),

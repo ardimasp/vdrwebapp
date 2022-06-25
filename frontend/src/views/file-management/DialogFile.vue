@@ -34,7 +34,7 @@
             <!-- {{checkVTP}} -->
             <v-card-actions>
                 <v-btn color="primary" text @click="closeDialog" :disabled="loading"> Close </v-btn>
-                <v-btn color="primary" text @click="save" :disabled="!checkFile && !checkVTP"> Save </v-btn>
+                <v-btn color="primary" text @click="save" :disabled="!checkFile || !checkVTP"> Save </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

@@ -13,7 +13,7 @@ import store from "../../store";
 // }
 // localStorage.getItem("user")
 function postDatatoDB(data){
-    return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
+    return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase', data, {headers:
     {
       accept: 'application/json',
       Authorization: "Bearer " + store.state.auth.user,
@@ -39,7 +39,7 @@ function postDatatoDB(data){
 
 let list =[];
 async function getListFieldWell(){
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
+  return axios.get('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
     accept: 'application/json',
     Authorization: "Bearer " + store.state.auth.user}
   })
@@ -68,7 +68,7 @@ let allData = [];
 let da = [];
 function getDatafromDB(){
 
-  return axios.get('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
+  return axios.get('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/list-well', {headers:{
     accept: 'application/json',
     Authorization: "Bearer " + store.state.auth.user}
   })
@@ -103,7 +103,7 @@ function getDB(dat){
   //   dataFW = result
   //   console.log(dataFW)
   var data = {data: dat}
-  return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', data, {headers:
+  return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/showcase/data', data, {headers:
   {
     accept: 'application/json',
     Authorization: "Bearer " + store.state.auth.user,
@@ -179,7 +179,7 @@ function getDB(dat){
 
   function uploadImages(data){
 
-    return axios.post('https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files', data, {headers:
+    return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/files', data, {headers:
     {
       accept: 'application/json',
       Authorization: "Bearer " + store.state.auth.user,
@@ -202,7 +202,7 @@ function getDB(dat){
   }
 
   function getImages(pointer){
-    return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/${pointer}`,{headers:
+    return axios.get(`https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/${pointer}`,{headers:
     {
       accept: 'application/json',
       Authorization: "Bearer " + store.state.auth.user,
@@ -234,7 +234,7 @@ function getDB(dat){
     // let imagesArray = []
     // for (let i in imagePath){
 
-    return axios.get(`https://ec2-13-250-37-201.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=${encodeURIComponent(imagePath)}`, {
+    return axios.get(`https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/file?path=${encodeURIComponent(imagePath)}`, {
     responseType: 'blob', headers:
       {
         accept: 'application/json',
@@ -262,6 +262,111 @@ function getDB(dat){
   });
   }
 
+  function vtpUpload(data){
+    return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/vtpviewer', data, {headers:
+    {
+      accept: 'application/json',
+      Authorization: "Bearer " + store.state.auth.user,
+      'Content-Type': 'multipart/form-data'
+    }
+    })
+           .then((res) => {
+               //Perform Success Action
+               console.log(res.status);
+              })
+              
+              .catch((error) => {
+                 console.log(error.response.data);
+                 checkExpire(error);
+
+                  // error.response.status Check status code
+              }).finally(() => {
+                  //Perform action in always
+              });
+  }
+
+function vtpInfo(data){
+  return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/vtpviewer/info', data, {headers:
+  {
+    accept: 'application/json',
+    Authorization: "Bearer " + store.state.auth.user,
+    'Content-Type': 'application/json'
+  }
+  })
+         .then((res) => {
+             //Perform Success Action
+             
+      console.log(res.status);
+      return res.status
+         })
+         .catch((error) => {
+            console.log(error.response.data);
+            checkExpire(error);
+            return [error.response.status,error.response.data]
+             // error.response.status Check status code
+         }).finally(() => {
+           console.log(data)
+             //Perform action in always
+         });
+}
+
+function getVTPdata(){
+  return axios.get('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/files/lists/?pointers=well-vtp&pointers=line-vtp&pointers=surface-vtp&pathname=true',{headers:
+    {
+      accept: 'application/json',
+      Authorization: "Bearer " + store.state.auth.user,
+    }
+    })
+           .then((res) => {
+               //Perform Success Action
+               
+        let vtpD = res.data.data;
+  
+        return vtpD
+        // console.log(dataDB)
+  
+           })
+           .catch((error) => {
+              console.log(error.response.data);
+              checkExpire(error);
+
+               // error.response.status Check status code
+           }).finally(() => {
+            //  console.log(data)
+               //Perform action in always
+           });
+}
+
+function getVTPinfo(vtppath){
+  var data = {'path': vtppath}
+  // console.log(data)
+  return axios.post('https://ec2-52-77-238-72.ap-southeast-1.compute.amazonaws.com/api/v1/common/vtpviewer/getInfo', data, {headers:
+  {
+    accept: 'application/json',
+    Authorization: "Bearer " + store.state.auth.user,
+    'Content-Type': 'application/json'
+  }
+    })
+           .then((res) => {
+               //Perform Success Action
+              //  console.log(res.data.result)
+        let vtpInfo = res.data.result;
+  
+        return vtpInfo
+        // console.log(dataDB)
+  
+           })
+           .catch((error) => {
+             
+              // console.log(error.response.data);
+              checkExpire(error);
+
+               // error.response.status Check status code
+           }).finally(() => {
+            //  console.log(data)
+               //Perform action in always
+           });
+  }
 
 
-export{postDatatoDB, getListFieldWell, getDatafromDB, getDB, restructureData, uploadImages, getImages, displayImages}
+export{postDatatoDB, getListFieldWell, getDatafromDB, getDB, restructureData, uploadImages, getImages, displayImages, vtpUpload, vtpInfo, getVTPdata, getVTPinfo}
