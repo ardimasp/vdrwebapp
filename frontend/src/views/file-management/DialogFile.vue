@@ -55,7 +55,7 @@ export default{
         const iconPaperClip = mdiPaperclip;
         const dialog = ref(true);
         const selectedFile = ref([]);
-        const selectItems = ["*","well-vtp","line-vtp","surface-vtp", "showcase", "sreeya"];
+        const selectItems = ["*","well-vtp","line-vtp","surface-vtp", "showcase", "production"];
         const categoryChoosen = ref("");
 
         const checkFile = computed(() => {
