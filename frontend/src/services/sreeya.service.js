@@ -21,7 +21,6 @@ class SreeyaService{
                     return res.data
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }
@@ -38,7 +37,6 @@ class SreeyaService{
                     return res.data
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }
@@ -55,7 +53,6 @@ class SreeyaService{
                     return res.data
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }
@@ -72,7 +69,6 @@ class SreeyaService{
                     return res.data
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err
                 }

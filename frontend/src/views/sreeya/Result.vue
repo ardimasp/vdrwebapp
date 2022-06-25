@@ -10,25 +10,27 @@
             class="mb-12"
             color="grey lighten-1"
         >
-            <v-row>
-                <v-col cols="12" md="6">
-                    <div id="plot3d"></div>
-                </v-col>
-                <v-col cols="12" md="6">
-                    <div id="plot3d2"></div>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12" md="6">
-                    <div id="plot3d1"></div>
-                </v-col>
-                <v-col cols="12" md="6">
-                    <sreeya-prediction :feature="feature"></sreeya-prediction>
-                </v-col>
-            </v-row>
             <div v-if="showErr">
                 <p class="headline font-weight-bold">{{errMsg}}!</p>
                 <p class="overline">Press the 'New Prediction' button below to reselect the file and make a new prediction</p>
+            </div>
+            <div v-else>
+                <v-row>
+                    <v-col cols="12" md="6">
+                        <div id="plot3d"></div>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                        <div id="plot3d2"></div>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12" md="6">
+                        <div id="plot3d1"></div>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                        <sreeya-prediction :feature="feature"></sreeya-prediction>
+                    </v-col>
+                </v-row>
             </div>
         </v-card>
     </div>
@@ -58,12 +60,16 @@ export default defineComponent({
                 var result;
                 if(props.feature == "oil") result = await sreeyaService.oilPredictionExcel(props.active);
                 else result = await sreeyaService.gasPredictionExcel(props.active);
-                console.log(result)
 
                 if(result.response && result.response.status == 422) {
                     errMsg.value = result.response.data.detail
                     showErr.value = true
-                } else {
+                }
+                else if(result.response && result.response.status == 400) {
+                    errMsg.value = result.response.data.detail
+                    showErr.value = true
+                } 
+                else {
                     var hoursOnline = result.data[0];
                     var downholeTemp = result.data[1];
                     var downholePress = result.data[2];

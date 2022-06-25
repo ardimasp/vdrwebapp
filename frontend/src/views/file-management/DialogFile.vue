@@ -29,10 +29,12 @@
                     indeterminate
                     color="secondary"
                 ></v-progress-linear>
+                <p class="caption" v-if="!checkVTP">the file you are uploading contains .vtp file, we suggest that you upload it here!</p>
             </v-card-text>
+            <!-- {{checkVTP}} -->
             <v-card-actions>
                 <v-btn color="primary" text @click="closeDialog" :disabled="loading"> Close </v-btn>
-                <v-btn color="primary" text @click="save" :disabled="!checkFile"> Save </v-btn>
+                <v-btn color="primary" text @click="save" :disabled="!checkFile && !checkVTP"> Save </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -53,13 +55,17 @@ export default{
         const iconPaperClip = mdiPaperclip;
         const dialog = ref(true);
         const selectedFile = ref([]);
-        const selectItems = ["*","chart", "showcase", "sreeya"];
+        const selectItems = ["*","well-vtp","line-vtp","surface-vtp", "showcase", "sreeya"];
         const categoryChoosen = ref("");
 
         const checkFile = computed(() => {
             if(selectedFile.value.length && !categoryChoosen.value == "" && !loading.value) return true;
             return false;
         });
+        const checkVTP = computed(() => {
+            for(let i = 0; i < selectedFile.value.length; i++) if( /\.(vtp)$/.test(selectedFile.value[i].name)) return false
+            return true
+        })
 
         const closeDialog = () => {
             dialog.value = false;
@@ -68,7 +74,6 @@ export default{
 
         const save = async () => {
             loading.value = true;
-            console.log(selectedFile.value);
             let submitData = new FormData();
             for(let i = 0; i < selectedFile.value.length; i++){
                 submitData.append('files', selectedFile.value[i]);
@@ -81,6 +86,7 @@ export default{
             // call API
             await fileService.addFile(submitData);
             await store.dispatch("fetchTreeList");
+            await store.dispatch("fetchVtpList")
             if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList");
 
             loading.value = false;
@@ -89,7 +95,7 @@ export default{
 
         return {
             iconPaperClip, dialog, selectedFile, checkFile, selectItems, categoryChoosen,
-            closeDialog, save, loading
+            closeDialog, save, loading, checkVTP
         }
     },
 }

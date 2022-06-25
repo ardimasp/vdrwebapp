@@ -18,11 +18,9 @@ class FileService{
         })
             .then(
                 (res) => {
-                    console.log("success fetch", res.data);
                     return res.data;
                 },
                 (err) => {
-                    console.log("error fetch", err);
                     checkExpire(err);
                     return err.response;
                 }
@@ -35,11 +33,9 @@ class FileService{
         }, data:{"paths": data}})
             .then(
                 (res) => {
-                    console.log(res.status);
                     return res.status;
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status;
                 }
@@ -56,7 +52,6 @@ class FileService{
                     return res.status;
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err.response.status;
                 }
@@ -70,11 +65,9 @@ class FileService{
         })
             .then(
                 (res) => {
-                    console.log(res);
                     return res.status;
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err;
                 }
@@ -89,11 +82,9 @@ class FileService{
         })
             .then(
                 (res) => {
-                    console.log(res);
                     return res.status
                 },
                 (err) => {
-                    console.log(err);
                     checkExpire(err);
                     return err.status;
                 }
@@ -120,7 +111,6 @@ class FileService{
                     link.remove()
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }
@@ -136,7 +126,6 @@ class FileService{
         return axios.post(`${url}/files/bulk`, data, option)
             .then(
                 (res) => {
-                    console.log("check bulk download", res.data);
                     var url = window.URL.createObjectURL(new Blob([res.data], {type: "application/zip"}))
                     var link = document.createElement('a');
                     document.body.appendChild(link);
@@ -147,7 +136,6 @@ class FileService{
                     return res.data;
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }
@@ -164,7 +152,22 @@ class FileService{
                     return res.data;
                 },
                 (err) => {
-                    console.log(err)
+                    checkExpire(err);
+                    return err.response.status
+                }
+            )
+    }
+    fetchFilesMultiPointer(data, bool) {
+        return axios.get(`${url}/files/lists/?${data}&pathname=${bool}`, {
+            headers: {
+                Authorization: "Bearer " + store.state.auth.user
+            }
+        })
+            .then(
+                (res) => {
+                    return res.data;
+                },
+                (err) => {
                     checkExpire(err);
                     return err.response.status
                 }
@@ -185,7 +188,6 @@ class FileService{
                     return res
                 },
                 (err) => {
-                    console.log(err)
                     checkExpire(err);
                     return err.response.status
                 }

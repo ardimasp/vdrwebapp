@@ -26,7 +26,6 @@ export const encryptToken = (token) => {
 }
 export const decryptToken = (encrypted) => {
     if (encrypted == null || encrypted == undefined) return
-    console.log("at decrypt", key)
     var decrypt = CryptoJS.AES.decrypt(encrypted, key);
     return decrypt.toString(CryptoJS.enc.Utf8).replace(/['"]+/g, '');
     // return decrypt.toString(CryptoJS.enc.Utf8)
