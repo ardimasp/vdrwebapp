@@ -33,7 +33,7 @@ export default {
             context.commit('UPDATE_TREE', [])
         },
         fetchSreeyaList(context){
-            return fileService.fetchFilesPointer("sreeya", true).then(
+            return fileService.fetchFilesPointer("production", true).then(
                 data => {
                     context.commit('UPDATE_SREEYA', data.data);
                     return data.data;

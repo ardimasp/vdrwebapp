@@ -166,7 +166,7 @@ export default defineComponent({
             </ol>
             <br>
             <ul>
-                <li>To upload a new file with data in accordance to the template, choose category 'Sreeya' before uploading in the file management.</li>
+                <li>To upload a new file with data in accordance to the template, choose category 'Production' before uploading in the file management.</li>
             </ul>
         `
         const toggleInfo = () => {information.value = !information.value}
