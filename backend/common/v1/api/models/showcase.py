@@ -13,7 +13,7 @@ class ReservoirType(str, Enum):
 
 class WellData(BaseModel):
     name: str
-    area: int 
+    area: float 
     latitude: float
     longitude: float
     oilVolume: float 
