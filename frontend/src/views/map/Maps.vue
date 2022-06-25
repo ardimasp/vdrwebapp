@@ -111,30 +111,38 @@ export default {
 
     placeSelected(point){
       this.selectedP = point
-      // console.log(this.selectedP)
+      console.log(this.selectedP)
       for (var s in this.selectedP){
         // console.log(this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].fillIcon)
 
         // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
         // console.log(this.datas)
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconfillColor = this.opacity
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconColor = this.deffillcolor
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconborderColor = 1
 
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconfillColor = this.opacity
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconColor = this.deffillcolor
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconborderColor = 1
+
+        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconfillColor = this.opacity
+        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconColor = this.deffillcolor
+        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconborderColor = 1
 
       }
 
-      const myArrayFiltered = this.datas.filter( el => {
+      const myArrayFiltered = this.vtpInfo.filter( el => {
         return this.selectedP.every( f => {
-          return f !== el.wellName;
+          return !el.filename.includes(f);
         });
       });
       console.log(myArrayFiltered)
       for (var ns in myArrayFiltered){
         
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconfillColor = this.lessopacity
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconfillColor = this.lessopacity
+        // // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconColor = this.deffillcolor
+        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconborderColor = this.transparent
+
+        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename === myArrayFiltered[ns].filename)].iconfillColor = this.lessopacity
         // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconColor = this.deffillcolor
-        this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconborderColor = this.transparent
+        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename === myArrayFiltered[ns].filename)].iconborderColor = this.transparent
 
         // this.datas[nsid].iconborderColor = this.transparent
 

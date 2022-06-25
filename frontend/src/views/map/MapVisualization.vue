@@ -81,7 +81,7 @@
       <!-- </vtp-card> -->
     </div>
     <div id="mapContainer">
-      <!-- <p>hel {{surfaceV[0]}} </p> -->
+      <p>hel {{wellV[0]}} </p>
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
 
