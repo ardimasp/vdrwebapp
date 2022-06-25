@@ -7,6 +7,7 @@ from fastapi import FastAPI, Body, status, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from pandas.api.types import *
 
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -259,37 +260,14 @@ async def oil_production_excel(path:str,
     current_user: User = Depends(get_current_active_user)
     ):
     if current_user.type == 'Premium User':
-        try:
-            userid = current_user.username
-            file_path = "files/"+(f"{userid}")+"/"+f"{path}"
-            data = pd.read_excel(file_path).astype(float)
-            data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
-            data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
-            data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
-            data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
-            data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
-
-        except:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
-            )
-
-        #checking shape
-        data_n_instances, data_n_features = data.shape
-        if data_n_features != n_features:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="There should be exactly 5 columns filled in!"
-            )
-
-        #checking empty values
-        missing = data.isnull().sum().sum()
-        print(missing)
-        if missing != 0:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Your file contains missing values, please fill it in!"
-            )
+        userid = current_user.username
+        file_path = "files/"+(f"{userid}")+"/"+f"{path}"
+        data = pd.read_excel(file_path)
+        data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
+        data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
+        data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
+        data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
+        data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
 
         #checking column name
         checking = data.columns.values.tolist()
@@ -319,6 +297,43 @@ async def oil_production_excel(path:str,
                     status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="File does not follow the template"
                 )
+        
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+
+        #checking empty values
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+        
+        # checking data types
+        error_arr = []
+
+        if data['Downhole_temp'].dtypes != float and data["Downhole_temp"].dtypes != int:
+            error_arr.append("Average Downhole Temperature / Deg C column should be numeric")
+        if data["Downhole_press"].dtypes != float and data["Downhole_press"].dtypes != int:
+            error_arr.append("Average Downhole Pressure / bar column should be numeric")
+        if data["Hours_Online"].dtypes != float and data["Hours_Online"].dtypes != int:
+            error_arr.append("Hours Online / hours column should be numeric")
+        if data["Press_diff"].dtypes != float and data["Press_diff"].dtypes != int:
+            error_arr.append("Pressure Difference of the Well / bar column should be numeric")
+        if data["Temp_diff"].dtypes != float and data["Temp_diff"].dtypes != int:
+            error_arr.append("Temperature Difference of the Well / Deg C column should be numeric")
+        
+        if(len(error_arr) > 0):
+            raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=error_arr
+            )
         
         #range validation
         
@@ -419,38 +434,16 @@ async def gas_production_excel(path:str,
     current_user: User = Depends(get_current_active_user)
     ):
     if current_user.type == 'Premium User':
-        try:
-            userid = current_user.username
-            file_path = "files/"+(f"{userid}")+"/"+f"{path}"
-            data = pd.read_excel(file_path).astype(float)
-            data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
-            data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
-            data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
-            data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
-            data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
-        except:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY, detail="File can not be processed!"
-            )
-            
-        #checking shape
-        data_n_instances, data_n_features = data.shape
-        if data_n_features != n_features:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="There should be exactly 5 columns filled in!"
-            )
-        
-        #checking for missing data
-        missing = data.isnull().sum().sum()
-        print(missing)
-        if missing != 0:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Your file contains missing values, please fill it in!"
-            )
+        userid = current_user.username
+        file_path = "files/"+(f"{userid}")+"/"+f"{path}"
+        data = pd.read_excel(file_path)
+        data = data.rename(columns={"Hours Online / hours": "Hours_Online"})
+        data = data.rename(columns={"Average Downhole Temperature / Deg C": "Downhole_temp"})
+        data = data.rename(columns={"Average Downhole Pressure / bar": "Downhole_press"})
+        data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
+        data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
 
-        # Make sure column names are the same
+        # checking column names
         checking = data.columns.values.tolist()
         for i in range(len(checking)):
             if checking[0] != "Hours_Online":
@@ -479,6 +472,44 @@ async def gas_production_excel(path:str,
                     detail="File does not follow the template"
                 )
         
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+
+        
+        #checking for empty values
+        missing = data.isnull().sum().sum()
+        print(missing)
+        if missing != 0:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Your file contains missing values, please fill it in!"
+            )
+        
+        #checking data types
+        error_arr = []
+
+        if data['Downhole_temp'].dtypes != float and data["Downhole_temp"].dtypes != int:
+            error_arr.append("Average Downhole Temperature / Deg C column should be numeric")
+        if data["Downhole_press"].dtypes != float and data["Downhole_press"].dtypes != int:
+            error_arr.append("Average Downhole Pressure / bar column should be numeric")
+        if data["Hours_Online"].dtypes != float and data["Hours_Online"].dtypes != int:
+            error_arr.append("Hours Online / hours column should be numeric")
+        if data["Press_diff"].dtypes != float and data["Press_diff"].dtypes != int:
+            error_arr.append("Pressure Difference of the Well / bar column should be numeric")
+        if data["Temp_diff"].dtypes != float and data["Temp_diff"].dtypes != int:
+            error_arr.append("Temperature Difference of the Well / Deg C column should be numeric")
+        
+        if(len(error_arr) > 0):
+            raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=error_arr
+            )
+
         #range validation
         if (data["Hours_Online"] < 0).any():
             raise HTTPException(
