@@ -81,7 +81,7 @@
       <!-- </vtp-card> -->
     </div>
     <div id="mapContainer">
-      <p>hel {{wellV[0]}} </p>
+      <!-- <p>hel {{wellV[0]}} </p> -->
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
 
@@ -89,7 +89,7 @@
             v-for="(surface,index) in surfaceV" 
             :color='rectangleColor'
             :bounds="surface.geodata"
-            @click="chosenClick(surface.geodata, surface.type)"
+            @click="chosenClick(surface.filename, surface.type)"
             ></l-rectangle>
 
             <l-polyline :key="'p1'+index"
