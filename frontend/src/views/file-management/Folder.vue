@@ -123,6 +123,7 @@
           v-if="information"
           title="Guide"
           :text="text"
+          @closedialog="toggleInfo"
         ></card-dialog>
       </div>
     </div>
