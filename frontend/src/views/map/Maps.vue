@@ -242,6 +242,7 @@ export default {
     }
     }
     this.vtpInfo = this.tmpVTP.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
+    console.log(this.vtpInfo)
 
 
     this.tempD = await getDatafromDB();
@@ -249,7 +250,6 @@ export default {
     // console.log(this.token)
     this.allData = await getDB(this.tempD)
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
-    console.log(this.datas)
     // console.log(this.allData)
     // this.correctData = await restructureData(this.allData)
     

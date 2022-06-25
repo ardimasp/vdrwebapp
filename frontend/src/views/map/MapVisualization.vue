@@ -81,33 +81,32 @@
       <!-- </vtp-card> -->
     </div>
     <div id="mapContainer">
-      <!-- <p>hel {{wellV[0].center}} </p> -->
+      <!-- <p>hel {{surfaceV[0]}} </p> -->
         <l-map ref="myMap" class="map-size" :zoom="zoom" :center="center">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+
           <l-rectangle :key="'r'+index"
-            v-for="(dataMap,index) in dataMaps" 
+            v-for="(surface,index) in surfaceV" 
             :color='rectangleColor'
-            :bounds="[[dataMap.wellLatitude+0.028236, dataMap.wellLongitude+(-0.077651)], 
-            [dataMap.wellLatitude-0.009319, dataMap.wellLongitude+0.075669]]"
-            @click="chosenClick(dataMap.wellName, visual[0])"
+            :bounds="surface.geodata"
+            @click="chosenClick(surface.geodata, surface.type)"
             ></l-rectangle>
 
             <l-polyline :key="'p1'+index"
-            v-for="(dataMap,index) in dataMaps" 
-            :lat-lngs="[[(dataMap.wellLatitude+0.028236-0.1), (dataMap.wellLongitude+(-0.077651))], 
-            [(dataMap.wellLatitude-0.009319+0.015), (dataMap.wellLongitude+0.075669+(-0.06))]]" 
+            v-for="(seismic,index) in seismicV" 
+            :lat-lngs="seismic.geodata" 
             :color='polylineColor'
-            @click="chosenClick(dataMap.wellName, visual[2])"
+            @click="chosenClick(seismic.filename, seismic.type)"
             ></l-polyline>
 
-            <l-polyline :key="'p2'+index"
+            <!-- <l-polyline :key="'p2'+index"
             v-for="(dataMap,index) in dataMaps" 
             :color='polylineColor2'
             :lat-lngs="[[(dataMap.wellLatitude+0.028236-0.1), (dataMap.wellLongitude+(-0.077651)+0.16)], 
             [(dataMap.wellLatitude-0.009319+0.015), (dataMap.wellLongitude+0.075669+(-0.09))]]" 
             @click="chosenClick(dataMap.wellName, visual[3])"
 
-            ></l-polyline>
+            ></l-polyline> -->
 
           <l-circle
             :key="'c'+index"
@@ -118,7 +117,7 @@
             :fillColor='circleColor'
             :fillOpacity="wel.iconfillColor"
             :opacity="wel.iconborderColor"
-            @click="chosenClick(dataMap.wellName, visual[1])"
+            @click="chosenClick(wel.filename, wel.type)"
           >
           </l-circle>
             <!-- <l-circle           
@@ -147,7 +146,7 @@ import { LMap, LTileLayer,LCircle, LRectangle,LPolyline } from 'vue2-leaflet'
 
 // import Vue from "vue";
 import ClickOutside from 'vue-click-outside'
-import {getImages} from '../showcase/MapEndPoint.js';
+import {getVTPdata} from '../showcase/MapEndPoint.js';
 import fileService from '../../services/file.service';
 import VtpCard2 from '../viewer/VtpCard.vue';
 
@@ -214,7 +213,7 @@ export default {
       unchosenColor: 'blue',
       dataVtp: null,
       chosenValue: [],
-      visual:["surface", "well", "seismic_C06", "seismic_C08"],
+      visual:["surface-vtp", "well-vtp", "line-vtp"],
       click:0,
       gain: 1,
       items: [],
@@ -263,26 +262,26 @@ export default {
         if(this.rectangleColor=="blue"){
           this.shapeClick(chosenWell, visualizeType)
         }else if(this.rectangleColor=="red"){
-          this.removeContent(visualizeType)
+          this.removeContent(chosenWell, visualizeType)
         }
       }else if(visualizeType == this.visual[1]){
         if(this.circleColor == "blue"){
           this.shapeClick(chosenWell, visualizeType)
         }else if(this.circleColor== "red"){
-          this.removeContent(visualizeType)
+          this.removeContent(chosenWell, visualizeType)
 
         }
       }else if(visualizeType == this.visual[2]){
         if(this.polylineColor == "blue"){
           this.shapeClick(chosenWell, visualizeType)
         }else if(this.polylineColor== "red"){
-          this.removeContent(visualizeType)
+          this.removeContent(chosenWell, visualizeType)
         }
       }else if (visualizeType == this.visual[3]){
         if(this.polylineColor2 == "blue"){
           this.shapeClick(chosenWell, visualizeType)
         }else if(this.polylineColor2== "red"){
-          this.removeContent(visualizeType)
+          this.removeContent(chosenWell, visualizeType)
         }}
        
         // if((this.rectangleColor||this.circleColor||this.polylineColor||this.polylineColor2)=="blue"){
@@ -295,20 +294,27 @@ export default {
       this.click += 1
       console.log('test', this.figVisualize)
             console.log('chosenWell', chosenWell)
+      // const arrChosenwell = chosenWell.split('/')
+      // console.log(arrChosenwell)
+      var well = chosenWell.replace('%20', ' ')
+      console.log('choosen', well)
 
-      var cW = this.figVisualize.find((e) => e.name == chosenWell)
-      console.log(cW.children)
-      var t= cW.children.find((e) => e.name.includes(visualizeType))
-      console.log(t)
+      // var cW = this.figVisualize.find((e) => e.name == well)
+      // console.log(cW.children)
+      // var t= cW.children.find((e) => e.name == arrChosenwell[2])
+      // var t= cW.children.find((e) => e.name.includes(visualizeType))
+      // console.log(t)
 
-      console.log('/'+chosenWell+'/'+t.name)
+      // console.log(t)
       this.gainValue.push(1);
       this.colourValue.push(this.value);
       if(this.selectedValue == null || this.selectedValue == "") {
         this.selectedValue = this.chosenValue[0]
         this.selectedIndex = 0
       }
-      const file = await fileService.getFileRaw('/'+chosenWell+'/'+t.name)
+      const file = await fileService.getFileRaw(well)
+
+      // const file = await fileService.getFileRaw('/'+chosenWell+'/'+t.name)
       console.log(file.data);
 
       const fileReader = new FileReader();
@@ -327,7 +333,9 @@ export default {
         };
         fileReader.readAsArrayBuffer(file.data);
         // console.log(this.dataVtp)
-        this.chosenValue.push('/'+t.name)
+        this.chosenValue.push(well)
+
+        // this.chosenValue.push('/'+t.name)
       console.log('arr:', this.chosenValue)
 
   // if(this.click > 1){
@@ -348,11 +356,15 @@ export default {
       // }
     },
 
-     removeContent(visualizeType){
+     removeContent(chosenWell, visualizeType){
+      var replaceW = chosenWell.replace('%20', ' ')
       for(let i=0; i<this.chosenValue.length;i++){
-        if (this.chosenValue[i].includes(visualizeType)){
+        if (this.chosenValue[i] == replaceW){
           var unclickedIndex = i
         }
+        // if (this.chosenValue[i].includes(visualizeType)){
+        //   var unclickedIndex = i
+        // }
       }
       console.log(unclickedIndex)
       this.gainValue.splice(unclickedIndex, 1)
@@ -383,6 +395,8 @@ export default {
         }else if( visualizeType == this.visual[3]){
           this.polylineColor2= "blue";
         }
+        this.load = false;
+
     },
 
     applyChanges(){
@@ -428,7 +442,9 @@ export default {
     this.items = vtkColorMaps.rgbPresetNames
     // console.log(this.dataMaps)
 
-    this.figVisualize = await getImages("visualization");
+    // this.figVisualize = await getImages("visualization");
+    this.figVisualize = await getVTPdata();
+
     console.log(this.figVisualize)
         // console.log(document.getElementsByClassName('container').clientWidths)
     // this.height = this.$refs.myMap.$el.clientWidth
@@ -457,14 +473,34 @@ export default {
     //   }
     // },
     wellV(){
-      var imguploadRules = []
+      var wellAvai = []
       if(Object.keys(this.vtpMaps).length > 0){
         var w = this.vtpMaps.find(e => e.type === 'well-vtp');
         console.log(w)
-        imguploadRules.push(w)
+        wellAvai.push(w)
       }
-      return imguploadRules
+      return wellAvai
 
+    },
+
+    surfaceV(){
+      var surfaceAvai = []
+      if(Object.keys(this.vtpMaps).length > 0){
+        var w = this.vtpMaps.find(e => e.type === 'surface-vtp');
+        console.log(w)
+        surfaceAvai.push(w)
+      }
+      return surfaceAvai
+    },
+
+    seismicV(){
+      var seismicAvai = []
+      if(Object.keys(this.vtpMaps).length > 0){
+        var w = this.vtpMaps.find(e => e.type === 'line-vtp');
+        console.log(w)
+        seismicAvai.push(w)
+      }
+      return seismicAvai
     }
   },
    // do not forget this section
