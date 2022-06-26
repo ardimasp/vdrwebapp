@@ -15,6 +15,7 @@
                 timeout=3000
                 rounded="pill"
                 color="secondary"
+                right
             >
                 Data is updated successfully!
             </v-snackbar>

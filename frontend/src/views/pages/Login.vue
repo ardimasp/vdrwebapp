@@ -8,6 +8,7 @@
           rounded="pill"
           color="secondary"
           timeout="5000"
+          right
         >Your session have expired, please login again.</v-snackbar>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
@@ -96,6 +97,7 @@
               v-model="loading"
               rounded="pill"
               color="secondary"
+              right
             >
               Logging you in, preparing your data...
             </v-snackbar>

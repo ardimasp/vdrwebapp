@@ -9,6 +9,7 @@
                 v-model="passwordUpdated"
                 timeout=3000
                 rounded="pill"
+                right
             >
                 Password is updated successfully!
             </v-snackbar>

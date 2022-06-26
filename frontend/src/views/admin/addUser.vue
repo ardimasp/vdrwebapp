@@ -5,6 +5,7 @@
             v-model="alertMsgShow"
             rounded="pill"
             timeout=3000
+            right
         >
             {{alertMsg}}
         </v-snackbar>
