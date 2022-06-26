@@ -90,7 +90,7 @@
                         v-if="editPassword"
                     ></v-text-field>
                     <div class="d-flex">
-                        <v-btn color="error" class="mr-3" @click="clearForm">
+                        <v-btn color="error" outlined class="mr-3" @click="clearForm">
                             Cancel
                         </v-btn>
                         <v-btn color="warning" class="mr-3" @click="changeEditStat" v-if="!editPassword">

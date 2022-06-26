@@ -29,7 +29,9 @@
                     indeterminate
                     color="secondary"
                 ></v-progress-linear>
-                <p class="caption" v-if="!checkVTP">the file you are uploading contains .vtp file, we suggest that you upload it here!</p>
+                <p class="caption" v-if="!checkVTP" style="color:#FF4C51">
+                    the file you are uploading contains .vtp file, we suggest that you upload it <router-link :to="{name:'vtpForm'}">here!</router-link>
+                </p>
             </v-card-text>
             <!-- {{checkVTP}} -->
             <v-card-actions>

@@ -56,7 +56,7 @@
                             <p  class="caption" style="color:red" v-if="!checkImg">
                                 Your file input exceeds the 4MB limit!
                             </p>
-                            <v-btn color="error" class="mr-3" @click="clearImage" :disabled="loadUpload">
+                            <v-btn color="error" outlined class="mr-3" @click="clearImage" :disabled="loadUpload">
                                 Cancel
                             </v-btn>
                             <v-btn color="secondary" @click="submitImage" :disabled="!checkImg || loadUpload">
@@ -127,7 +127,7 @@
                                     Your confirm password is not the same!
                                 </p>
                                 <div class="d-flex">
-                                    <v-btn color="error" class="mr-3" @click="changeEditStat">
+                                    <v-btn color="error" outlined class="mr-3" @click="changeEditStat">
                                         Cancel
                                     </v-btn>
                                     <v-btn color="secondary" @click="submitPassword" :disabled="!checkPassword">
