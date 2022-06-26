@@ -24,7 +24,7 @@
       <!-- </v-card> -->
     </div>
     <v-overlay v-if="this.dataType === 'showcase'" style="z-index: 9999;" :absolute="true" :value="overlay">
-      <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
+      <ChoiceCard  :dataDetail="this.datacard" v-click-outside="onClickOutside" :windowHeight="this.height" v-on:click="changeOverlay"/>
     </v-overlay>
     <v-overlay v-if="this.dataType === 'visual'" style="z-index: 9999;" :absolute="true" :value="overlay">
       <ChoiceVisual  :dataDetail="this.datacard" v-click-outside="onClickOutside" v-on:click="changeOverlay"/>
@@ -144,7 +144,8 @@ export default {
   },
 
   mounted() {
-
+     this.height = this.$refs.myMap.$el.clientHeight
+    console.log(this.height)
     
   },
    // do not forget this section

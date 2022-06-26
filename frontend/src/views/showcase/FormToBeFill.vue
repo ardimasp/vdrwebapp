@@ -56,13 +56,14 @@
         <v-text-field
         required
           v-model="children.area"
-          label="Area (km2)"
+          label="Area"
           outlined
           dense
-          placeholder="Area (km2)"
+          placeholder="Area"
           hide-details
           type="number"
           min="0"
+          suffix="km²"
           :rules="generalRules"
         ></v-text-field>
       </v-col>
@@ -130,6 +131,8 @@
           hide-details
           type="number"
           min="0"
+          suffix="m³"
+
           :rules="[v => !!v || 'Input the oil volume']"
 
         ></v-text-field>
@@ -149,6 +152,8 @@
           hide-details
           type="number"
           min="0"
+          suffix="m³"
+
           :rules="[v => !!v || 'Input the gas volume']"
         ></v-text-field>
       </v-col>
@@ -481,14 +486,12 @@ export default {
         }else if(Array.isArray(returnedStatus)){
           var failstatusStr = String(returnedStatus[0])[0]
           if(failstatusStr === '4'){
-            this.$refs.form.reset()
             this.status = "error"
             this.resultPost = returnedStatus[1]
             this.snackbar = true
             // this.successDialog = true
           }
           else{
-            this.$refs.form.reset()
             this.status = "error"
             this.resultPost = "Please reload & try again"
             this.snackbar = true

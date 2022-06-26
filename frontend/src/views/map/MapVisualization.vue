@@ -41,7 +41,18 @@
                     :thumb-size="24"
                     thumb-label="always"
                     @change="applyChanges"
-                  ></v-slider>
+                  >
+                  <template v-slot:append>
+                    <v-text-field
+                      v-model="gainValue[selectedIndex]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px"
+                    ></v-text-field>
+                  </template>
+                  </v-slider>
             </v-col>
             <v-col class="ml-4">
                   <v-autocomplete
@@ -66,7 +77,7 @@
         :y="200"
         title="VTP Viewer"
         :w="800"
-        :h="800"
+        :h="this.height"
         :dataVtp="dataVtp"
         :vtpIndex="selectedIndex"
         ref="vtpcard">
@@ -89,6 +100,7 @@
             v-for="(surface,index) in surfaceV" 
             :color='rectangleColor'
             :bounds="surface.geodata"
+            :opacity="surface.iconfillColor"
             @click="chosenClick(surface.filename, surface.type)"
             ></l-rectangle>
 
@@ -96,6 +108,8 @@
             v-for="(seismic,index) in seismicV" 
             :lat-lngs="seismic.geodata" 
             :color='polylineColor'
+            :opacity="seismic.iconfillColor"
+
             @click="chosenClick(seismic.filename, seismic.type)"
             ></l-polyline>
 
@@ -447,8 +461,8 @@ export default {
 
     console.log(this.figVisualize)
         // console.log(document.getElementsByClassName('container').clientWidths)
-    // this.height = this.$refs.myMap.$el.clientWidth
-    // console.log(this.height)
+    this.height = (this.$refs.myMap.$el.clientHeight) / 1.4
+    console.log('vtp height', this.height)
     // console.log(window.innerWidth)
     // if(window.innerWidth > 1200) this.width = window.innerWidth - this.$refs.myMap.$el.clientWidth - 260 - 100
     //   else if (window.innerWidth > 600) this.width = window.innerWidth - this.$refs.myMap.$el.clientWidth - 100

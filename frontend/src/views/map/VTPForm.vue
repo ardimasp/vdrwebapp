@@ -11,7 +11,7 @@
           :items="existingWells"
           outlined
           dense
-          placeholder="Field Name"
+          placeholder="Well Name"
           required
           :menu-props="{ maxHeight: '150' }"
           :rules="[v => !!v || 'Choose the well for VTP']"
@@ -27,19 +27,20 @@
         md="6"
       >
 
-        <v-combobox
+        <v-select
         v-model="vtptypeChosen"
           label="Select VTP Type"
           :items="vtpType"
           outlined
           dense
-          placeholder="Field Name"
+          placeholder="VTP Type"
           required
           :menu-props="{ maxHeight: '100' }"
-          :rules="[v => !!v || 'Choose the well for VTP']"
+          :rules="[v => !!v || 'Choose the VTP type']"
+          style="z-index: 8;"
           @change="latlngRequired"
 
-        ></v-combobox>
+        ></v-select>
       </v-col>
 
       <v-col
@@ -525,7 +526,7 @@ export default {
 
 
     backPage(){
-      this.$router.push('/map-showcase')
+      this.$router.push('/maps')
     },
 
     closeDialog(){

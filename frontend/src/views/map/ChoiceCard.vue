@@ -95,7 +95,7 @@
 
     </v-card>
      <v-overlay style="z-index: 99999" :absolute="true" :value="overlayAgain">
-      <CardContent :dataD="this.chosenImgPath" :dataTitle="this.datacard.wellName" :details="this.info" v-on:click="changeOverlay"/>
+      <CardContent :dataD="this.chosenImgPath" :dataTitle="this.datacard.wellName" :details="this.info" :windowHeight="this.windowHeight" v-on:click="changeOverlay"/>
     </v-overlay>
     </div>
   <!-- </v-hover> -->
@@ -116,7 +116,8 @@ export default {
   name: "ChoiceCard",
   props: {
     dataDetail: Object,
-    overlay: String
+    overlay: String,
+    windowHeight: Number
   },
   data: function(){
     return{

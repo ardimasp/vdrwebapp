@@ -3,16 +3,17 @@
      style="background-color:rgb(145, 85, 253);"
       class="mx-auto my-12"
       max-width="900"
-      max-height="900"
+      max-height="this.heightWindow"
       width="900"
-      height="800"
+      height="this.heightWindow"
+      ref="cardContent"
     >
      <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
-      <v-row>
+      <v-row class="mt-2">
         <!-- <v-col class="ml-5 mt-5"> -->
-                <v-card-title style="color: white!important;" class="ml-4">{{ this.dataTitle }}</v-card-title>
+                <v-card-title style="color: white!important;" class="ml-4 mb-3">{{ this.dataTitle }}</v-card-title>
         <!-- </v-col> -->
                   <!-- <v-spacer></v-spacer> -->
           <v-spacer></v-spacer>
@@ -22,32 +23,32 @@
               <v-icon>{{icons.mdiDownload}}</v-icon>
 
           </v-btn> -->
-          <div class="mt-10 mr-10">
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
+          <div class="mr-10 mt-2">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="wH()"  class="mr-4" style="color: white!important;">
-                  <v-icon  v-bind="attrs"
-                v-on="on">{{icons.mdiDownload}}</v-icon>
+                  <v-btn icon @click="wH()"  class="mr-4" style="color: white!important;">
+                      <v-icon  v-bind="attrs"
+                    v-on="on">{{icons.mdiDownload}}</v-icon>
 
-              </v-btn>
-            </template>
-            <span>Download Data</span>
-          </v-tooltip>
+                  </v-btn>
+                </template>
+                <span>Download Data</span>
+              </v-tooltip>
 
-        <!-- </v-col> -->
-        <!-- <v-col lg="2" class="mt-7"> -->
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
+            <!-- </v-col> -->
+            <!-- <v-col lg="2" class="mt-7"> -->
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="closeOverlay()" style="color: white!important;">
-                  <v-icon  v-bind="attrs"
-                v-on="on">{{icons.mdiCloseThick}}</v-icon>
+                  <v-btn icon @click="closeOverlay()" style="color: white!important;">
+                      <v-icon  v-bind="attrs"
+                    v-on="on">{{icons.mdiCloseThick}}</v-icon>
 
-              </v-btn>
-            </template>
-            <span>Close Overlay</span>
-          </v-tooltip>
+                  </v-btn>
+                </template>
+                <span>Close Overlay</span>
+              </v-tooltip>
           </div>
           <!-- <v-btn icon @click="closeOverlay()">
               <v-icon>{{icons.mdiCloseThick}}</v-icon>
@@ -111,7 +112,8 @@ export default {
   props: {
     dataD: Array,
     dataTitle: String,
-    details: Object
+    details: Object,
+    windowHeight: Number
   },
   data: function(){
     return{
@@ -131,7 +133,8 @@ export default {
       dataValues: [],
       size: [],
       stateS: [],
-      widthHeight :[]
+      widthHeight :[],
+      heightWindow: 0
     }
   },
 
@@ -240,6 +243,10 @@ export default {
     this.dataValues = Object.values(this.showcaseDetails)
     console.log(this.dataValues)
 
+    console.log(this.windowHeight)
+    var height = this.$refs.cardContent.$el.clientHeight
+    this.heightWindow  = this.windowHeight / 1.4
+    console.log(height)
   }
 }
 

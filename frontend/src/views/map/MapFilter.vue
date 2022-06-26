@@ -1,5 +1,7 @@
 <template>
 <v-card>
+  <v-row>
+    <v-col>
 <v-text-field
     color="black"
     v-model="search"
@@ -10,6 +12,21 @@
     hide-details
     clearable
     ></v-text-field>
+    <!-- <v-spacer></v-spacer> -->
+    </v-col>
+    <!-- <spacer/> -->
+
+    <v-col class="mt-2" v-if="mapfilterPage=='visualization'">
+    <v-btn
+            color="primary"
+            small
+            @click="addVTP"
+
+          >
+            Add VTP
+          </v-btn>
+    </v-col>
+  </v-row>
   <v-treeview
     selectable
     color="#9155fd"
@@ -36,6 +53,7 @@
     props:{
         dataMaps: Array,
         value: Array,
+        mapfilterPage: String
     },
 
     data: function() {
@@ -81,6 +99,10 @@
         console.log(result)
 
         this.$emit('input', result)
+      },
+
+      addVTP(){
+        this.$router.push('/vtp-form')
       }
     }
   }

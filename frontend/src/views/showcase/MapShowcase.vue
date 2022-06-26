@@ -18,7 +18,7 @@
       :h="200"
     >
      <template>
-       <map-filter :dataMaps="correctData" :value="value" v-on:input="placeSelected"></map-filter>
+       <map-filter :dataMaps="correctData" :value="value" :mapfilterPage="'showcase'" v-on:input="placeSelected"></map-filter>
      </template>
     </regular-card>
 
