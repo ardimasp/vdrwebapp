@@ -52,7 +52,7 @@
                     <v-btn color="error" outlined class="mr-3" @click="clearForm">
                         Cancel
                     </v-btn>
-                    <v-btn color="secondary" @click="submitForm" :disabled="!checkForm">
+                    <v-btn color="primary" @click="submitForm" :disabled="!checkForm">
                         Submit
                     </v-btn>
                 </div>

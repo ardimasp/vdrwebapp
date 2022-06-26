@@ -75,13 +75,13 @@
                         <v-btn color="error" outlined class="mr-3" @click="clearForm">
                             Cancel
                         </v-btn>
-                        <v-btn color="warning" class="mr-3" @click="changeEditStat" v-if="!editPassword">
+                        <v-btn color="warning" outlined class="mr-3" @click="changeEditStat" v-if="!editPassword">
                             Change Password
                         </v-btn>
-                        <v-btn v-else class="mr-3" color="warning" @click="changeEditStat">
+                        <v-btn v-else class="mr-3" outlined color="warning" @click="changeEditStat">
                             Cancel New Password
                         </v-btn>
-                        <v-btn color="secondary" @click="submitForm">
+                        <v-btn color="primary" @click="submitForm">
                             Submit
                         </v-btn>
                     </div>
