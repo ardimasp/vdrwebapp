@@ -49,30 +49,12 @@
                         required
                         :prepend-icon="mdiAccountOutline"
                     ></v-text-field>
-                    <v-menu
-                        v-model="menu"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="expiryDate"
-                                label="Expiry Date"
-                                :prepend-icon="mdiCalendarRange"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                                required
-                            ></v-text-field>
-                        </template>
-                        <v-date-picker
-                            v-model="expiryDate"
-                            @input="menu = false"
-                        ></v-date-picker>
-                    </v-menu>
+                    <v-text-field
+                        v-model="expiryDate"
+                        label="Expiry Date"
+                        :prepend-icon="mdiCalendarRange"
+                        readonly
+                    ></v-text-field>
                     <v-text-field
                         v-model="affiliation"
                         label="Affiliation"
@@ -188,7 +170,6 @@ export default defineComponent({
                     "password": password.value,
                     "type": type.value,
                     "name": name.value,
-                    "expiry_date": expiryDate.value,
                     "affiliation": affiliation.value
                 }
             } else {
@@ -196,7 +177,6 @@ export default defineComponent({
                     "userid": username.value,
                     "type": type.value,
                     "name": name.value,
-                    "expiry_date": expiryDate.value,
                     "affiliation": affiliation.value
                 }
             }

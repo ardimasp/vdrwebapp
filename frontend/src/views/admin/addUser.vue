@@ -42,30 +42,6 @@
                     required
                     :prepend-icon="mdiAccountOutline"
                 ></v-text-field>
-                <v-menu
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            v-model="expiryDate"
-                            label="Expiry Date"
-                            :prepend-icon="mdiCalendarRange"
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            required
-                        ></v-text-field>
-                    </template>
-                    <v-date-picker
-                        v-model="expiryDate"
-                        @input="menu = false"
-                    ></v-date-picker>
-                </v-menu>
                 <v-text-field
                     v-model="affiliation"
                     label="Affiliation"
@@ -101,7 +77,6 @@ export default defineComponent({
         const userTypes = ["Premium User", "Regular User"];
         const type = ref("Regular User");
         const name = ref("");
-        const expiryDate = ref("");
         const affiliation = ref("");
 
         const menu = ref(false);
@@ -117,12 +92,11 @@ export default defineComponent({
             username.value = "";
             password.value = "";
             name.value = "";
-            expiryDate.value = "";
             affiliation.value = ""
         }
 
         const checkForm = computed(() => {
-            if(username.value == "" || password.value == "" || name.value == "" || expiryDate.value == "" || affiliation.value == ""){
+            if(username.value == "" || password.value == "" || name.value == "" || affiliation.value == ""){
                 return false
             }
             return true;
@@ -137,7 +111,6 @@ export default defineComponent({
                 "password": password.value,
                 "type": type.value,
                 "name": name.value,
-                "expiry_date": expiryDate.value,
                 "affiliation": affiliation.value,
                 "profile_pict": profile
             }
@@ -164,7 +137,7 @@ export default defineComponent({
         return {
             username, password, mdiAccount, mdiKey, mdiEye, mdiEyeOff,
             showPass, clearForm, submitForm, alertMsg, alertMsgShow, alertColour,
-            checkForm, userTypes, type, name, expiryDate, affiliation,
+            checkForm, userTypes, type, name, affiliation,
             menu, mdiAccountOutline, mdiCalendarRange, mdiDomain,
             mdiCardAccountDetails, breadcrumb
         }
