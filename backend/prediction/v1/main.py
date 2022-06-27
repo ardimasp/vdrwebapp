@@ -131,7 +131,7 @@ async def oil_production(oil_data: Production,
     ):
     if current_user.type == 'Premium User':
         data = oil_data.dict()        
-        if data["deg"] == "celcius":
+        if data["deg"] == "celsius":
 
             #range validation
             if data["hours_online"] < 0:
@@ -218,7 +218,7 @@ async def oil_production(oil_data: Production,
                     'prediction': new_pre[0]
                 }
 
-        if data["deg"] != "fahrenheit" or data["deg"] != "celcius":
+        if data["deg"] != "fahrenheit" or data["deg"] != "celsius":
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST
             )
@@ -243,7 +243,7 @@ async def gas_production(gas_data: Production,
     if current_user.type == 'Premium User':
         data = gas_data.dict()
 
-        if data["deg"] == 'celcius': 
+        if data["deg"] == 'celsius': 
             #range validation
 
             if data["hours_online"] < 0:
@@ -343,7 +343,7 @@ async def gas_production(gas_data: Production,
                     'prediction': new_pre[0]
                 }
         
-        if data["deg"] != "fahrenheit" or data["deg"] != "celcius":
+        if data["deg"] != "fahrenheit" or data["deg"] != "celsius":
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST
             )
