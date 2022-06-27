@@ -111,7 +111,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         "affiliation": user.affiliation,
         }
 
-
 ################
 
 
@@ -122,6 +121,7 @@ class Production(BaseModel):
     downhole_press: float
     press_diff: float
     temp_diff: float
+    deg : str
 
 n_features = 5
 
@@ -130,50 +130,98 @@ async def oil_production(oil_data: Production,
     current_user: User = Depends(get_current_active_user)
     ):
     if current_user.type == 'Premium User':
-        data = oil_data.dict()
-        if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
-            return {
+        data = oil_data.dict()        
+        if data["deg"] == "celcius":
+
+            #range validation
+            if data["hours_online"] < 0:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Hours Online range should be 0 or above!"
+                )
+
+            if data["downhole_press"] < 0 or data["downhole_press"] > 308:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+            
+            if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+
+            if data["press_diff"] < 0 or data["press_diff"] > 325:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+        
+            if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
+                return {
             'prediction': 0
             }
 
-        #range validation
-        if data["hours_online"] < 0:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Hours Online range should be 0 or above!"
-            )
+            else:
+                data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                        data["temp_diff"]]]
+                prediction = oil_loaded_model.predict(data_in)
+                new_pre = []
+                val = prediction[0] * 6.28981077
+                new_pre.append(val)
+                return {
+                    'prediction': new_pre[0]
+                }
+        if  data["deg"] == 'fahrenheit':
 
-        if data["downhole_press"] < 0 or data["downhole_press"] > 308:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
-            )
-        
-        if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
-            )
+            data["downhole_temp"] = (data["downhole_temp"] - 32) * 5/9
+            data["temp_diff"] = (data["temp_diff"] - 32) * 5/9
+            #range validation
+            if data["hours_online"] < 0:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Hours Online range should be 0 or above!"
+                )
 
-        if data["press_diff"] < 0 or data["press_diff"] > 325:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
-            )
-        
-        if data["temp_diff"] < 0 or data["temp_diff"] > 190:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
-            )
+            if data["downhole_press"] < 0 or data["downhole_press"] > 308:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+            
+            if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
 
-        else:
-            data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
-                    data["temp_diff"]]]
-            prediction = oil_loaded_model.predict(data_in)
-            return {
-                'prediction': prediction[0]
-            }
+            if data["press_diff"] < 0 or data["press_diff"] > 325:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+
+            if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
+                return {
+                'prediction': 0
+                }
+
+            else:
+               data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                        data["temp_diff"]]]
+               prediction = oil_loaded_model.predict(data_in)
+               new_pre = []
+               val = prediction[0] * 6.28981077
+               new_pre.append(val)
+               return {
+                    'prediction': new_pre[0]
+                }
+
+        if data["deg"] != "fahrenheit" or data["deg"] != "celcius":
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST
+            )
     else:
         if current_user.type == "Administrator":
             raise HTTPException(
@@ -195,51 +243,111 @@ async def gas_production(gas_data: Production,
     if current_user.type == 'Premium User':
         data = gas_data.dict()
 
-        #range validation
+        if data["deg"] == 'celcius': 
+            #range validation
 
-        if data["hours_online"] < 0:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Hours Online range should be 0 or above!"
-            )
+            if data["hours_online"] < 0:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Hours Online range should be 0 or above!"
+                )
 
-        if data["downhole_press"] < 0 or data["downhole_press"] > 308:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
-            )
-        
-        if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
-            )
-
-        if data["press_diff"] < 0 or data["press_diff"] > 325:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
-            )
-        
-        if data["temp_diff"] < 0 or data["temp_diff"] > 190:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
-            )
+            if data["downhole_press"] < 0 or data["downhole_press"] > 308:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
             
+            if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
 
-        if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
-            return {
-            'prediction': 0
-            }
-       
-        else:
-            data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
-                        data["temp_diff"]]]
-            prediction = gas_loaded_model.predict(data_in)
-            return {
-                'prediction': prediction[0]
-            }
+            if data["press_diff"] < 0 or data["press_diff"] > 325:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+            
+            if data["temp_diff"] < 0 or data["temp_diff"] > 190:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
+
+            if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
+                return {
+                'prediction': 0
+                }
+        
+            else:
+                data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                            data["temp_diff"]]]
+                prediction = gas_loaded_model.predict(data_in)
+                new_pre = []
+                val = prediction[0] // 28316.8466
+                new_pre.append(val)
+                return {
+                    'prediction': new_pre[0]
+                }
+        if  data["deg"] == 'fahrenheit':
+            data["downhole_temp"] = (data["downhole_temp"] - 32) * 5/9
+            data["temp_diff"] = (data["temp_diff"] - 32) * 5/9
+
+            #range validation
+
+            if data["hours_online"] < 0:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Hours Online range should be 0 or above!"
+                )
+
+            if data["downhole_press"] < 0 or data["downhole_press"] > 308:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Pressure / bar range should fall between 0 to 308!"
+                )
+            
+            if data["downhole_temp"] < 0 or data["downhole_temp"] > 172:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Average Downhole Temperature / Deg C range should fall between 0 to 172!"
+                )
+
+            if data["press_diff"] < 0 or data["press_diff"] > 325:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
+                )
+            
+            if data["temp_diff"] < 0 or data["temp_diff"] > 190:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
+
+            if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
+                return {
+                'prediction': 0
+                }
+        
+            else:
+                data_in = [[data["hours_online"], data["downhole_temp"], data["downhole_press"], data["press_diff"],
+                            data["temp_diff"]]]
+                prediction = gas_loaded_model.predict(data_in)
+                new_pre = []
+                val = prediction[0] // 28316.8466
+                new_pre.append(val)
+                return {
+                    'prediction': new_pre[0]
+                }
+        
+        if data["deg"] != "fahrenheit" or data["deg"] != "celcius":
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST
+            )
+
     else:
         if current_user.type == "Administrator":
             raise HTTPException(
@@ -405,12 +513,12 @@ async def oil_production_excel(path:str,
                 continue
 
         inputs = [
-            {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
-            {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
-            {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
-            {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
-            {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Oil Prediction Value / m3", "data": new['Oil Prediction Value / m3'].to_numpy().tolist()}
+            {"label": "Hours Online", "data": data['Hours_Online'].to_numpy().tolist()},
+            {"label": "Downhole Temperature", "data": data['Downhole_temp'].to_numpy().tolist()},
+            {"label": "Downhole Pressure", "data": data['Downhole_press'].to_numpy().tolist()},
+            {"label": "Pressure Difference", "data": data['Temp_diff'].to_numpy().tolist()},
+            {"label": "Temperature Difference", "data": data['Press_diff'].to_numpy().tolist()},
+            {"label": "Oil Prediction Value", "data": new['Oil Prediction Value / m3'].to_numpy().tolist()}
         ]
 
         return {"data": inputs}
@@ -579,12 +687,12 @@ async def gas_production_excel(path:str,
                 continue
 
         inputs = [
-            {"label": "Hours Online / hours", "data": data['Hours_Online'].to_numpy().tolist()},
-            {"label": "Average Downhole Temperature / Deg C", "data": data['Downhole_temp'].to_numpy().tolist()},
-            {"label": "Average Downhole Pressure / bar", "data": data['Downhole_press'].to_numpy().tolist()},
-            {"label": "Pressure Difference of the Well / bar", "data": data['Temp_diff'].to_numpy().tolist()},
-            {"label": "Temperature Difference of the Well / Deg C", "data": data['Press_diff'].to_numpy().tolist()},
-            {"label": "Gas Prediction Value / m3", "data": new['Gas Prediction Value / m3'].to_numpy().tolist()}
+            {"label": "Hours Online", "data": data['Hours_Online'].to_numpy().tolist()},
+            {"label": "Downhole Temperature", "data": data['Downhole_temp'].to_numpy().tolist()},
+            {"label": "Downhole Pressure", "data": data['Downhole_press'].to_numpy().tolist()},
+            {"label": "Pressure Difference", "data": data['Temp_diff'].to_numpy().tolist()},
+            {"label": "Temperature Difference", "data": data['Press_diff'].to_numpy().tolist()},
+            {"label": "Gas Prediction Value", "data": new['Gas Prediction Value / m3'].to_numpy().tolist()}
         ]
 
         return {"data": inputs}
