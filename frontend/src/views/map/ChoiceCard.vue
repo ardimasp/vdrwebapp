@@ -95,7 +95,7 @@
 
     </v-card>
      <v-overlay style="z-index: 99999" :absolute="true" :value="overlayAgain">
-      <CardContent :dataD="this.chosenImgPath" :dataTitle="this.datacard.wellName" :details="this.info" v-on:click="changeOverlay"/>
+      <CardContent :dataD="this.chosenImgPath" :dataTitle="this.datacard.wellName" :details="this.info" :windowHeight="this.windowHeight" v-on:click="changeOverlay"/>
     </v-overlay>
     </div>
   <!-- </v-hover> -->
@@ -116,7 +116,8 @@ export default {
   name: "ChoiceCard",
   props: {
     dataDetail: Object,
-    overlay: String
+    overlay: String,
+    windowHeight: Number
   },
   data: function(){
     return{
@@ -142,7 +143,6 @@ export default {
   methods: {
     selectedImg:function(){
       var chosensort = this.imgsort
-      console.log(chosensort)
       const prev = this.images
       var lucky = prev.filter(function(prev) {
         return prev != chosensort;
@@ -151,7 +151,6 @@ export default {
       imag.push(chosensort)
       imag.push(...lucky)
       this.images = imag
-      console.log(this.images)
 
     },
 
@@ -168,19 +167,14 @@ export default {
     choseImg:function(){
         this.chosenImg = this.val
         this.chosenImgPath = []
-        // let imgD = this.takeImages.filter(tImg => this.chosenImg.includes(tImg.name))
-        // console.log(imgD)
         for(let i in this.chosenImg){
           this.chosenImgPath.push('/'+this.datacard.wellName+'/'+this.chosenImg[i])
         }
-        console.log(this.chosenImgPath)
-        // console.log(this.chosenImg)
         this.overlayAgain = true
     },
 
     changeOverlay(closeover){
       this.overlayAgain = closeover
-      console.log(closeover);
     }
   },
   async mounted() {
@@ -199,25 +193,12 @@ export default {
     this.info = copy
     var pointer = "showcase"
     this.imgShowcase = await getImages(pointer);
-    // console.log(this.imgShowcase)
     let result = this.imgShowcase.filter(obj => {
       return obj.name === this.datacard.wellName
     })
-    // console.log(result[0].children)
     for (let i in result[0].children){
       this.takeImages.push(result[0].children[i])
     }
-    console.log(this.takeImages)
-
-
-    // for (let i in result){
-    //   for(let j=0; j <result[i].children.length; j++){
-
-    //   }
-    //   console.log(result.children[])
-    //   this.takeImages.push(result.children[i].name)
-    // }
-
   },
   computed: {
     disabled() {

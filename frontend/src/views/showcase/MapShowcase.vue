@@ -18,7 +18,7 @@
       :h="200"
     >
      <template>
-       <map-filter :dataMaps="correctData" :value="value" v-on:input="placeSelected"></map-filter>
+       <map-filter :dataMaps="correctData" :value="value" :mapfilterPage="'showcase'" v-on:input="placeSelected"></map-filter>
      </template>
     </regular-card>
 
@@ -125,12 +125,9 @@ export default {
 
     placeSelected(point){
       this.selectedP = point
-      // console.log(this.selectedP)
       for (var s in this.selectedP){
-        console.log(this.selectedP[s])
 
         // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
-        // console.log(this.datas)
         this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconfillColor = this.opacity
         this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].fillIcon = this.defcolor
         // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconborderColor = this.opacity
@@ -152,7 +149,6 @@ export default {
         // this.datas[nsid].iconborderColor = this.transparent
 
       }
-      console.log(myArrayFiltered)
     },
 
     funcVol(arrayGas){
@@ -171,7 +167,6 @@ export default {
           }
           this.heatmap = sortedarrayGas
 
-          console.log(this.colorSort)
           var newtotalC = []
           if (this.colorSort.length >= sortedarrayGas.length){
             for(let i in sortedarrayGas){
@@ -183,9 +178,6 @@ export default {
             }else{
               totalColor = Math.round(sortedarrayGas.length / this.colorSort.length)
             }
-            console.log(sortedarrayGas.length)
-            console.log(this.colorSort.length)
-            console.log(totalColor)
             for(let i in this.colorSort){
               var tempAr = Array(totalColor).fill(this.colorSort[i])
               newtotalC = newtotalC.concat(tempAr)
@@ -197,8 +189,6 @@ export default {
 
           for (let s in sortedarrayGas){
             var sortSelect = this.datas.findIndex(dataC => dataC.wellName === sortedarrayGas[s][0]) 
-            console.log(sortSelect)
-            console.log(sortedarrayGas[s][5])
 
             this.datas[sortSelect].iconborderColor = this.opacity
             this.datas[sortSelect].iconColor = sortedarrayGas[s][5]
@@ -208,7 +198,7 @@ export default {
     
     sortSelected(sortp){
       let arrayGas = []
-      alert(sortp);
+      // alert(sortp);
       if(sortp == "Gas Volume"){
         for (let i in this.datas){
           arrayGas.push([this.datas[i].wellName, this.datas[i].wellLatitude, this.datas[i].wellLongitude, this.datas[i].wellGasVolume])
@@ -242,20 +232,11 @@ export default {
   },
   async mounted(){
     this.tempD = await getDatafromDB();
-    // console.log(this.tempD)
-    // console.log(this.token)
     this.allData = await getDB(this.tempD)
-    // console.log(this.allData)
     this.correctData = await restructureData(this.allData)
-    // console.log(this.correctData)
 
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
-    // console.log(this.datas)
-  
-  
 
-    // this.datas = this.dataMaps.map(v => ({...v, iconSize: this.normalIcon, opac: this.lessopacity, iconImg: this.defaulticon}))
-    // console.log(datas)
   },
 }
 </script>

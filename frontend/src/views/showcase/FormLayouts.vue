@@ -1,4 +1,5 @@
 <template>
+<div>
   <v-row class="match-height">
 
     <!-- Multiple Column -->
@@ -16,6 +17,19 @@
       </v-card>
     </v-col>
   </v-row>
+   <div style="position: absolute;">
+    <p>tes</p>
+      <!-- <v-snackbar
+        v-model="snackbar"
+        right
+        :color="status"
+        elevation="24"
+        style="position: absolute;"
+      >
+        {{resultPost}}
+      </v-snackbar> -->
+      </div>
+</div>
 </template>
 
 <script>

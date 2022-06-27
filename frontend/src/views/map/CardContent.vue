@@ -3,16 +3,17 @@
      style="background-color:rgb(145, 85, 253);"
       class="mx-auto my-12"
       max-width="900"
-      max-height="900"
+      max-height="this.heightWindow"
       width="900"
-      height="800"
+      height="this.heightWindow"
+      ref="cardContent"
     >
      <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
-      <v-row>
+      <v-row class="mt-2">
         <!-- <v-col class="ml-5 mt-5"> -->
-                <v-card-title style="color: white!important;" class="ml-4">{{ this.dataTitle }}</v-card-title>
+                <v-card-title style="color: white!important;" class="ml-4 mb-3">{{ this.dataTitle }}</v-card-title>
         <!-- </v-col> -->
                   <!-- <v-spacer></v-spacer> -->
           <v-spacer></v-spacer>
@@ -22,32 +23,32 @@
               <v-icon>{{icons.mdiDownload}}</v-icon>
 
           </v-btn> -->
-          <div class="mt-10 mr-10">
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
+          <div class="mr-10 mt-2">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="wH()"  class="mr-4" style="color: white!important;">
-                  <v-icon  v-bind="attrs"
-                v-on="on">{{icons.mdiDownload}}</v-icon>
+                  <v-btn icon @click="wH()"  class="mr-4" style="color: white!important;">
+                      <v-icon  v-bind="attrs"
+                    v-on="on">{{icons.mdiDownload}}</v-icon>
 
-              </v-btn>
-            </template>
-            <span>Download Data</span>
-          </v-tooltip>
+                  </v-btn>
+                </template>
+                <span>Download Data</span>
+              </v-tooltip>
 
-        <!-- </v-col> -->
-        <!-- <v-col lg="2" class="mt-7"> -->
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
+            <!-- </v-col> -->
+            <!-- <v-col lg="2" class="mt-7"> -->
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
 
-               <v-btn icon @click="closeOverlay()" style="color: white!important;">
-                  <v-icon  v-bind="attrs"
-                v-on="on">{{icons.mdiCloseThick}}</v-icon>
+                  <v-btn icon @click="closeOverlay()" style="color: white!important;">
+                      <v-icon  v-bind="attrs"
+                    v-on="on">{{icons.mdiCloseThick}}</v-icon>
 
-              </v-btn>
-            </template>
-            <span>Close Overlay</span>
-          </v-tooltip>
+                  </v-btn>
+                </template>
+                <span>Close Overlay</span>
+              </v-tooltip>
           </div>
           <!-- <v-btn icon @click="closeOverlay()">
               <v-icon>{{icons.mdiCloseThick}}</v-icon>
@@ -111,7 +112,8 @@ export default {
   props: {
     dataD: Array,
     dataTitle: String,
-    details: Object
+    details: Object,
+    windowHeight: Number
   },
   data: function(){
     return{
@@ -131,15 +133,17 @@ export default {
       dataValues: [],
       size: [],
       stateS: [],
-      widthHeight :[]
+      widthHeight :[],
+      heightWindow: 0
     }
   },
 
   watch: {
     stateS(nstateS) {
       // alert(nstateS)
-      this.widthHeight.push(nstateS)
       if(nstateS.length == this.images.length){
+        this.widthHeight.push(nstateS)
+
         this.downloadData(this.widthHeight)
       }
     }
@@ -161,16 +165,12 @@ export default {
         img.src = this.images[x]
         img.onload = function(r) {
           that.stateS.push([r.path[0].width, r.path[0].height])  
-        }   
+        }  
       }
     },
 
     downloadData(widHei){
-
       var doc = new jsPDF();
-      var width = doc.internal.pageSize.getWidth();
-      var height = doc.internal.pageSize.getHeight();
-      console.log(width, height)
       doc.text(10, 10, this.dataTitle);
       // let space = 20
       // for(let i=0; i < this.dataKeys.length;i++){
@@ -194,11 +194,8 @@ export default {
       let init = [0, 0, 90, 90]
       let initialX = init[0]
       let initialY = init[1]
-
       for(let x in this.images){
         var hratio =  widHei[widHei.length - 1][x][1]/widHei[widHei.length - 1][x][0]
-
-        console.log(widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1])
         if(widHei[widHei.length - 1][x][0] > doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] > doc.internal.pageSize.getHeight() ){
           doc.addImage(this.images[x], 'JPEG', initialX, initialY, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getWidth()*hratio);
         }
@@ -213,7 +210,8 @@ export default {
         else if(widHei[widHei.length - 1][x][0] < doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] < doc.internal.pageSize.getHeight()){
           doc.addImage(this.images[x], 'JPEG', initialX, initialY, widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1]);
         }
-        if(this.images.length > (x+1)){
+
+        if(this.images.length > (x)){
           doc.addPage()
         }
         else {
@@ -229,17 +227,12 @@ export default {
     for (let i in this.datacard){
 
       var valI = await displayImages(this.datacard[i])
-      console.log(valI)
       this.images.push(valI)
     }
-    console.log(this.images)
     this.showcaseDetails = this.sD
-    console.log(this.showcaseDetails)
     this.dataKeys = Object.keys(this.showcaseDetails)
-    console.log(this.dataKeys)
     this.dataValues = Object.values(this.showcaseDetails)
-    console.log(this.dataValues)
-
+    this.heightWindow  = this.windowHeight / 1.4
   }
 }
 

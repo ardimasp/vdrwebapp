@@ -28,7 +28,7 @@ export default {
         return {
             bysort: this.sortby,
             mapTitle: [],
-            sortitems: ['Oil Volume', 'Gas Volume', 'Mix oil & gas volume'],
+            sortitems: ['Oil Volume', 'Gas Volume'],
         }
     },
 
