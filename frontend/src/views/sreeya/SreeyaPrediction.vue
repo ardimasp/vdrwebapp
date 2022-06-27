@@ -39,12 +39,12 @@
                     <v-text-field
                         v-model="downholeTemp"
                         type="number"
-                        hint="0 ≤ value ≤ 172"
+                        :hint="tempMeasurement == 'celcius' ? '0 ≤ value ≤ 172': '32 ≤ value ≤ 341.6'"
                         persistent-hint
                         :suffix="tempMeasurement == 'celcius' ? '°C':'°F'"
                         dense
                         required
-                        :rules="[v=>(v && v>=0 && v<=172) || '0 ≤ value ≤ 172']"
+                        :rules="tempMeasurement == 'celcius' ? [v=>(v && v>=0 && v<=172) || '0 ≤ value ≤ 172'] : [v=>(v && v>=32 && v<=341.6) || '32 ≤ value ≤ 341.6']"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -90,12 +90,12 @@
                     <v-text-field
                         v-model="tempDiff"
                         type="number"
-                        hint="0 ≤ value ≤ 190"
+                        :hint="tempMeasurement == 'celcius' ? '0 ≤ value ≤ 190': '32 ≤ value ≤ 374'"
                         persistent-hint
                         :suffix="tempMeasurement == 'celcius' ? '°C':'°F'"
                         dense
                         required
-                        :rules="[v=>(v && v>=0 && v<=190) || '0 ≤ value ≤ 190']"
+                        :rules="tempMeasurement == 'celcius' ? [v=>(v && v>=0 && v<=190) || '0 ≤ value ≤ 190'] : [v=>(v && v>=32 && v<=374) || '32 ≤ value ≤ 374']"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from '@vue/composition-api'
+import { defineComponent, ref, computed, watch } from '@vue/composition-api'
 import sreeyaService from './../../services/sreeya.service'
 
 export default defineComponent({
@@ -137,6 +137,9 @@ export default defineComponent({
     setup(props) {
         const validForm = ref(true)
 
+        const tempOptions = ["celcius", "fahrenheit"];
+        const tempMeasurement = ref("celcius");
+
         const hoursOnline = ref(0);
         const downholeTemp = ref(0);
         const downholePress = ref(0);
@@ -144,15 +147,29 @@ export default defineComponent({
         const tempDiff = ref(0);
         const result = ref();
 
-        const tempOptions = ["celcius", "fahrenheit"];
-        const tempMeasurement = ref("celcius");
+        watch(() => tempMeasurement.value, () => {
+            if(tempMeasurement.value == "celcius"){
+                downholeTemp.value = 0;
+                tempDiff.value = 0;
+            } 
+            else if(tempMeasurement.value == "fahrenheit") {
+                downholeTemp.value = 32;
+                tempDiff.value = 32;
+            }
+        })
 
         const checkPredict = computed(() => {
             if (hoursOnline.value < 0) return false
             if (downholePress.value < 0 || downholePress.value > 308) return false
-            if (downholeTemp.value < 0 || downholeTemp.value > 172) return false
             if (pressDiff.value < 0 || pressDiff.value > 325) return false
-            if (tempDiff.value < 0 || tempDiff.value > 190) return false
+            if(tempMeasurement.value == "celcius"){
+                if (downholeTemp.value < 0 || downholeTemp.value > 172) return false
+                if (tempDiff.value < 0 || tempDiff.value > 190) return false
+            }
+            else {
+                if (downholeTemp.value < 32 || downholeTemp.value > 341.6) return false
+                if (tempDiff.value < 32 || tempDiff.value > 374) return false
+            }
 
             return true
         })
