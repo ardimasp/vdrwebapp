@@ -52,7 +52,6 @@ export default {
         temp.push(this.dataMaps[i].title);
         }
         this.mapTitle = temp
-        console.log(temp)
     },
     
     methods:{

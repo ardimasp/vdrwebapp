@@ -1,6 +1,6 @@
 <template>
 <div id="formContainer">
-  <v-form ref="form" v-model="formValid" lazy-validation>
+  <v-form ref="form" v-model="formValid" lazy-validation style="position:relative">
     <v-row>
       <v-col cols="8"
        >
@@ -131,7 +131,7 @@
           hide-details
           type="number"
           min="0"
-          suffix="m³"
+          suffix="bar"
 
           :rules="[v => !!v || 'Input the oil volume']"
 
@@ -152,7 +152,7 @@
           hide-details
           type="number"
           min="0"
-          suffix="m³"
+          suffix="x10 ^ 6 ft ^3 (MMCF)"
 
           :rules="[v => !!v || 'Input the gas volume']"
         ></v-text-field>
@@ -281,11 +281,14 @@
       </v-col>
     </v-row>
     </div>
-
+  <template>
+        <v-progress-linear
+          v-if="load"
+          indeterminate
+          color="secondary"
+        ></v-progress-linear>
+      </template>
       <v-col cols="12">
-        <v-btn color="primary" :disabled="!valid" @click="submitData">
-          Submit
-        </v-btn>
         <v-btn
           type="reset"
           outlined
@@ -294,19 +297,14 @@
         >
           BACK
         </v-btn>
+        <v-btn color="primary" :disabled="!valid" @click="submitData">
+          Submit
+        </v-btn>
       </v-col>
       <!-- <v-alert type="success" :value="successAlert">
         Successfully save data
       </v-alert> -->
-      <v-snackbar
-        v-model="snackbar"
-        :timeout="timeout"
-        right
-        :color="status"
-        elevation="24"
-      >
-        {{resultPost}}
-      </v-snackbar>
+      
       <v-dialog
       v-model="successDialog"
       max-width="350"
@@ -343,6 +341,17 @@
           </v-card-actions>
         </v-card>
     </v-dialog>
+     <div style="position: absolute; right:0; bottom:0">
+      <v-snackbar
+        v-model="snackbar"
+        right
+        :color="status"
+        elevation="24"
+        style="position: absolute;"
+      >
+        {{resultPost}}
+      </v-snackbar>
+      </div>
   </v-form>
 </div>        
 
@@ -402,7 +411,9 @@ export default {
 
         // Rules:[v => !!v || 'Image is required'], 
         wellRules:[v => !!v || 'Well Name is required'],
-        generalRules:[v => !!v || 'Field is required']
+        generalRules:[v => !!v || 'Field is required'],
+        load: false,
+
     }
   },
   methods: {
@@ -424,8 +435,6 @@ export default {
 
         })
 
-        console.log(this.childrens)
-
         if(Object.keys(this.childrens).length > 0){
         var usedWells = this.childrens.map(a => a.name);
 
@@ -436,19 +445,11 @@ export default {
     },
 
     deleteWell(id) {
-      console.log(id)
       this.wellRules.splice(id)
-        // this.wellRules.pop();
-              console.log(this.wellRules)
-        console.log(this.imageDatas)
         this.childrens.splice(id, 1);
-
-        console.log(this.childrens)
     },
     
     storeloc(choseLoc){
-      console.log('loc', choseLoc)
-      console.log(choseLoc)
       this.childrens[choseLoc.index].latitude = choseLoc.position.lat
       this.childrens[choseLoc.index].longitude = choseLoc.position.lng
     },
@@ -461,14 +462,13 @@ export default {
       delete this.childrens.location;
       delete this.childrens.imgFiles;
 
-
-      console.log(this.$refs.form.validate())
       if(this.$refs.form.validate() === true){
+        this.load = true;
+
         const data = {
         fieldName: this.fieldName,
         wells: this.childrens
         }
-        console.log(data)
         var returnedStatus = await postDatatoDB(data);
         
         for (let i=0; i<this.imageDatas.length;i++){
@@ -482,6 +482,8 @@ export default {
             this.resultPost = "Successfully save data"
             this.snackbar = true
             this.successDialog = true
+            this.load = false;
+
           }
         }else if(Array.isArray(returnedStatus)){
           var failstatusStr = String(returnedStatus[0])[0]
@@ -489,13 +491,13 @@ export default {
             this.status = "error"
             this.resultPost = returnedStatus[1]
             this.snackbar = true
-            // this.successDialog = true
+            this.load = false;
           }
           else{
             this.status = "error"
             this.resultPost = "Please reload & try again"
             this.snackbar = true
-            // this.successDialog = true
+            this.load = false;
           }
         }
         
@@ -505,43 +507,15 @@ export default {
 
     selectFiles (imgArr){
       let categoryChoosen = 'showcase'
-      console.log(imgArr.imgFiles)
       let submitData = new FormData();
       for(let i = 0; i < imgArr.imgFiles.length; i++){
-        console.log(imgArr.imgFiles[i])
           submitData.append('files', imgArr.imgFiles[i]);
       }
       submitData.append('foldername', imgArr.name);
       submitData.append('pointer', categoryChoosen);
-      console.log(submitData)
       this.imageDatas.push(submitData)
       
       },
-
-    // selectFiles (index){
-    //   let categoryChoosen = 'showcase'
-    //   console.log(this.childrens[index].imgFiles.length)
-    //   let submitData = new FormData();
-    //   for(let i = 0; i < this.childrens[index].imgFiles.length; i++){
-    //     console.log(this.childrens[index].imgFiles[i])
-    //       submitData.append('files', this.childrens[index].imgFiles[i]);
-    //   }
-    //   submitData.append('foldername', this.childrens[index].name);
-    //   submitData.append('pointer', categoryChoosen);
-    //   console.log(submitData)
-    //   this.imageDatas.push(submitData)
-    //   // for (let i = 0; i < this.imageDatas.length; i++){
-    //   //  for (const value of this.imageDatas[i].values()) {
-    //   //    if(value === "t"){
-           
-    //   //    }
-    //   //     console.log(value);
-    //   //   }
-    //     // for (var pair of this.imageDatas[i].entries()) {
-    //     //   console.log(pair[0]+ ', ' + pair[1]); 
-    //   // }
-      
-    //   },
 
     backPage(){
       this.$router.push('/map-showcase')
@@ -566,15 +540,11 @@ export default {
   async mounted(){
  
       this.existingFieldsWells = await getListFieldWell()
-            console.log(this.existingFieldsWells)
-
       this.existingFields = this.existingFieldsWells.map(a => a.fieldName);
       this.existingWells = this.existingFieldsWells.map(a => a.wellName);
       
          this.exD = getDatafromDB()
-         console.log(this.exD)
        this.ex = getDB()
-         console.log(this.ex)
 
          if(this.existingWells){
         const rule =

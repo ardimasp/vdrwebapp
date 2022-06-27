@@ -22,17 +22,6 @@
      </template>
     </regular-card>
 
-     <!-- <regular-card v-if="v==false"
-      :x="400"
-      :y="50"
-      title="Sort By"
-      :w="250"
-      :h="150"
-    >
-     <template>
-          <MapSort v-on:input="sortSelected" />
-     </template>
-    </regular-card> -->
 
     </div>
     <MapVisualization :dataMaps="datas" :vtpMaps="vtpInfo" :heatmap="heatmap" :dataType="visualData" v-on:click="visualSelected"> </MapVisualization>
@@ -111,19 +100,10 @@ export default {
 
     placeSelected(point){
       this.selectedP = point
-      console.log(this.selectedP)
       for (var s in this.selectedP){
-        // console.log(this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].fillIcon)
-
-        // this.datas[this.datas.findIndex(dataC => dataC.title === this.selectedP[s])].iconSize = this.largeIcon
-        // console.log(this.datas)
-
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconfillColor = this.opacity
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconColor = this.deffillcolor
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === this.selectedP[s])].iconborderColor = 1
 
         this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconfillColor = this.opacity
-        this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconColor = this.deffillcolor
+        // this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].fillIcon = this.defcolor
         this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename.includes(this.selectedP[s]))].iconborderColor = 1
 
       }
@@ -133,15 +113,10 @@ export default {
           return !el.filename.includes(f);
         });
       });
-      console.log(myArrayFiltered)
       for (var ns in myArrayFiltered){
-        
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconfillColor = this.lessopacity
-        // // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconColor = this.deffillcolor
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconborderColor = this.transparent
-
+ 
         this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename === myArrayFiltered[ns].filename)].iconfillColor = this.lessopacity
-        // this.datas[this.datas.findIndex(dataC => dataC.wellName === myArrayFiltered[ns].wellName)].iconColor = this.deffillcolor
+        // this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename === myArrayFiltered[ns].filename)].fillIcon = this.deffillcolor
         this.vtpInfo[this.vtpInfo.findIndex(dataC => dataC.filename === myArrayFiltered[ns].filename)].iconborderColor = this.transparent
 
         // this.datas[nsid].iconborderColor = this.transparent
@@ -158,7 +133,6 @@ export default {
           });
           // HERE COLOR
           // this.colorSort = colorRange
-          // console.log(sortedarrayGas)
           // OPACITY SORT
           var totalColor
           var intensity = 1/sortedarrayGas.length
@@ -168,7 +142,6 @@ export default {
           }
           this.heatmap = sortedarrayGas
 
-          console.log(this.colorSort)
           var newtotalC = []
           if (this.colorSort.length >= sortedarrayGas.length){
             for(let i in sortedarrayGas){
@@ -180,9 +153,6 @@ export default {
             }else{
               totalColor = Math.round(sortedarrayGas.length / this.colorSort.length)
             }
-            // console.log(sortedarrayGas.length)
-            // console.log(this.colorSort.length)
-            // console.log(totalColor)
             for(let i in this.colorSort){
               var tempAr = Array(totalColor).fill(this.colorSort[i])
               newtotalC = newtotalC.concat(tempAr)
@@ -191,56 +161,22 @@ export default {
               sortedarrayGas[i].push(newtotalC[i])
             }
           }
-          console.log(sortedarrayGas)
           for (let s in sortedarrayGas){
             var sortSelect = this.datas.findIndex(dataC => dataC.wellName === sortedarrayGas[s][0]) 
-            console.log(sortSelect)
-            console.log(sortedarrayGas[s][5])
-
+            
             this.datas[sortSelect].iconborderColor = this.opacity
             this.datas[sortSelect].iconColor = sortedarrayGas[s][5]
           }
-          console.log(this.datas)
 
     },
     
-    sortSelected(sortp){
-      let arrayGas = []
-      alert(sortp);
-      if(sortp == "Gas Volume"){
-        for (let i in this.datas){
-          arrayGas.push([this.datas[i].wellName, this.datas[i].wellLatitude, this.datas[i].wellLongitude, this.datas[i].wellGasVolume])
-          // alert(arrayGas)
-        }
-        this.funcVol(arrayGas)
-      
-      }
-      else if(sortp == "Oil Volume"){
-        for (let i in this.datas){
-          arrayGas.push([this.datas[i].wellName, this.datas[i].wellLatitude, this.datas[i].wellLongitude, this.datas[i].wellOilVolume])
-          // alert(arrayGas)
-        }
-        this.funcVol(arrayGas)
-      }
-      else if(sortp == null){
-        for (let i in this.datas){
-          this.datas[i].iconColor = this.deffillcolor
-           this.datas[i].iconborderColor = this.transparent
-
-        }
-      }
-     
-    }
   },
   async mounted(){
     this.correctData = await getVTPdata();
     var children
     for(let i =0; i <this.correctData.length; i++){
       children = this.correctData[i].children
-      // console.log("c", children)
       for (var j = 0; j < children.length; j++) {
-          // console.log("child", children[j])
-      // console.log('path', children[j].id)
       let infochildVTP = await getVTPinfo(children[j].id)
       if(infochildVTP != undefined){
         this.tmpVTP.push(infochildVTP)
@@ -250,16 +186,11 @@ export default {
     }
     }
     this.vtpInfo = this.tmpVTP.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
-    console.log(this.vtpInfo)
 
 
     this.tempD = await getDatafromDB();
-    // console.log(this.tempD)
-    // console.log(this.token)
     this.allData = await getDB(this.tempD)
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
-    // console.log(this.allData)
-    // this.correctData = await restructureData(this.allData)
     
   },
 }
@@ -274,14 +205,4 @@ export default {
     transform: translate(-50%, 0);
   }
 
-// .try{
-//   width: 100%;
-//   height: 1000px;
-// }  
-
-/* // .fixedcontainer {
-//   position: absolute;
-//   left: 0px;
-//   top: 0px;
-// } */
 </style>
