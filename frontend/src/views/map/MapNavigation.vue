@@ -92,22 +92,16 @@ export default {
     cardshown(keyName){
       var filteredResult = this.dataMaps.find((e) => e.wellName == keyName);
       this.datacard = filteredResult
-      // console.log(this.datacard.image)
       this.overlay = true
-      // var data = this.dataMaps.findIndex(dataC => dataC.id === key) 
-      // this.dataMaps[data].iconImg = this.icon
     },
     onClickOutside(val) {
       this.overlay = val
-      console.log("clicked outside");
     },
 
     changeOverlay(over){
       this.overlay = over
-      console.log(over);
     },
     getIcon(item) {
-      // console.log(item.iconColor)
       return L.divIcon({
         className: "my-custom-pin",
         html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="${item.iconSize[0]}" height="${item.iconSize[1]}" viewBox="0 0 24 24">
@@ -126,7 +120,6 @@ export default {
   },
     markeronhover(key){
       var filteredResult = this.dataMaps.find((e) => e.id == key);
-      console.log(filteredResult)
       this.dataFilter = filteredResult
       this.overlaymap = true
     },
@@ -138,14 +131,12 @@ export default {
     },
 
     pixelValue(latitude, meters, zoomLevel) {
-      console.log(meters / this.metersPerPixel(latitude, zoomLevel))
       return meters / this.metersPerPixel(latitude, zoomLevel);
     }
   },
 
   mounted() {
      this.height = this.$refs.myMap.$el.clientHeight
-    console.log(this.height)
     
   },
    // do not forget this section

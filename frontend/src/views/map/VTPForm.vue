@@ -1,5 +1,12 @@
 <template>
 <div id="formContainer">
+  <template>
+        <v-progress-linear
+          v-if="load"
+          indeterminate
+          color="secondary"
+        ></v-progress-linear>
+      </template>
   <v-form ref="form" v-model="formValid" lazy-validation>
     <v-row>
       <v-col class="mt-2" cols="12"
@@ -50,13 +57,14 @@
         <v-text-field v-if="vtptypeChosen==vtpType[0]"
         required
           v-model="radius"
-          label="Radius (m)"
+          label="Radius"
           outlined
           dense
-          placeholder="Radius (m)"
+          placeholder="Radius"
           hide-details
           type="number"
           min="0"
+          suffix="m"
           :rules="generalRules"
         ></v-text-field>
          <v-text-field v-if="vtptypeChosen==vtpType[1] ||vtptypeChosen==vtpType[2] "
@@ -69,40 +77,11 @@
           hide-details
           type="number"
           min="0"
+          suffix="°"
           :rules="generalRules"
         ></v-text-field>
       </v-col>
-              <!-- <v-row> -->
     </v-row>
-        <!-- <v-row v-for="n in latlngTotal" :key="n">
-     <v-col cols="6"
-        > <v-text-field
-                  required
-                    v-model="latArray[n]"
-                    label="Latitude"
-                    outlined
-                    dense
-                    placeholder="Latitude (Ex: -0.847199)"
-                    hide-details
-                    :rules="generalRules"
-                  ></v-text-field>
-        </v-col>
-        <v-col  cols="6"
-        > <v-text-field
-                  required
-                    v-model="lngArray[n]"
-                    label="Longitude"
-                    outlined
-                    dense
-                    placeholder="Longitude (Ex: 117.015818)"
-                    hide-details
-                    :rules="generalRules"
-                  ></v-text-field>
-        </v-col>
-            </v-row> -->
-
-      <!-- </div> -->
-              <!-- </v-row> -->
 
       <div v-if="location.position">
       <v-row class="mt-2">
@@ -166,6 +145,7 @@
           hide-details
           type="number"
           min="0"
+          suffix="m"
           :rules="generalRules"
         ></v-text-field>
       </v-col>
@@ -180,6 +160,7 @@
           placeholder="Width"
           hide-details
           type="number"
+          suffix="m"
           min="0"
           :rules="generalRules"
         ></v-text-field>
@@ -196,6 +177,7 @@
           hide-details
           type="number"
           min="0"
+          suffix="m"
           :rules="generalRules"
         ></v-text-field>
       </v-col>
@@ -220,21 +202,8 @@
         >
          
         </v-file-input>
-          <!-- @change="selectFiles(index)" -->
-
       </v-col>
 
-      <!-- <v-col  cols="12"
-        md="6">
-         <v-btn
-          type="reset"
-          outlined
-          color="error"
-          class="mx-2" @click="deleteWell(index)"
-        >
-          Delete
-        </v-btn>
-      </v-col> -->
     </v-row>
 
       <v-col cols="12">
@@ -253,15 +222,7 @@
       <!-- <v-alert type="success" :value="successAlert">
         Successfully save data
       </v-alert> -->
-      <v-snackbar
-        v-model="snackbar"
-        :timeout="timeout"
-        right
-        :color="status"
-        elevation="24"
-      >
-        {{resultPost}}
-      </v-snackbar>
+     
       <v-dialog
       v-model="successDialog"
       max-width="350"
@@ -299,14 +260,27 @@
         </v-card>
     </v-dialog>
   </v-form>
+  <div style="position: absolute; right:0; bottom:0">
+      <v-snackbar
+        v-model="snackbar"
+        right
+        :timeout="timeout"
+        :color="status"
+        elevation="24"
+        style="position: absolute;"
+      >
+        {{resultPost}}
+      </v-snackbar>
+      </div>
 </div>        
 
 </template>
 
 <script>
-import {getDatafromDB, getDB, getListFieldWell, vtpUpload,vtpInfo} from '../showcase/MapEndPoint.js';
+import {getDatafromDB, getDB, getVTPdata, vtpUpload,vtpInfo} from '../showcase/MapEndPoint.js';
 import SearchLocation from "../showcase/SearchLocation.vue";
 // import {rectangleLatlng} from './RotateBoundary.js';
+import store from "../../store";
 
 export default {
   components:{
@@ -332,13 +306,10 @@ export default {
      
         successAlert: false,
         imageDatas: [],
-        tempImg: [],
         existingFieldsWells: null,
         existingFields: null,
         existingWells: null,
         exD: null,
-        selectedFiles: undefined,
-        selectedImages: undefined,
         fileDisabled: true,
         snackbar:false,
         timeout:5000,
@@ -346,18 +317,15 @@ export default {
         resultPost:"",
         successDialog:false,
         vtpType: ['well-vtp','line-vtp','surface-vtp'],
-        latlngTotal: 1,
-        latArray: [],
-        lngArray: [],
-        // category:[],
+        
         location: {},
         returnedStatus: undefined,
         returnedStatusUpload:undefined,
-        // imgFiles: undefined,
 
-        // Rules:[v => !!v || 'Image is required'], 
         wellRules:[v => !!v || 'Well Name is required'],
-        generalRules:[v => !!v || 'Field is required']
+        generalRules:[v => !!v || 'Field is required'],
+        load: false,
+
     }
   },
   methods: {
@@ -365,91 +333,74 @@ export default {
     storeloc(choseLoc){
       console.log('loc', choseLoc)
       console.log(choseLoc)
-      // this.childrens[choseLoc.index].latitude = choseLoc.position.lat
-      // this.childrens[choseLoc.index].longitude = choseLoc.position.lng
     },
     angleToRadians(angle)
     {
       return (Math.PI / 180) * angle;
     },
     async submitData(){
-      // for (let i = 0; i < Object.keys(this.childrens).length; i++){
-      //   this.selectFiles(this.childrens[i])
-      // }
+       
+      if(this.$refs.form.validate() === true){
+      this.load = true;
 
-      // delete this.childrens.location;
-      // delete this.childrens.imgFiles;
-
-      console.log('chosen well', this.wellName),
-      console.log('chosen vtp type',  this.vtptypeChosen)
-      console.log('chosen tilt angle',  this.tilt)
-            console.log('chosen long',  this.long)
-      console.log('location', this.location.position.lat, this.location.position.lng)
-      console.log('vtp file chosen', this.vtpfilename)
       var fileVTP = this.selectFiles(this.vtpFiles, this.vtptypeChosen, this.wellName)
       this.returnedStatusUpload = await vtpUpload(fileVTP)
-      console.log('returnedStatusUpload', this.returnedStatusUpload)
-       
-      console.log(this.$refs.form.validate())
-      if(this.$refs.form.validate() === true){
 
       if(this.vtptypeChosen == this.vtpType[1]){
-        let x = this.location.position.lat + (this.long/1000) * Math.cos(this.angleToRadians(this.tilt));
-        let y = this.location.position.lng + (this.long/1000) * Math.sin(this.angleToRadians(this.tilt));
-        console.log([x,y])
+        let rx = this.location.position.lat + (this.long/2) * Math.cos(this.angleToRadians(this.tilt));
+        let ry = this.location.position.lng + (this.long/2) * Math.sin(this.angleToRadians(this.tilt));
+        let lx = this.location.position.lat - (this.long/2) * Math.cos(this.angleToRadians(this.tilt));
+        let ly = this.location.position.lng - (this.long/2) * Math.sin(this.angleToRadians(this.tilt));
         const data = {
         path: '/'+this.wellName+'/'+this.vtpfilename,
         type: this.vtptypeChosen,
         center: [this.location.position.lat, this.location.position.lng],
-        geodata: [[this.location.position.lat, this.location.position.lng], [x,y]],
+        geodata: [[rx, ry], [lx,ly]],
         tilt: this.tilt
         }
         this.returnedStatus = await vtpInfo(data);
+        await store.dispatch("fetchVtpList")
 
       }else if(this.vtptypeChosen == this.vtpType[2]){
-        let x = (this.location.position.lat - (0.5*this.surfaceWidth))
-        let y = (this.location.position.lng - (0.5*this.surfaceLength))
-        console.log([x,y])
-        const data = {
+      
+        let ne_lat = this.location.position.lat + ((this.surfaceWidth/2)/110.574)
+        let ne_lon =  this.location.position.lng - ((this.surfaceLength/2)/(111.320 * Math.cos(this.angleToRadians((this.surfaceWidth/2)/110574))))
+        let sw_lat = this.location.position.lat - ((this.surfaceWidth/2)/110.574)
+        let sw_lon = this.location.position.lng + ((this.surfaceLength/2)/(111.320 *  Math.cos(this.angleToRadians((this.surfaceWidth/2)/110574))))
+
+        var pointlist = [];   
+        var p1 = [sw_lat, ne_lon];
+        pointlist.push(p1);
+        var p2 = [ne_lat, ne_lon];
+        pointlist.push(p2);
+        var p3 = [ne_lat, sw_lon];
+        pointlist.push(p3);
+        var p4 = [sw_lat, sw_lon];
+        pointlist.push(p4);    
+        const res = []
+        const angle = this.tilt * (Math.PI / 180)
+
+        for (let i = 0; i < pointlist.length; i++) {
+            const p = pointlist[i]
+            // translate to center
+            const p2 = [p[0] - this.location.position.lat, p[1] - this.location.position.lng]
+            // rotate using matrix rotation
+            const p3 =  [Math.cos(angle) * p2[0] - Math.sin(angle) * p2[1], Math.sin(angle) * p2[0] + Math.cos(angle) * p2[1]]
+            // translate back to center
+            let p4 = [p3[0] + this.location.position.lat, p3[1] + this.location.position.lng]
+            // done with that point
+            // p4 = map.layerPointToLatLng(p4)
+            res.push(p4)
+        }
+          const data = {
           path: '/'+this.wellName+'/'+this.vtpfilename,
           type: this.vtptypeChosen,
           center: [this.location.position.lat, this.location.position.lng],
-          geodata: [[this.location.position.lat, this.location.position.lng], [x,y]],
+          geodata: res,
           tilt: this.tilt
         }
         this.returnedStatus = await vtpInfo(data);
-
-        //  let z = (this.location.position.lat + (0.5*this.surfaceWidth))
-        // let a = (this.location.position.lng + (0.5*this.surfaceLength))
-
-        // var pointlist = [];   
-
-        // var p1 = [z, y];
-        // pointlist.push(p1);
-        // var p2 = [z, a];
-        // pointlist.push(p2);
-        // var p3 = [z, y];
-        // pointlist.push(p3);
-        // var p4 = [x,a];
-        // pointlist.push(p4);    
-        // let recLatlng = rectangleLatlng(x, y, this.surfaceWidth, this.tilt)
-
-      //   const res = []
-			// const angle = this.tilt * (Math.PI / 180)
-			// 		for (let i = 0; i < pointlist.length; i++) {
-			// 				const p = pointlist[i]
-			// 				// translate to center
-			// 				const p2 = [p[0] - this.location.position.lat, p[1] - this.location.position.lng]
-			// 				// rotate using matrix rotation
-			// 				const p3 =  [Math.cos(angle) * p2[0] - Math.sin(angle) * p2[1], Math.sin(angle) * p2[0] + Math.cos(angle) * p2[1]]
-			// 				// translate back to center
-			// 				let p4 = [p3[0] + this.location.position.lat, p3[1] + this.location.position.lng]
-			// 				// done with that point
-			// 				// p4 = map.layerPointToLatLng(p4)
-			// 				res.push(p4)
-			// 		}
-
-        // console.log(res)
+        await store.dispatch("fetchVtpList")
       }
       else if(this.vtptypeChosen == this.vtpType[0]){
         const data = {
@@ -459,19 +410,9 @@ export default {
           radius:this.radius
         }
         this.returnedStatus = await vtpInfo(data);
-
+        await store.dispatch("fetchVtpList")
       }
-      // if(this.$refs.form.validate() === true){
-      //   const data = {
-      //   fieldName: this.fieldName,
-      //   wells: this.childrens
-      //   }
-      //   console.log(data)
-      //   var returnedStatus = await postDatatoDB(data);
-        
-      //   for (let i=0; i<this.imageDatas.length;i++){
-      //     uploadImages(this.imageDatas[i])
-      // }
+     
         if(Number.isInteger(this.returnedStatus)){
           var successstatusStr = String(this.returnedStatus)[0]
           if(successstatusStr === '2'){
@@ -480,6 +421,8 @@ export default {
             this.resultPost = "Successfully save data"
             this.snackbar = true
             this.successDialog = true
+            this.load = false;
+
           }
         }else if(Array.isArray(this.returnedStatus)){
           var failstatusStr = String(this.returnedStatus[0])[0]
@@ -488,6 +431,8 @@ export default {
             this.status = "error"
             this.resultPost = this.returnedStatus[1]
             this.snackbar = true
+            this.load = false;
+
             // this.successDialog = true
           }
           else{
@@ -495,33 +440,27 @@ export default {
             this.status = "error"
             this.resultPost = "Please reload & try again"
             this.snackbar = true
+            this.load = false;
+
             // this.successDialog = true
           }
         }
         
+      }else{
+        this.value = false
       }
         
     },
     findFileName(){
-      //  var fileData =   e.target.files;
       this.vtpfilename=this.vtpFiles.name;
-      console.log(this.vtpfilename)
     },
 
     selectFiles (vtpFiles, vtpType, wellName){
-      // let categoryChoosen = 'showcase'
       let submitData = new FormData();
-      // for(let i = 0; i < imgArr.imgFiles.length; i++){
-        // console.log(imgArr.imgFiles[i])
-          submitData.append('file', vtpFiles);
-      // }
+      submitData.append('file', vtpFiles);
       submitData.append('foldername', wellName);
       submitData.append('pointer', vtpType);
-      console.log(submitData)
       return(submitData)
-      // this.finalVTPfile = submitData
-      // this.imageDatas.push(submitData)
-      
       },
 
 
@@ -530,6 +469,7 @@ export default {
     },
 
     closeDialog(){
+      this.$router.go(this.$router.currentRoute)
       this.successDialog = false
     },
 
@@ -540,9 +480,7 @@ export default {
         this.fileDisabled = true
 
       }else{
-        this.fileDisabled = false
-        console.log(this.wellName)
-      
+        this.fileDisabled = false      
       }
 
     },
@@ -561,16 +499,13 @@ export default {
   },
   async mounted(){
  
-      this.existingFieldsWells = await getListFieldWell()
-            console.log(this.existingFieldsWells)
+      this.existingFieldsWells = await getVTPdata()
 
       this.existingFields = this.existingFieldsWells.map(a => a.fieldName);
-      this.existingWells = this.existingFieldsWells.map(a => a.wellName);
-      
+      this.existingWells = this.existingFieldsWells.map(a => a.name);
+
          this.exD = getDatafromDB()
-         console.log(this.exD)
        this.ex = getDB()
-         console.log(this.ex)
 
          if(this.existingWells){
         const rule =

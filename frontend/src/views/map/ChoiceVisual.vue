@@ -123,19 +123,16 @@ export default {
         this.chosenImg = this.val
         this.chosenImgPath = []
         this.chosenImgPath.push('/'+this.datacard.wellName+'/'+this.chosenImg)
-        console.log(this.chosenImgPath)
         this.overlayAgain = true
     },
 
     changeOverlay(closeover){
       this.overlayAgain = closeover
-      console.log(closeover);
     }
   },
  
   computed: {
     disabled() {
-      console.log('id' + this.datacard.id)
         return this.val === null; // or === 0   
     }
 }

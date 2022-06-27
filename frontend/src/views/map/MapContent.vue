@@ -137,7 +137,6 @@ export default {
 
   },
   data: function(){
-    // console.log(this.details)
     return{
       loading: false,
       selection: 1,

@@ -141,8 +141,9 @@ export default {
   watch: {
     stateS(nstateS) {
       // alert(nstateS)
-      this.widthHeight.push(nstateS)
       if(nstateS.length == this.images.length){
+        this.widthHeight.push(nstateS)
+
         this.downloadData(this.widthHeight)
       }
     }
@@ -164,16 +165,12 @@ export default {
         img.src = this.images[x]
         img.onload = function(r) {
           that.stateS.push([r.path[0].width, r.path[0].height])  
-        }   
+        }  
       }
     },
 
     downloadData(widHei){
-
       var doc = new jsPDF();
-      var width = doc.internal.pageSize.getWidth();
-      var height = doc.internal.pageSize.getHeight();
-      console.log(width, height)
       doc.text(10, 10, this.dataTitle);
       // let space = 20
       // for(let i=0; i < this.dataKeys.length;i++){
@@ -197,11 +194,8 @@ export default {
       let init = [0, 0, 90, 90]
       let initialX = init[0]
       let initialY = init[1]
-
       for(let x in this.images){
         var hratio =  widHei[widHei.length - 1][x][1]/widHei[widHei.length - 1][x][0]
-
-        console.log(widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1])
         if(widHei[widHei.length - 1][x][0] > doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] > doc.internal.pageSize.getHeight() ){
           doc.addImage(this.images[x], 'JPEG', initialX, initialY, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getWidth()*hratio);
         }
@@ -216,7 +210,8 @@ export default {
         else if(widHei[widHei.length - 1][x][0] < doc.internal.pageSize.getWidth() && widHei[widHei.length - 1][x][1] < doc.internal.pageSize.getHeight()){
           doc.addImage(this.images[x], 'JPEG', initialX, initialY, widHei[widHei.length - 1][x][0], widHei[widHei.length - 1][x][1]);
         }
-        if(this.images.length > (x+1)){
+
+        if(this.images.length > (x)){
           doc.addPage()
         }
         else {
@@ -232,21 +227,12 @@ export default {
     for (let i in this.datacard){
 
       var valI = await displayImages(this.datacard[i])
-      console.log(valI)
       this.images.push(valI)
     }
-    console.log(this.images)
     this.showcaseDetails = this.sD
-    console.log(this.showcaseDetails)
     this.dataKeys = Object.keys(this.showcaseDetails)
-    console.log(this.dataKeys)
     this.dataValues = Object.values(this.showcaseDetails)
-    console.log(this.dataValues)
-
-    console.log(this.windowHeight)
-    var height = this.$refs.cardContent.$el.clientHeight
     this.heightWindow  = this.windowHeight / 1.4
-    console.log(height)
   }
 }
 
