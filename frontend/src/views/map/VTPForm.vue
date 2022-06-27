@@ -238,9 +238,6 @@
     </v-row>
 
       <v-col cols="12">
-        <v-btn color="primary" :disabled="!valid" @click="submitData">
-          Submit
-        </v-btn>
         <v-btn
           type="reset"
           outlined
@@ -248,6 +245,9 @@
           @click="backPage"
         >
           BACK
+        </v-btn>
+        <v-btn color="primary" :disabled="!valid" @click="submitData">
+          Submit
         </v-btn>
       </v-col>
       <!-- <v-alert type="success" :value="successAlert">

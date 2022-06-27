@@ -15,6 +15,7 @@
                 timeout=3000
                 rounded="pill"
                 color="secondary"
+                right
             >
                 Data is updated successfully!
             </v-snackbar>
@@ -48,30 +49,12 @@
                         required
                         :prepend-icon="mdiAccountOutline"
                     ></v-text-field>
-                    <v-menu
-                        v-model="menu"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="expiryDate"
-                                label="Expiry Date"
-                                :prepend-icon="mdiCalendarRange"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                                required
-                            ></v-text-field>
-                        </template>
-                        <v-date-picker
-                            v-model="expiryDate"
-                            @input="menu = false"
-                        ></v-date-picker>
-                    </v-menu>
+                    <v-text-field
+                        v-model="expiryDate"
+                        label="Expiry Date"
+                        :prepend-icon="mdiCalendarRange"
+                        readonly
+                    ></v-text-field>
                     <v-text-field
                         v-model="affiliation"
                         label="Affiliation"
@@ -89,16 +72,16 @@
                         v-if="editPassword"
                     ></v-text-field>
                     <div class="d-flex">
-                        <v-btn color="error" class="mr-3" @click="clearForm">
+                        <v-btn color="error" outlined class="mr-3" @click="clearForm">
                             Cancel
                         </v-btn>
-                        <v-btn color="warning" class="mr-3" @click="changeEditStat" v-if="!editPassword">
+                        <v-btn color="warning" outlined class="mr-3" @click="changeEditStat" v-if="!editPassword">
                             Change Password
                         </v-btn>
-                        <v-btn v-else class="mr-3" color="warning" @click="changeEditStat">
+                        <v-btn v-else class="mr-3" outlined color="warning" @click="changeEditStat">
                             Cancel New Password
                         </v-btn>
-                        <v-btn color="secondary" @click="submitForm">
+                        <v-btn color="primary" @click="submitForm">
                             Submit
                         </v-btn>
                     </div>
@@ -187,7 +170,6 @@ export default defineComponent({
                     "password": password.value,
                     "type": type.value,
                     "name": name.value,
-                    "expiry_date": expiryDate.value,
                     "affiliation": affiliation.value
                 }
             } else {
@@ -195,7 +177,6 @@ export default defineComponent({
                     "userid": username.value,
                     "type": type.value,
                     "name": name.value,
-                    "expiry_date": expiryDate.value,
                     "affiliation": affiliation.value
                 }
             }

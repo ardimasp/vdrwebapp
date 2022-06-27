@@ -123,6 +123,7 @@
           v-if="information"
           title="Guide"
           :text="text"
+          @closedialog="toggleInfo"
         ></card-dialog>
       </div>
     </div>
@@ -190,9 +191,8 @@ export default{
             <li>There are categories when adding new file(s):</li>
             <ul>
               <li>Choose '*' for general use</li>
-              <li>Choose 'Chart' to use on Viewer's page</li>
               <li>Choose 'Showchase' to use on Map's and Showcase's page</li> 
-              <li>Choose 'Sreeya' to use on Production's page (for Premium user)</li>
+              <li>Choose 'Production' to use on Production's page (for Premium user)</li>
             </ul>
           </ul>
           <br>
@@ -206,7 +206,13 @@ export default{
             <b>Downloading file or folder:</b>
             <li>To download a file, press the download button on the right side of the file name</li>
             <li>To download multiple files, select the chechboxes and press download</li>
-          </ul>`;
+          </ul>
+          <br>
+          <ul>
+            <b>Note:</b>
+            <li>Please upload .vtp file through '3D Viewer' page or from the '3D Viewer Map' page</li>
+          </ul>
+          `;
     const toggleInfo = () => {
       information.value = !information.value
     }
@@ -237,6 +243,7 @@ export default{
         }
         await fileService.deleteFile(tree.value);
         await store.dispatch("fetchTreeList");
+        active.value = []
       }
       delFileDialog.value = false;
     }
@@ -248,7 +255,8 @@ export default{
     const deleteFolder = async (bool) => {
       if(bool) {
         await fileService.deleteFolder(selectedFolder.value);
-        await store.dispatch("fetchTreeList");
+        await store.dispatch("fetchTreeList"); 
+        active.value = []
       }
       delFolderDialog.value = false;
     }

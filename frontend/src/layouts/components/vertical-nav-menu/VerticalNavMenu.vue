@@ -43,32 +43,20 @@
         :to="{ name: 'vtkviewer' }"
         :icon="icons.mdiCubeScan"
       ></nav-menu-link>
-      <nav-menu-link
+      <!-- <nav-menu-link
         title="Viewer"
         :to="{ name: 'viewer' }"
         :icon="icons.mdiCardSearchOutline"
-      ></nav-menu-link>
+      ></nav-menu-link> -->
 
-      <nav-menu-link
+      <!-- <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
         :icon="icons.mdiHomeOutline"
-      ></nav-menu-link>
-
-      <nav-menu-link
-        title="File Management"
-        :to="{ name: 'file-management' }"
-        :icon="icons.mdiTable"
-      ></nav-menu-link>
-      
-      <nav-menu-link
-        title="Sreeya AI"
-        :to="{ name: 'production' }"
-        :icon="icons.mdiChartLine"
-      ></nav-menu-link>
+      ></nav-menu-link> -->
       
       <nav-menu-link 
-        title="Map" 
+        title="3D Viewer Map" 
         :to="{ name: 'maps' }" 
         :icon="icons.mdiMap">
       </nav-menu-link>
@@ -76,6 +64,18 @@
         title="Data Showcase"
         :to="{ name: 'mapShowcase' }"
         :icon="icons.mdiCardSearchOutline"
+      ></nav-menu-link>
+      
+      <nav-menu-link
+        title="Production"
+        :to="{ name: 'production' }"
+        :icon="icons.mdiChartLine"
+      ></nav-menu-link>
+
+      <nav-menu-link
+        title="File Management"
+        :to="{ name: 'file-management' }"
+        :icon="icons.mdiTable"
       ></nav-menu-link>
 
     </v-list>

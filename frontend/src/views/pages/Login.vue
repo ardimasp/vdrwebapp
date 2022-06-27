@@ -8,6 +8,7 @@
           rounded="pill"
           color="secondary"
           timeout="5000"
+          right
         >Your session have expired, please login again.</v-snackbar>
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
@@ -63,20 +64,27 @@
             </p>
 
             <div class="d-flex align-center justify-space-between flex-wrap">
-              <v-checkbox
+              <!-- <v-checkbox
                 label="Remember Me"
                 hide-details
                 class="me-3 mt-1"
               >
-              </v-checkbox>
+              </v-checkbox> -->
 
               <!-- forgot link -->
-              <a
-                href="javascript:void(0)"
+              <p
                 class="mt-1"
+                style="color:#9155FD"
+                @click="openForgetPassword"
               >
                 Forgot Password?
-              </a>
+              </p>
+              <card-info
+                v-if="forgetPassword"
+                title="Forget Password"
+                text="If you forget your password, please contact the administrator!"
+                @closedialog="closeForgetPassword"
+              ></card-info>
             </div>
 
             
@@ -89,6 +97,7 @@
               v-model="loading"
               rounded="pill"
               color="secondary"
+              right
             >
               Logging you in, preparing your data...
             </v-snackbar>
@@ -139,9 +148,17 @@ import store from '../../store'
 import router from '../../router'
 import adminService from './../../services/admin.service'
 import {detectMimeType} from './../../function'
+import CardInfo from './../cards/CardInfo.vue'
 
 export default {
+  components: {
+    CardInfo,
+  },
   setup() {
+    const forgetPassword = ref(false)
+    const openForgetPassword = () => {forgetPassword.value = true}
+    const closeForgetPassword = () => { forgetPassword.value = false}
+
     const loading = ref(false)
     const isPasswordVisible = ref(false)
     const username = ref('')
@@ -236,7 +253,7 @@ export default {
       submitForm,
       checkValid,
       errorMsg,
-      loading, setAlert,
+      loading, setAlert, forgetPassword, closeForgetPassword, openForgetPassword,
 
       icons: {
         mdiEyeOutline,

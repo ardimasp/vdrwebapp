@@ -1,16 +1,15 @@
 <template>
     <div class="text-center">
         <v-dialog
-        v-model="dialog"
-        width="500"
-        scrollable
+            v-model="dialog"
+            max-width="300"
         >
             <v-card>
                 <v-card-title class="text-h5 grey lighten-2 mb-3" style="background-color: #4DB6AC">
                     {{title}}
                 </v-card-title>
 
-                <v-card-text style="height:300px">
+                <v-card-text>
                     <p v-html="text"></p>
                 </v-card-text>
 

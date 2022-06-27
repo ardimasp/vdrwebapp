@@ -63,7 +63,7 @@ export default {
     
     const checkSelect = computed(() => {
       if (selected.value.length) return true;
-      console.log(selected.value)
+      // console.log(selected.value)
       return false;
     });
 

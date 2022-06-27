@@ -11,7 +11,7 @@
             color="grey lighten-1"
         >
             <div v-if="showErr">
-                <p class="headline font-weight-bold">{{errMsg}}!</p>
+                <p class="headline font-weight-bold" v-for="err in errMsg" :key="err">{{err}}!</p>
                 <p class="overline">Press the 'New Prediction' button below to reselect the file and make a new prediction</p>
             </div>
             <div v-else>
@@ -52,21 +52,27 @@ export default defineComponent({
     },
     setup(props) {
         const loading = ref(false);
-        const errMsg = ref("");
+        const errMsg = ref([]);
         const showErr = ref(false);
         onMounted(async () => {
             loading.value = true;
+            errMsg.value = [];
+            showErr.value = false;
             if(props.active !== null || props.active !== "" || props.feature !== null || props.feature !== ""){
                 var result;
                 if(props.feature == "oil") result = await sreeyaService.oilPredictionExcel(props.active);
                 else result = await sreeyaService.gasPredictionExcel(props.active);
 
                 if(result.response && result.response.status == 422) {
-                    errMsg.value = result.response.data.detail
+                    if(Array.isArray(result.response.data.detail)) {
+                        errMsg.value = null;
+                        errMsg.value = result.response.data.detail
+                    }
+                    else errMsg.value.push(result.response.data.detail)
                     showErr.value = true
                 }
                 else if(result.response && result.response.status == 400) {
-                    errMsg.value = result.response.data.detail
+                    errMsg.value.push(result.response.data.detail)
                     showErr.value = true
                 } 
                 else {

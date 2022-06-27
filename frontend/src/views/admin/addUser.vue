@@ -5,6 +5,7 @@
             v-model="alertMsgShow"
             rounded="pill"
             timeout=3000
+            right
         >
             {{alertMsg}}
         </v-snackbar>
@@ -41,30 +42,6 @@
                     required
                     :prepend-icon="mdiAccountOutline"
                 ></v-text-field>
-                <v-menu
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                            v-model="expiryDate"
-                            label="Expiry Date"
-                            :prepend-icon="mdiCalendarRange"
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            required
-                        ></v-text-field>
-                    </template>
-                    <v-date-picker
-                        v-model="expiryDate"
-                        @input="menu = false"
-                    ></v-date-picker>
-                </v-menu>
                 <v-text-field
                     v-model="affiliation"
                     label="Affiliation"
@@ -72,10 +49,10 @@
                     :prepend-icon="mdiDomain"
                 ></v-text-field>
                 <div class="d-flex">
-                    <v-btn color="error" class="mr-3" @click="clearForm">
+                    <v-btn color="error" outlined class="mr-3" @click="clearForm">
                         Cancel
                     </v-btn>
-                    <v-btn color="secondary" @click="submitForm" :disabled="!checkForm">
+                    <v-btn color="primary" @click="submitForm" :disabled="!checkForm">
                         Submit
                     </v-btn>
                 </div>
@@ -100,7 +77,6 @@ export default defineComponent({
         const userTypes = ["Premium User", "Regular User"];
         const type = ref("Regular User");
         const name = ref("");
-        const expiryDate = ref("");
         const affiliation = ref("");
 
         const menu = ref(false);
@@ -116,12 +92,11 @@ export default defineComponent({
             username.value = "";
             password.value = "";
             name.value = "";
-            expiryDate.value = "";
             affiliation.value = ""
         }
 
         const checkForm = computed(() => {
-            if(username.value == "" || password.value == "" || name.value == "" || expiryDate.value == "" || affiliation.value == ""){
+            if(username.value == "" || password.value == "" || name.value == "" || affiliation.value == ""){
                 return false
             }
             return true;
@@ -136,13 +111,13 @@ export default defineComponent({
                 "password": password.value,
                 "type": type.value,
                 "name": name.value,
-                "expiry_date": expiryDate.value,
                 "affiliation": affiliation.value,
                 "profile_pict": profile
             }
 
             let status = await adminService.addUser(submitData);
             if (status == 200) {
+                console.log(submitData);
                 await store.dispatch("fetchUserList");
                 alertMsgShow.value = true;
                 alertColour.value = "#4DB6AC";
@@ -162,7 +137,7 @@ export default defineComponent({
         return {
             username, password, mdiAccount, mdiKey, mdiEye, mdiEyeOff,
             showPass, clearForm, submitForm, alertMsg, alertMsgShow, alertColour,
-            checkForm, userTypes, type, name, expiryDate, affiliation,
+            checkForm, userTypes, type, name, affiliation,
             menu, mdiAccountOutline, mdiCalendarRange, mdiDomain,
             mdiCardAccountDetails, breadcrumb
         }

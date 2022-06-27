@@ -11,7 +11,7 @@ VueRouter.prototype.push = function push(location) {
 const routes = [
   {
     path: '/',
-    redirect: 'viewer',
+    redirect: 'vtkviewer',
   },
   {
     path: '/vtkviewer',
