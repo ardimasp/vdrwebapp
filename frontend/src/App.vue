@@ -13,8 +13,6 @@ import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
 import {decode, decryptToken } from './function'
-// import CryptoJS from "crypto-js";
-// import {checkToken} from './check.js'
 
 export default {
   components: {

@@ -59,20 +59,13 @@
       color="#F4F5FA"
     >
       <div class="boxed-container w-full">
-        <div class="mx-6 d-flex justify-space-between">
+        <div class="mx-6">
           <span>
             &copy; {{ currentYear }} <a
               href="https://international.binus.ac.id/"
               class="text-decoration-none"
               target="_blank"
             >Binus International</a></span>
-          <span class="d-sm-inline d-none">
-            <a
-              href="https://international.binus.ac.id/computer-science/category/article/"
-              target="_blank"
-              class="me-6 text--secondary text-decoration-none"
-            >Blog</a>
-          </span>
         </div>
       </div>
     </v-footer>
