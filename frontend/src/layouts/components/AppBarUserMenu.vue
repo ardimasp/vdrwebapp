@@ -114,7 +114,7 @@
       </v-list-item> -->
 
       <!-- Pricing -->
-      <v-list-item link>
+      <v-list-item link :to="{'name': 'pricing'}">
         <v-list-item-icon class="me-2">
           <v-icon size="22">
             {{ icons.mdiCurrencyUsd }}

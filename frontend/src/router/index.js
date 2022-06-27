@@ -121,6 +121,11 @@ const routes = [
     },
   },
   {
+    path: '/pricing',
+    name: 'pricing',
+    component: () => import('@/views/pages/Pricing.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
