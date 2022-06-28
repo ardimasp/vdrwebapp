@@ -377,6 +377,14 @@ async def oil_production_excel(path:str,
         data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
         data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
 
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+        
         #checking column name
         checking = data.columns.values.tolist()
         for i in range(len(checking)):
@@ -406,14 +414,6 @@ async def oil_production_excel(path:str,
                     detail="File does not follow the template"
                 )
         
-        #checking shape
-        data_n_instances, data_n_features = data.shape
-        if data_n_features != n_features:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="There should be exactly 5 columns filled in!"
-            )
-
         #checking empty values
         missing = data.isnull().sum().sum()
         print(missing)
@@ -551,6 +551,14 @@ async def gas_production_excel(path:str,
         data = data.rename(columns={"Pressure Difference of the Well / bar": "Press_diff"})
         data = data.rename(columns={"Temperature Difference of the Well / Deg C": "Temp_diff"})
 
+        #checking shape
+        data_n_instances, data_n_features = data.shape
+        if data_n_features != n_features:
+            raise HTTPException(
+                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="There should be exactly 5 columns filled in!"
+            )
+
         # checking column names
         checking = data.columns.values.tolist()
         for i in range(len(checking)):
@@ -580,14 +588,6 @@ async def gas_production_excel(path:str,
                     detail="File does not follow the template"
                 )
         
-        #checking shape
-        data_n_instances, data_n_features = data.shape
-        if data_n_features != n_features:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="There should be exactly 5 columns filled in!"
-            )
-
         
         #checking for empty values
         missing = data.isnull().sum().sum()
