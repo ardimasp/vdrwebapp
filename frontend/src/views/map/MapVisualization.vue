@@ -5,16 +5,16 @@
        :x="0"
       :y="50"
       title="Select VTP"
-      :w="800"
-      :h="100"
+      :w="850"
+      :h="120"
       >
         <template>
-          <div class="pa-4 text-no-wrap ">
+          <div class="pa-2 text-no-wrap mt-4 ">
 
             <v-row
               no-gutters
             >
-            <v-col>
+            <v-col cols="3">
                 <v-autocomplete 
                     dense
                     v-model="selectedValue"
@@ -22,7 +22,7 @@
                     label="Selected"
                   ></v-autocomplete>
             </v-col>
-            <v-col class="ml-4">
+            <v-col cols="3" class="ml-4">
                  
                   <v-slider class="pl-0 mt-1"
                   label="Gain"
@@ -30,8 +30,8 @@
                     dense
                     :max="max"
                     :min="min"
+                    :step="sliderStep"
                     v-model="gainValue[selectedIndex]"
-                    :thumb-size="24"
                     thumb-label="always"
                     @change="applyChanges"
                   >
@@ -48,7 +48,7 @@
                   </template>
                   </v-slider>
             </v-col>
-            <v-col class="ml-4">
+            <v-col cols="4" class="ml-4">
                   <v-autocomplete
                     :disabled="selectedValue == null"
                     dense
@@ -58,6 +58,15 @@
                     @change="applyChanges"
 
                   ></v-autocomplete>
+            </v-col>
+            <v-col class="ml-4">
+               <v-btn
+                  color="primary"
+                  small
+                  @click="addVTP"
+                >
+                  Add VTP
+                </v-btn>
             </v-col>
             </v-row>
           </div>
@@ -70,7 +79,7 @@
         :x="0"
         :y="200"
         title="VTP Viewer"
-        :w="800"
+        :w="850"
         :h="this.height"
         :dataVtp="dataVtp"
         :vtpIndex="selectedIndex"
@@ -197,6 +206,7 @@ export default {
       value: '2hot',
       max:100,
       min:1,
+      sliderStep:0.01,
       selectedValue: null, //value selected based on the array
       selectedIndex: null, //the index of the selected value
       load: false,
@@ -329,12 +339,16 @@ export default {
       var filteredResult = this.dataMaps.find((e) => e.id == key);
 
       this.$refs.myMap.mapObject.flyTo([filteredResult.wellLatitude, filteredResult.wellLongitude], 9)
-  },
+    },
     markeronhover(key){
       var filteredResult = this.dataMaps.find((e) => e.id == key);
       this.dataFilter = filteredResult
       this.overlaymap = true
     },
+
+    addVTP(){
+      this.$router.push('/vtp-form')
+    }
 
   },
   async mounted() {

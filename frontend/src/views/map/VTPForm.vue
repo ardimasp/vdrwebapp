@@ -330,10 +330,10 @@ export default {
   },
   methods: {
     
-    storeloc(choseLoc){
-      console.log('loc', choseLoc)
-      console.log(choseLoc)
-    },
+    // storeloc(choseLoc){
+    //   console.log('loc', choseLoc)
+    //   console.log(choseLoc)
+    // },
     angleToRadians(angle)
     {
       return (Math.PI / 180) * angle;
@@ -347,10 +347,10 @@ export default {
       this.returnedStatusUpload = await vtpUpload(fileVTP)
 
       if(this.vtptypeChosen == this.vtpType[1]){
-        let rx = this.location.position.lat + (this.long/2) * Math.cos(this.angleToRadians(this.tilt));
-        let ry = this.location.position.lng + (this.long/2) * Math.sin(this.angleToRadians(this.tilt));
-        let lx = this.location.position.lat - (this.long/2) * Math.cos(this.angleToRadians(this.tilt));
-        let ly = this.location.position.lng - (this.long/2) * Math.sin(this.angleToRadians(this.tilt));
+        let rx = this.location.position.lat + ((this.long/2)/110.574) * Math.cos(this.angleToRadians(this.tilt));
+        let ry = this.location.position.lng + ((this.long/2)/110.574) * Math.sin(this.angleToRadians(this.tilt));
+        let lx = this.location.position.lat - ((this.long/2)/110.574) * Math.cos(this.angleToRadians(this.tilt));
+        let ly = this.location.position.lng - ((this.long/2)/110.574) * Math.sin(this.angleToRadians(this.tilt));
         const data = {
         path: '/'+this.wellName+'/'+this.vtpfilename,
         type: this.vtptypeChosen,

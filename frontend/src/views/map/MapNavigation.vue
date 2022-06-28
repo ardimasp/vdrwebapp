@@ -81,9 +81,15 @@ export default {
 
       prevColor: [],
       options: { permanent: true, direction:'top' },
-
     }
   },
+
+  // watch:{
+  //   height:function(newW){
+  //     console.log('width', newW)
+
+  //   }
+  // },
   methods: {
     latLng: function(lat,lng){
       return L.latLng(lat,lng)
@@ -135,9 +141,7 @@ export default {
     }
   },
 
-  mounted() {
-     this.height = this.$refs.myMap.$el.clientHeight
-    
+  mounted() {    
   },
    // do not forget this section
   directives: {
