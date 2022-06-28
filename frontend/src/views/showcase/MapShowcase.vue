@@ -9,9 +9,8 @@
       :h="500"
     >
     </vtk-card> -->
-
     <regular-card 
-      :x="400"
+      :x="400 - wss"
       :y="50"
       title="Select Wells"
       :w="300"
@@ -23,7 +22,7 @@
     </regular-card>
 
      <regular-card 
-      :x="10"
+      :x="10 - wss"
       :y="50"
       title="Sort By"
       :w="300"
@@ -34,7 +33,7 @@
      </template>
     </regular-card>
 <!-- <regular-card  -->
-  <draggable-button style="z-index: 999; left: 22px; top: 215px;" :isClick.sync="btnIsClick">
+  <draggable-button :style="{'z-index': '999', 'left': wleft, 'top': '215px'}" :isClick.sync="btnIsClick">
             <v-btn
               elevation="2"
               x-large
@@ -77,6 +76,7 @@ import { mdiMapMarkerPlus } from '@mdi/js';
 import {getDatafromDB, getDB, restructureData} from './MapEndPoint.js'
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgas from '../../assets/images/map-marker.svg'
+import store from '../../store'
 
 export default {
   components: {
@@ -247,6 +247,27 @@ export default {
     //   }
 
   },
+  
+  computed:{
+    wss(){
+      if(store.state.test.isDrawerOpen == true){
+        return 0
+      }else{
+        return 300
+
+      }
+    },
+
+    wleft(){
+      if(store.state.test.isDrawerOpen == true){
+        return 22+'px'
+      }else{
+        return -280+'px'
+
+      }
+    }
+
+  }
   // computed:{
   //   wss(){
   //     // this.width = this.$refs.myMap.$el.clientWidth

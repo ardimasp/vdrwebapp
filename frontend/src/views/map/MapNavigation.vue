@@ -142,6 +142,7 @@ export default {
   },
 
   mounted() {    
+    this.height = this.$refs.myMap.$el.clientHeight
   },
    // do not forget this section
   directives: {
