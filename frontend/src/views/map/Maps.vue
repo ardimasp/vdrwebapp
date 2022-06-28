@@ -11,7 +11,7 @@
     </vtk-card> -->
 
     <regular-card v-if="v==false"
-      :x="10"
+      :x="10 - wss"
       :y="50"
       title="Select Wells"
       :w="300"
@@ -50,7 +50,7 @@ import {getDatafromDB, getDB, getVTPdata, getVTPinfo} from '../showcase/MapEndPo
 import MapVisualization from './MapVisualization.vue'
 // import oilgas from '../../assets/images/oil&gas.svg'
 // import oilgas from '../../assets/images/map-marker.svg'
-// import store from "../../store";
+import store from '../../store'
 
 export default {
   components: {
@@ -193,6 +193,27 @@ export default {
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
     
   },
+
+  computed:{
+    wss(){
+      if(store.state.test.isDrawerOpen == true){
+        return 0
+      }else{
+        return 300
+
+      }
+    },
+
+    wleft(){
+      if(store.state.test.isDrawerOpen == true){
+        return 22+'px'
+      }else{
+        return -280+'px'
+
+      }
+    }
+
+  }
 }
 </script>
 <style lang="scss" scoped>

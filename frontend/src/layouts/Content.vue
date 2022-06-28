@@ -67,10 +67,11 @@
 </template>
 
 <script>
-import { ref } from '@vue/composition-api'
+import { ref, watch } from '@vue/composition-api'
 import { mdiMagnify, mdiBellOutline, mdiChevronLeft, mdiChevronRight  } from '@mdi/js'
 import VerticalNavMenu from './components/vertical-nav-menu/VerticalNavMenu.vue'
 import AppBarUserMenu from './components/AppBarUserMenu.vue'
+import store from '../store'
 
 export default {
   components: {
@@ -80,7 +81,11 @@ export default {
   setup() {
     const isDrawerOpen = ref(null)
     const currentYear = ref((new Date()).getFullYear())
-
+    
+    watch(() => isDrawerOpen.value, () =>{
+      if(isDrawerOpen.value == null){return}
+      else{ store.dispatch("updateDrawer", isDrawerOpen.value)}
+    })
     return {
       isDrawerOpen,
       currentYear,
@@ -93,6 +98,7 @@ export default {
         mdiChevronRight,
       },
     }
+
   },
 }
 </script>

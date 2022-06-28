@@ -2,7 +2,7 @@
   <div>
      <div class="container">
       <regular-card  v-if="chosenValue.length != 0"
-       :x="0"
+       :x="0 - coorX"
       :y="50"
       title="Select VTP"
       :w="850"
@@ -76,7 +76,7 @@
       
       <vtp-card-2
       v-if="chosenValue.length != 0"
-        :x="0"
+        :x="0 - coorX"
         :y="200"
         title="VTP Viewer"
         :w="850"
@@ -148,6 +148,7 @@ import RegularCard from '../viewer/RegularCard.vue'
 
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader'
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
+import store from '../../store'
 
 // import VtpCard from '../viewer/VtpCard.vue';
 
@@ -373,7 +374,25 @@ export default {
 
     wss(){
       return this.vtpMaps
-    }
+    },
+
+    coorX(){
+      if(store.state.test.isDrawerOpen == true){
+        return 0
+      }else{
+        return 300
+
+      }
+    },
+
+    wleft(){
+      if(store.state.test.isDrawerOpen == true){
+        return 22+'px'
+      }else{
+        return -280+'px'
+
+      }
+    },
   },
    // do not forget this section
   directives: {
