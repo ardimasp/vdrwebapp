@@ -111,7 +111,7 @@
                         v-model="result"
                         dense
                         readonly
-                        :suffix="feature=='oil'?'m³':'x10⁶ ft³'"
+                        :suffix="feature=='oil'?'barrel':'x10⁶ ft³'"
                     >
                     </v-text-field>
                 </v-col>
