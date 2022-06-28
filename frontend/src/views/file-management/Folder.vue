@@ -200,6 +200,7 @@ export default{
             <b>Deleting file or folder:</b>
             <li>To delete file(s), select the checkbox(es) and press delete</li>
             <li>Whilst deleting a folder, the file(s) inside the folder would be deleted</li>
+            <li>To delete a folder, press the delete icon on the right side of the folder name</li>
           </ul>
           <br>
           <ul>
