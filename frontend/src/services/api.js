@@ -11,9 +11,8 @@ export const checkExpire = (err) => {
         store.dispatch('setAlert', true);
         router.push('/login');
     }
-    if(store.state.auth.permission == "Administrator" && err.response.status == 500){
-        router.push('/admin')
-    }
+    if(store.state.auth.permission == "Administrator" && err.response.status == 500) router.push('/admin')
+    if(err.response.status == 404) router.push('/error-404')
 }
 
 const instance = axios.create({

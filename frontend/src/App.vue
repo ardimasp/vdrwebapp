@@ -13,6 +13,8 @@ import LayoutAdmin from '@/layouts/TopContent.vue'
 import store from './store'
 import route from './router'
 import {decode, decryptToken } from './function'
+import adminService from './services/admin.service';
+import {detectMimeType} from './function'
 
 export default {
   components: {
@@ -40,6 +42,17 @@ export default {
 
       if(store.state.auth.permission == "Premium User") await store.dispatch("fetchSreeyaList")
 
+      var res = await adminService.getUserDetail(data.userid);
+      if(res.status == 200) {
+          let pic = res.data.data.profile_pict;
+          let mime = detectMimeType(pic);
+          let profile
+          if(mime == "") profile = pic
+          else profile = "data:" + mime + ";base64," + pic
+          // profile.value = "data:" + mime + ";base64," + pic
+          // localStorage.setItem("profile", profile)
+          store.dispatch("setProfile", profile)
+      }
       await store.dispatch("setLoad", false)
     }
     else route.push('/login');

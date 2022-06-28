@@ -45,30 +45,45 @@
                             Please ensure you follow this format exactly. 
                             Do not rename the headers or leave any blanks and ensure you only input numerical values. 
                         </p>
-                        <v-text-field
-                        v-model="search"
-                        label="Search File | Folder"
-                        flat
-                        hide-details
-                        clearable
-                        :clear-icon="mdiCloseCircleOutline"
-                        ></v-text-field>
-                        <v-progress-linear
-                        v-if="load"
-                        color="secondary"
-                        indeterminate
-                        ></v-progress-linear>
-                        <v-treeview
-                            :open="open" 
-                            :search="search"
-                            :items="items" 
-                            item-key="id"
-                            activatable
-                            :active.sync="active"
+                        <div v-if="items.length > 0">
+                            <v-text-field
+                            v-model="search"
+                            label="Search File | Folder"
+                            flat
+                            hide-details
+                            clearable
+                            :clear-icon="mdiCloseCircleOutline"
+                            ></v-text-field>
+                            <v-progress-linear
+                            v-if="load"
                             color="secondary"
-                            selected-color="secondary"
-                            rounded
-                        ></v-treeview>
+                            indeterminate
+                            ></v-progress-linear>
+                            <v-treeview
+                                :open="open" 
+                                :search="search"
+                                :items="items" 
+                                item-key="id"
+                                activatable
+                                :active.sync="active"
+                                color="secondary"
+                                selected-color="secondary"
+                                rounded
+                            >
+                                <template slot="append" slot-scope="props">
+                                    <div>
+                                        <span v-if="props.item.type == 'file'">
+                                            <v-icon small @click.prevent="downloadFile(props.item.id)">
+                                                {{mdiDownload}}
+                                            </v-icon>
+                                        </span>
+                                    </div>
+                                </template>
+                            </v-treeview>
+                        </div>
+                        <div v-else class="mb-3">
+                            <v-btn color="secondary" to="/filemanagement">Add File</v-btn>
+                        </div>
                     </div>
 
                     <v-btn
@@ -85,12 +100,14 @@
                         <label>Choose what you want to predict:</label>
                         <v-checkbox
                             v-model="selectFeatures"
+                            dense
                             color="secondary"
                             label="Oil"
                             value="oil"
                         ></v-checkbox>
                         <v-checkbox
                             v-model="selectFeatures"
+                            dense
                             color="secondary"
                             label="Gas"
                             value="gas"

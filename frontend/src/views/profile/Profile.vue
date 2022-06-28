@@ -209,7 +209,9 @@ export default defineComponent({
             if(check == 200){
                 profPic.value = newImage.value;
                 clearImage();
-                localStorage.setItem("profile", profPic.value)
+                // localStorage.setItem("profile", profPic.value)
+                
+                store.dispatch("setProfile", profPic.value)
             }
             loadUpload.value = false
         }

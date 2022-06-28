@@ -1,5 +1,5 @@
 import axios from "axios";
-import {URL} from './api';
+import {checkExpire, URL} from './api';
 import tokenService from "./token.service";
 
 const url = URL + "/common"
@@ -14,6 +14,7 @@ class AuthService{
                     return res;
                 },
                 (err) => {
+                    checkExpire(err)
                     return err.response;
                 }
             )

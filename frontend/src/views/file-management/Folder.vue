@@ -243,6 +243,8 @@ export default{
         }
         await fileService.deleteFile(tree.value);
         await store.dispatch("fetchTreeList");
+        await store.dispatch("fetchSreeyaList");
+        await store.dispatch("fetchVtpList");
         active.value = []
       }
       delFileDialog.value = false;
@@ -256,6 +258,8 @@ export default{
       if(bool) {
         await fileService.deleteFolder(selectedFolder.value);
         await store.dispatch("fetchTreeList"); 
+        await store.dispatch("fetchSreeyaList");
+        await store.dispatch("fetchVtpList");
         active.value = []
       }
       delFolderDialog.value = false;

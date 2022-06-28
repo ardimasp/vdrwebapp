@@ -39,12 +39,12 @@
                     <v-text-field
                         v-model="downholeTemp"
                         type="number"
-                        :hint="tempMeasurement == 'celcius' ? '0 ≤ value ≤ 172': '32 ≤ value ≤ 341.6'"
+                        :hint="tempMeasurement == 'celsius' ? '0 ≤ value ≤ 172': '32 ≤ value ≤ 341.6'"
                         persistent-hint
-                        :suffix="tempMeasurement == 'celcius' ? '°C':'°F'"
+                        :suffix="tempMeasurement == 'celsius' ? '°C':'°F'"
                         dense
                         required
-                        :rules="tempMeasurement == 'celcius' ? [v=>(v && v>=0 && v<=172) || '0 ≤ value ≤ 172'] : [v=>(v && v>=32 && v<=341.6) || '32 ≤ value ≤ 341.6']"
+                        :rules="tempMeasurement == 'celsius' ? [v=>(v && v>=0 && v<=172) || '0 ≤ value ≤ 172'] : [v=>(v && v>=32 && v<=341.6) || '32 ≤ value ≤ 341.6']"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -90,12 +90,12 @@
                     <v-text-field
                         v-model="tempDiff"
                         type="number"
-                        :hint="tempMeasurement == 'celcius' ? '0 ≤ value ≤ 190': '32 ≤ value ≤ 374'"
+                        :hint="tempMeasurement == 'celsius' ? '0 ≤ value ≤ 190': '32 ≤ value ≤ 374'"
                         persistent-hint
-                        :suffix="tempMeasurement == 'celcius' ? '°C':'°F'"
+                        :suffix="tempMeasurement == 'celsius' ? '°C':'°F'"
                         dense
                         required
-                        :rules="tempMeasurement == 'celcius' ? [v=>(v && v>=0 && v<=190) || '0 ≤ value ≤ 190'] : [v=>(v && v>=32 && v<=374) || '32 ≤ value ≤ 374']"
+                        :rules="tempMeasurement == 'celsius' ? [v=>(v && v>=0 && v<=190) || '0 ≤ value ≤ 190'] : [v=>(v && v>=32 && v<=374) || '32 ≤ value ≤ 374']"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -137,20 +137,20 @@ export default defineComponent({
     setup(props) {
         const validForm = ref(true)
 
-        const tempOptions = ["celcius", "fahrenheit"];
-        const tempMeasurement = ref("celcius");
+        const tempOptions = ["celsius", "fahrenheit"];
+        const tempMeasurement = ref("celsius");
 
-        const hoursOnline = ref(0);
-        const downholeTemp = ref(0);
-        const downholePress = ref(0);
-        const pressDiff = ref(0);
-        const tempDiff = ref(0);
+        const hoursOnline = ref(1);
+        const downholeTemp = ref(1);
+        const downholePress = ref(1);
+        const pressDiff = ref(1);
+        const tempDiff = ref(1);
         const result = ref();
 
         watch(() => tempMeasurement.value, () => {
-            if(tempMeasurement.value == "celcius"){
-                downholeTemp.value = 0;
-                tempDiff.value = 0;
+            if(tempMeasurement.value == "celsius"){
+                downholeTemp.value = 1;
+                tempDiff.value = 1;
             } 
             else if(tempMeasurement.value == "fahrenheit") {
                 downholeTemp.value = 32;
@@ -162,7 +162,7 @@ export default defineComponent({
             if (hoursOnline.value < 0) return false
             if (downholePress.value < 0 || downholePress.value > 308) return false
             if (pressDiff.value < 0 || pressDiff.value > 325) return false
-            if(tempMeasurement.value == "celcius"){
+            if(tempMeasurement.value == "celsius"){
                 if (downholeTemp.value < 0 || downholeTemp.value > 172) return false
                 if (tempDiff.value < 0 || tempDiff.value > 190) return false
             }
@@ -176,11 +176,11 @@ export default defineComponent({
         
         const predict = async () => {
             var submitData = {
-                "hours_online": hoursOnline.value,
-                "downhole_temp": downholeTemp.value,
-                "downhole_press": downholePress.value,
-                "press_diff": pressDiff.value,
-                "temp_diff": tempDiff.value,
+                "hours_online": hoursOnline.value-0,
+                "downhole_temp": downholeTemp.value-0,
+                "downhole_press": downholePress.value-0,
+                "press_diff": pressDiff.value-0,
+                "temp_diff": tempDiff.value-0,
                 "deg": tempMeasurement.value
             }
 

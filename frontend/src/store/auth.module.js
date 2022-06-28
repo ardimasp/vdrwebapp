@@ -2,7 +2,7 @@ import authService from "../services/auth.service";
 
 const user = localStorage.getItem('user');
 // user = token, username = userid, alert = login alert when access expire
-const initialState = user ? {logged: true, user, username:"", permission:"", string:""} : {logged:false, user:null, username:null, permission:null, string:null};
+const initialState = user ? {logged: true, user, username:"", permission:"", string:"", profile:""} : {logged:false, user:null, username:null, permission:null, string:null, profile:null};
 
 export default {
     state: initialState,
@@ -37,6 +37,9 @@ export default {
         },
         SET_TOKEN(state, data){
             state.user = data
+        },
+        SET_PROFILE(state, data){
+            state.profile = data
         }
     },
     actions: {
@@ -67,6 +70,9 @@ export default {
         },
         setToken(context, data){
             context.commit("SET_TOKEN", data)
+        },
+        setProfile(context, data){
+            context.commit("SET_PROFILE", data)
         }
     }
 }

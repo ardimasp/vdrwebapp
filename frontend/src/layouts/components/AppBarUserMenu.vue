@@ -167,19 +167,27 @@ import {
 } from '@mdi/js'
 import store from '../../store'
 import router from '../../router'
-import { computed, onBeforeUnmount, onMounted, ref } from '@vue/composition-api'
+import { computed, onMounted,} from '@vue/composition-api'
 // import adminService from '../../services/admin.service';
 // import {detectMimeType} from './../../function'
 
 export default {
   setup() {
-    const profile = ref("");
+    const profile = computed(() => {return store.state.auth.profile});
     onMounted(async () => {
-        profile.value = localStorage.getItem("profile")
-    })
-
-    onBeforeUnmount(() => {
-      // localStorage.setItem("black", "ugh")
+        // profile.value = localStorage.getItem("profile")
+        // var res = await adminService.getUserDetail(username.value);
+        // if(res.status == 200) {
+        //     let pic = res.data.data.profile_pict;
+        //     let mime = detectMimeType(pic);
+        //     let profile
+        //     if(mime == "") profile = pic
+        //     else profile = "data:" + mime + ";base64," + pic
+        //     // profile.value = "data:" + mime + ";base64," + pic
+        //     // localStorage.setItem("profile", profile)
+        //     store.dispatch("setProfile", profile)
+        // }
+        // console.log(store.state.auth.profile)
     })
 
     const logout = async () => {

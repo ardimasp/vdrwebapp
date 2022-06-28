@@ -28,14 +28,6 @@
           src="@/assets/images/3d-characters/error.png"
         ></v-img>
       </div>
-
-      <v-btn
-        color="primary"
-        to="/"
-        class="mb-4"
-      >
-        Back to home
-      </v-btn>
     </div>
   </div>
 </template>

@@ -67,7 +67,7 @@
       ></nav-menu-link>
       
       <nav-menu-link
-        title="Production"
+        title="O&G Data Prediction"
         :to="{ name: 'production' }"
         :icon="icons.mdiChartLine"
       ></nav-menu-link>

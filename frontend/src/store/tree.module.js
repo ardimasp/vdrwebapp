@@ -21,6 +21,8 @@ export default {
         fetchTreeList(context){
             return fileService.fetchFiles().then(
                 data => {
+                    var index = data.data.findIndex(item => item.id == "/template.xlsx")
+                    data.data.splice(index, 1);
                     context.commit('UPDATE_TREE', data.data);
                     return data.data;
                 },
