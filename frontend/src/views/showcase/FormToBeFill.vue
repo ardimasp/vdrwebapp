@@ -231,9 +231,9 @@
       <v-col  cols="12"
         md="6">
         <v-file-input
-        :disabled="fileDisabled"
-        required
-        dense
+          :disabled="fileDisabled"
+          required
+          dense
           accept="image/*"
           v-model="children.imgFiles"
           color="primary"
@@ -245,8 +245,14 @@
           :show-size="1000"
           type="file"
           :rules="fileRules"
+          @change="inputChanged(index)"
         >
-          <template v-slot:selection="{ index, text }">
+          <template v-slot:selection="{ text }">
+              <v-chip small text-color="white" color="#295671" close @click:close="remove(text, index)">
+                  {{ text }}
+              </v-chip>
+          </template>
+          <!-- <template v-slot:selection="{ index, text }">
             <v-chip
               v-if="index < 2"
               color="primary"
@@ -262,8 +268,14 @@
             >
               +{{ files.length - 2 }} File(s)
             </span>
-          </template>
+          </template> -->
         </v-file-input>
+        <!-- <div v-if="children.imgFiles.length">
+            <h5>All files</h5>
+                <v-chip :key="index" v-for="(f,index) in children.imgFiles" class="mr-1">
+                    {{ f }}
+                </v-chip>
+            </div> -->
           <!-- @change="selectFiles(index)" -->
 
       </v-col>
@@ -414,6 +426,9 @@ export default {
         generalRules:[v => !!v || 'Field is required'],
         load: false,
 
+        currFiles: [],
+        files: []
+
     }
   },
   methods: {
@@ -453,6 +468,21 @@ export default {
       this.childrens[choseLoc.index].latitude = choseLoc.position.lat
       this.childrens[choseLoc.index].longitude = choseLoc.position.lng
     },
+
+    // remove (i, index) {
+      // console.log('children index', index)
+
+      // this.files.splice(i, 1)
+      // this.childrens[index].imgFiles = this.files
+
+    // },
+
+    // inputChanged (index) {
+      // console.log('children index', index)
+      
+      // console.log('imgfil', this.childrens[index].imgFiles.length)
+
+    // },
     
     async submitData(){
       for (let i = 0; i < Object.keys(this.childrens).length; i++){
@@ -565,7 +595,7 @@ export default {
     //   }
     // },
     fileRules(){
-      console.log(this.childrens)
+      // console.log(this.childrens)
       const imguploadRules = []
       const Grule = v => !!v || 'Upload image required'
       imguploadRules.push(Grule)

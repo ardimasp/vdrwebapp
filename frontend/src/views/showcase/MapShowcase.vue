@@ -53,7 +53,7 @@
 
     </div>
 
-    <MapNavigation :dataMaps="datas" :heatmap="heatmap" :dataType="dT"></MapNavigation>
+    <MapNavigation ref="myMap" :dataMaps="datas" :heatmap="heatmap" :dataType="dT"></MapNavigation>
     <!-- <br>
     <br> -->
   </div>
@@ -112,7 +112,9 @@ export default {
       transparent: 0,
       correctData:[],
       btnIsClick: false,
-      dT: 'showcase'
+      dT: 'showcase',
+      width: undefined,
+      xResponsive: undefined
     }
   },
   setup() {
@@ -236,8 +238,44 @@ export default {
     this.correctData = await restructureData(this.allData)
 
     this.datas = this.allData.map(v => ({...v, iconSize: this.normalIcon, iconColor: this.defcolor,  iconfillColor: this.lessopacity, iconborderColor: this.transparent, fillIcon: this.deffillcolor}))
+    this.width = this.$refs.myMap.$el.clientWidth
+      // console.log(this.$refs.myMap.$el.clientWidth)
+    // if(this.width > 1200){
+    //     this.xResponsive = 0
+    //   }else{
+    //     this.xResponsive = 200
+    //   }
 
   },
+  // computed:{
+  //   wss(){
+  //     // this.width = this.$refs.myMap.$el.clientWidth
+  //     // console.log(this.width)
+  //     console.log(this.$refs.myMap)
+  //     if(this.$refs.myMap.$el.clientWidth > 1000){
+  //       return 200
+  //     }else{
+  //       return 0
+  //     }
+  //     // return this.xResponsive
+  //   }
+  // },
+
+  
+  // watch:{
+  //   width:function(n){
+  //     if(n > 1200){
+  //       this.xResponsive = 0
+  //     }else{
+  //       this.xResponsive = 200
+  //     }
+  //     // console.log('w', this.xResponsive)
+  //   },
+    // xResponsive:function(newW){
+    //   console.log('width', newW)
+
+    // }
+  // },
 }
 </script>
 <style lang="scss" scoped>

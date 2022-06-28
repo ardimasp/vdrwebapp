@@ -47,7 +47,7 @@
 
                   </v-btn>
                 </template>
-                <span>Close Overlay</span>
+                <span>Close</span>
               </v-tooltip>
           </div>
           <!-- <v-btn icon @click="closeOverlay()">
@@ -62,12 +62,13 @@
         /> -->
         <div ref="content">
       <v-carousel height="400">
-        <v-carousel-item min-width="500"
+        <v-carousel-item min-width="500" max-height="400"
           v-for="(item, i) in this.images"
           :key="i"
           :src="item"
           reverse-transition="fade-transition"
           transition="fade-transition"
+          @contextmenu.prevent="handler(item)"
         ></v-carousel-item>
       </v-carousel>
       <v-simple-table class="pl-4" style="background-color: #EDE7F6;" height="300px">
@@ -219,6 +220,10 @@ export default {
         }
       }
       doc.save(`${this.dataTitle}.pdf`);
+
+    },
+    handler(imgSrc){
+      window.open(imgSrc);
 
     }
     
