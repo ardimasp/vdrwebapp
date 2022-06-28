@@ -122,7 +122,7 @@ export default defineComponent({
                                     color: '#7f7f7f'
                                 }
                             },
-                            zaxis: {title: "z-"+prediction.label,
+                            zaxis: {title: "z-"+downholePress.label,
                                 titlefont: {
                                     family: 'Roboto',
                                     size: 12,
