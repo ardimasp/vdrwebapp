@@ -18,7 +18,6 @@
     </v-col>
   </v-row>
    <div style="position: absolute;">
-    <p>tes</p>
       <!-- <v-snackbar
         v-model="snackbar"
         right

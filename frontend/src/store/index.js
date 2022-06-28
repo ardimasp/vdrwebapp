@@ -5,7 +5,7 @@ import adminModule from './admin.module'
 import treeModule from './tree.module'
 import viewerModule from './viewer.module'
 import authModule from './auth.module'
-
+import testModule from './test.module'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -14,6 +14,7 @@ export default new Vuex.Store({
     viewer: viewerModule,
     admin: adminModule,
     auth: authModule,
+    test: testModule
   },
   state: {
     initialLoad: false,

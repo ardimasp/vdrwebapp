@@ -247,12 +247,12 @@
           :rules="fileRules"
           @change="inputChanged(index)"
         >
-          <template v-slot:selection="{ text }">
-              <v-chip small text-color="white" color="#295671" close @click:close="remove(text, index)">
+          <!-- <template v-slot:selection="{ text,i }">
+              <v-chip small text-color="white" color="#295671" close @click:close="remove(i, index)">
                   {{ text }}
               </v-chip>
-          </template>
-          <!-- <template v-slot:selection="{ index, text }">
+          </template> -->
+          <template v-slot:selection="{ index, text }">
             <v-chip
               v-if="index < 2"
               color="primary"
@@ -266,14 +266,14 @@
               v-else-if="index === 2"
               class="text-overline grey--text text--darken-3 mx-2"
             >
-              +{{ files.length - 2 }} File(s)
+              +{{ children.imgFiles.length - 2 }} File(s)
             </span>
-          </template> -->
+          </template>
         </v-file-input>
-        <!-- <div v-if="children.imgFiles.length">
+        <!-- <div v-if="files.length">
             <h5>All files</h5>
-                <v-chip :key="index" v-for="(f,index) in children.imgFiles" class="mr-1">
-                    {{ f }}
+                <v-chip :key="index" v-for="(f,index) in files" class="mr-1">
+                    {{ f.name }}
                 </v-chip>
             </div> -->
           <!-- @change="selectFiles(index)" -->
@@ -427,8 +427,8 @@ export default {
         load: false,
 
         currFiles: [],
-        files: []
-
+        files: [],
+        childFiles: []
     }
   },
   methods: {
@@ -470,18 +470,25 @@ export default {
     },
 
     // remove (i, index) {
-      // console.log('children index', index)
+    //   console.log('children index', index)
 
-      // this.files.splice(i, 1)
-      // this.childrens[index].imgFiles = this.files
+    //   this.files.splice(i, 1)
+    //   // this.childrens[index].imgFiles = this.files
 
     // },
 
     // inputChanged (index) {
-      // console.log('children index', index)
-      
-      // console.log('imgfil', this.childrens[index].imgFiles.length)
+    //   console.log('children index', index)
+    //   this.files = [
+    //       ...this.currFiles,
+    //       ...this.files
+    //   ]
+    //   console.log(this.files)
 
+    //   console.log('imgfil', this.childrens[index].imgFiles.length)
+    //   var data = {id: index, imgFil: this.files}
+    //   this.childFiles.append(data)
+    //   console.log(this.childFiles)
     // },
     
     async submitData(){

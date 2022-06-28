@@ -3,27 +3,20 @@
      style="background-color:rgb(145, 85, 253);"
       class="mx-auto my-12"
       max-width="900"
-      max-height="this.heightWindow"
+      :max-height="wss"
       width="900"
-      height="this.heightWindow"
+      :height="wss"
       ref="cardContent"
     >
      <template slot="progress">
         <v-progress-linear color="#BB86FC" height="10" indeterminate></v-progress-linear>
       </template>
       <v-row class="mt-2">
-        <!-- <v-col class="ml-5 mt-5"> -->
-                <v-card-title style="color: white!important;" class="ml-4 mb-3">{{ this.dataTitle }}</v-card-title>
-        <!-- </v-col> -->
-                  <!-- <v-spacer></v-spacer> -->
+          <v-card-title style="color: white!important;" class="ml-4 mb-3">{{ this.dataTitle }}</v-card-title>
+
           <v-spacer></v-spacer>
 
-        <!-- <v-col md="auto" class="mt-7"> -->
-          <!-- <v-btn icon>
-              <v-icon>{{icons.mdiDownload}}</v-icon>
-
-          </v-btn> -->
-          <div class="mr-10 mt-2">
+          <div class="mr-10 mt-8">
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
 
@@ -36,8 +29,6 @@
                 <span>Download Data</span>
               </v-tooltip>
 
-            <!-- </v-col> -->
-            <!-- <v-col lg="2" class="mt-7"> -->
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
 
@@ -50,11 +41,6 @@
                 <span>Close</span>
               </v-tooltip>
           </div>
-          <!-- <v-btn icon @click="closeOverlay()">
-              <v-icon>{{icons.mdiCloseThick}}</v-icon>
-
-          </v-btn> -->
-        <!-- </v-col> -->
       </v-row>
         <!-- <VtkContent
             :divWidthProp="800"
@@ -238,6 +224,13 @@ export default {
     this.dataKeys = Object.keys(this.showcaseDetails)
     this.dataValues = Object.values(this.showcaseDetails)
     this.heightWindow  = this.windowHeight / 1.4
+    console.log(this.heightWindow)
+  },
+
+  computed:{
+    wss(){
+      return this.windowHeight/1.4
+    },
   }
 }
 
