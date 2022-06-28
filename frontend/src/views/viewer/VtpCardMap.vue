@@ -164,9 +164,9 @@ export default {
     }
   },
   watch: { 
-    dataVtp: function(newVal, oldVal) { // watch it
-      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-    },
+    // dataVtp: function(newVal, oldVal) { // watch it
+    //   console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+    // },
     selectedValue: function(newVal) {
       if(this.chosenValue == null || this.chosenValue.length == 0) return
 
@@ -219,9 +219,9 @@ export default {
       }
     }
   },
-  mounted(){
-    console.log(this.dataVtp)
-  }
+  // mounted(){
+  //   console.log(this.dataVtp)
+  // }
 }
 </script>
 

@@ -89,7 +89,7 @@ export default {
     };
   },
   mounted() {
-    console.log('i', this.ind)
+    // console.log('i', this.ind)
     this.getUserPosition();
     this.$refs.map.mapObject.on("geosearch/showlocation", this.onSearch);
   },

@@ -38,7 +38,7 @@
 
               </v-btn>
             </template>
-            <span>Close Overlay</span>
+            <span>Close</span>
           </v-tooltip>
           </div>
       </v-row>
@@ -162,13 +162,13 @@ export default {
       items: [],
       value: '2hot',
 
-      idTesting: 1
+      idTesting: 1,
     }
   },
   watch: { 
     value: function(newVal) { // watch it
       this.$refs.vtpcontent.changeColorMapName(newVal,this.gain)
-    }
+    },
   },
   methods: {
 
@@ -216,6 +216,7 @@ export default {
   mounted() {
 
       this.items = vtkColorMaps.rgbPresetNames
+      this.height = this.$refs.myMap.$el.clientWidth
     },
   setup(){
 

@@ -33,7 +33,7 @@
 
                     </v-btn>
                   </template>
-                  <span>Close Overlay</span>
+                  <span>Close</span>
                 </v-tooltip>
               </v-col> 
       </v-row>

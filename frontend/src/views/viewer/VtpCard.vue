@@ -109,9 +109,9 @@ export default {
     }
   },
   watch: { 
-    dataVtp: function(newVal, oldVal) { // watch it
-      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-    }
+    // dataVtp: function(newVal, oldVal) { // watch it
+    //   console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+    // }
   },
   components: {
     VueDraggableResizable,
@@ -155,9 +155,9 @@ export default {
       }
     }
   },
-  mounted(){
-    console.log(this.dataVtp)
-  }
+  // mounted(){
+  //   console.log(this.dataVtp)
+  // }
 }
 </script>
 
