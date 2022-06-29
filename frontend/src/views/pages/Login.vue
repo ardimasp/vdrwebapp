@@ -200,6 +200,8 @@ export default {
     const errorMsg = ref(false);
     const message = ref("");
     const submitForm = async () => {
+      errorMsg.value = false;
+      message.value = "";
       loading.value = true;
 
       let submitData = new FormData();
@@ -245,9 +247,10 @@ export default {
         }
       }
       else {
+        loading.value = false;
         errorMsg.value = true;
         message.value = result.response.data.detail
-        console.log(result)
+        // console.log(result)
       }
       loading.value = false;
     }
