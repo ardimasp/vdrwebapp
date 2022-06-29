@@ -60,7 +60,7 @@
             ></v-text-field>
 
             <p  class="caption" style="color:red" v-if="errorMsg">
-              You typed the wrong username or password!
+              {{message}}
             </p>
 
             <div class="d-flex align-center justify-space-between flex-wrap">
@@ -198,6 +198,7 @@ export default {
     })
 
     const errorMsg = ref(false);
+    const message = ref("");
     const submitForm = async () => {
       loading.value = true;
 
@@ -206,8 +207,9 @@ export default {
       submitData.append("password", password.value);
 
       const result = await store.dispatch('login', submitData);
+      console.log(result)
 
-      if(result == 200) {
+      if(result.status == 200) {
         errorMsg.value = false;
         await store.dispatch("setUsername", username.value)
         
@@ -242,7 +244,11 @@ export default {
           await store.dispatch("setLoad", false)
         }
       }
-      else errorMsg.value = true;
+      else {
+        errorMsg.value = true;
+        message.value = result.response.data.detail
+        console.log(result)
+      }
       loading.value = false;
     }
 
@@ -253,7 +259,7 @@ export default {
       socialLink,
       submitForm,
       checkValid,
-      errorMsg,
+      errorMsg, message,
       loading, setAlert, forgetPassword, closeForgetPassword, openForgetPassword,
 
       icons: {

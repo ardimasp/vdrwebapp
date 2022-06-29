@@ -46,12 +46,12 @@ export default {
         login({commit}, data){
             return authService.login(data).then(
                 data => {
-                    commit('LOGIN_SUCCESS', data.data);
-                    return data.status;
+                    if(data.data) commit('LOGIN_SUCCESS', data.data);
+                    return data;
                 },
                 error => {
                     commit('LOGIN_FAIL', data);
-                    return Promise.reject(error);
+                    return error;
                 }
             )
         },

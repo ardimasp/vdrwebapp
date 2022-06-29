@@ -55,7 +55,6 @@ export default {
           if(mime == "") profile = pic
           else profile = "data:" + mime + ";base64," + pic
           // profile.value = "data:" + mime + ";base64," + pic
-          // localStorage.setItem("profile", profile)
           store.dispatch("setProfile", profile)
           // console.log("aaaaaaaaa",store.state.auth.profile)
       }

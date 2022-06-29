@@ -36,6 +36,7 @@
     "vue-draggable-button": "^0.1.5",
     "vue-draggable-resizable": "^2.3.0",
     "vue-router": "^3.2.0",
+    "vue-smooth-scrollbar": "^1.0.3",
     "vue-vtk-js": "^1.4.3",
     "vue2-leaflet": "^2.7.1",
     "vue2-leaflet-geosearch": "^1.0.6",
