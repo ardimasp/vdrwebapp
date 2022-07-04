@@ -157,6 +157,17 @@ async def oil_production(oil_data: Production,
                     status_code=HTTP_400_BAD_REQUEST,
                     detail="Pressure Difference of the Well / bar range should fall between 0 to 325!"
                 )
+            
+            if data["temp_diff"] < 0 or data["temp_diff"] > 190:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Temperature Difference of the Well / Deg C range should fall between 0 to 190!"
+                )
+
+            if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
+                return {
+                'prediction': 0
+                }
         
             if data["downhole_press"] == 0 and data["downhole_temp"] == 0 and data["hours_online"] == 0 and data["press_diff"] == 0 and data["temp_diff"] == 0:
                 return {
