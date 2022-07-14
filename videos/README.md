@@ -23,5 +23,13 @@
 	- Tested with tree view and vtk
 	- Add new card with chartjs when add new file from treeview card
 
+- [prediction.gif](prediction.gif) 
+	
+	![prediction.gif](prediction.gif) 
+
+- [endpoints.gif](endpoints.gif) 
+	
+	![endpoints.gif](endpoints.gif) 
+
 
 
